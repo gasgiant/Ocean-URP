@@ -227,7 +227,7 @@ namespace OceanSystem
             Graphics.ExecuteCommandBuffer(dynamicSpectrumCbuff);
 
             // Calculating IFFTs of complex amplitudes
-            FastFourierTransformCompute.IFFT2D(fftInOut, fftBuffer, true, false, true);
+            FFTCompute.IFFT2D(fftInOut, fftBuffer, true, false, true);
             fftInOut.GenerateMips();
 
             // Simulating foam

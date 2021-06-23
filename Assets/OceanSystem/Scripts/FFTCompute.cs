@@ -4,9 +4,9 @@ using UnityEngine.Rendering;
 
 namespace OceanSystem
 {
-    public static class FastFourierTransformCompute
+    public static class FFTCompute
     {
-        private const string ShaderPath = "ComputeShaders/FastFourierTransform";
+        private const string ShaderPath = "ComputeShaders/FFT";
         private const int LocalWorkGroupsX = 8;
         private const int LocalWorkGroupsY = 8;
 

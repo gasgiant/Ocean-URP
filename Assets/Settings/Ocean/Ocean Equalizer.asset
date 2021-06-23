@@ -12,11 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05009e91a8ecf074b90aa0e95d40fceb, type: 3}
   m_Name: Ocean Equalizer
   m_EditorClassIdentifier: 
-  scaleFilters:
-  - type: 0
-    center: 0
-    value: 0
-    width: 0.5
+  scaleFilters: []
   chopFilters: []
   DisplayWavesSettings: {fileID: 11400000, guid: 07b4d7e62a3e90d4cb735581891aeb1c, type: 2}
   showScale: 1

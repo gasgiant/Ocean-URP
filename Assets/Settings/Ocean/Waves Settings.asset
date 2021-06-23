@@ -18,7 +18,7 @@ MonoBehaviour:
   foamDecayRate: 0.1
   local:
     energySpectrum: 0
-    windSpeed: 4.7
+    windSpeed: 5.2
     fetch: 100
     peaking: 3.3
     scale: 1
