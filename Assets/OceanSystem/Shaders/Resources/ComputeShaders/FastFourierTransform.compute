@@ -1,0 +1,127 @@
+﻿#pragma kernel PrecomputeTwiddleFactorsAndInputIndices
+#pragma kernel FftStep
+#pragma kernel Scale
+#pragma kernel Permute
+
+#pragma multi_compile _ FFT_INVERSE
+#pragma multi_compile _ FFT_PING_PONG
+#pragma multi_compile _ FFT_DIRECTION
+
+#define PI 3.1415926
+
+RWTexture2D<float4> PrecomputedData;
+RWTexture2DArray<float4> Buffer0;
+RWTexture2DArray<float4> Buffer1;
+
+#if defined(FFT_PING_PONG)
+#define PingPong true
+#else
+#define PingPong false
+#endif
+
+#if defined(FFT_DIRECTION)
+#define Direction true
+#else
+#define Direction false
+#endif
+
+#if defined(FFT_INVERSE)
+#define Inverse true
+#else
+#define Inverse false
+#endif
+
+uint Step;
+uint Size;
+uint TargetsCount;
+
+float2 ComplexMult(float2 a, float2 b)
+{
+	return float2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+}
+
+float2 ComplexExp(float2 a)
+{
+	return float2(cos(a.y), sin(a.y)) * exp(a.x);
+}
+
+[numthreads(1, 8, 1)]
+void PrecomputeTwiddleFactorsAndInputIndices(uint3 id : SV_DispatchThreadID)
+{
+	uint b = Size >> (id.x + 1);
+	float2 mult = 2 * PI * float2(0, 1) / Size;
+	uint i = (2 * b * (id.y / b) + id.y % b) % Size;
+	float2 twiddle = ComplexExp(-mult * ((id.y / b) * b));
+	PrecomputedData[id.xy] = float4(twiddle.x, twiddle.y, i, i + b);
+	PrecomputedData[uint2(id.x, id.y + Size / 2)] = float4(-twiddle.x, -twiddle.y, i, i + b);
+}
+
+void DoButterfly(RWTexture2DArray<float4> buff0, RWTexture2DArray<float4> buff1,
+	uint2 id, uint2 sampleIndexA, uint2 sampleIndexB, float2 twiddle)
+{
+	float4 v;
+	
+	for (uint i = 0; i < TargetsCount; i++)
+	{
+		v = buff0[uint3(sampleIndexA, i)];
+		buff1[uint3(id, i)] = buff0[uint3(sampleIndexB, i)]
+		+ float4(ComplexMult(twiddle, v.xy), ComplexMult(twiddle, v.zw));
+	}
+}
+
+[numthreads(8, 8, 1)]
+void FftStep(uint3 id : SV_DispatchThreadID)
+{
+	float4 data;
+	uint2 inputsIndices;
+	uint2 sampleIndexA;
+	uint2 sampleIndexB;
+	float2 twiddle;
+	
+	if (Direction)
+	{
+		data = PrecomputedData[uint2(Step, id.y)];
+		inputsIndices = (uint2) data.zw;
+		sampleIndexA = uint2(id.x, inputsIndices.y);
+		sampleIndexB = uint2(id.x, inputsIndices.x);
+	}
+	else
+	{
+		data = PrecomputedData[uint2(Step, id.x)];
+		inputsIndices = (uint2) data.zw;
+		sampleIndexA = uint2(inputsIndices.y, id.y);
+		sampleIndexB = uint2(inputsIndices.x, id.y);
+	}
+	
+	if (Inverse)
+		twiddle = float2(data.x, -data.y);
+	else
+		twiddle = data.xy;
+	
+	if (PingPong)
+	{
+		DoButterfly(Buffer0, Buffer1, id.xy, sampleIndexA, sampleIndexB, twiddle);
+	}
+	else
+	{
+		DoButterfly(Buffer1, Buffer0, id.xy, sampleIndexA, sampleIndexB, twiddle);
+	}
+}
+
+[numthreads(8, 8, 1)]
+void Scale(uint3 id : SV_DispatchThreadID)
+{
+	for (uint i = 0; i < TargetsCount; i++)
+	{
+		Buffer0[uint3(id.xy, i)] = Buffer0[uint3(id.xy, i)] / Size / Size;
+	}
+}
+
+[numthreads(8, 8, 1)]
+void Permute(uint3 id : SV_DispatchThreadID)
+{
+	for (uint i = 0; i < TargetsCount; i++)
+	{
+		Buffer0[uint3(id.xy, i)] = Buffer0[uint3(id.xy, i)] * (1.0 - 2.0 * ((id.x + id.y) % 2));
+	}
+}
