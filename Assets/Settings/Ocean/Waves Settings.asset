@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timeScale: 1
   depth: 1000
-  chop: 1
+  chop: 1.12
   foamDecayRate: 0.1
   local:
     energySpectrum: 0

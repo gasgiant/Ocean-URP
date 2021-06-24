@@ -53,21 +53,21 @@ Shader "Hidden/SpectrumPlot"
 
             struct Attributes
             {
-                float4 vertex : POSITION;
+                float4 positionOS : POSITION;
                 float2 uv : TEXCOORD0;
             };
 
             struct Varyings
             {
-                float4 positionCS : SV_POSITION;
+                float4 positionHCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
             };
 
-            Varyings Vert(Attributes i) {
-                Varyings o;
-                o.positionCS = TransformObjectToHClip(i.vertex.xyz);
-                o.uv = i.uv;
-                return o;
+            Varyings Vert(Attributes IN) {
+                Varyings OUT;
+                OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
+                OUT.uv = IN.uv;
+                return OUT;
             }
 
             float2 Spectrum(float x, int energySpectrum, float windSpeed, float fetch, float peaking, float shortWaves)
@@ -181,8 +181,8 @@ Shader "Hidden/SpectrumPlot"
                 return lerp(col, rampLine, saturate(sdfRamp.y));
             }
 
-            float4 Frag(Varyings i) : SV_Target{
-                float2 coords = i.uv * float2(width, height) + leftBottom;
+            float4 Frag(Varyings IN) : SV_Target{
+                float2 coords = IN.uv * float2(width, height) + leftBottom;
                 float2 sdfGrid = GridValue(coords);
                 float3 gridColor = 0.52;
 
@@ -205,7 +205,7 @@ Shader "Hidden/SpectrumPlot"
                 }
 
                 if (drawRamp)
-                    col = DrawRamp(col, i.uv);
+                    col = DrawRamp(col, IN.uv);
 
                 // Draw border
                 col = lerp(col, gridColor, saturate(sdfGrid.y));
@@ -217,6 +217,8 @@ Shader "Hidden/SpectrumPlot"
 
         Pass
         {
+            Cull Off ZWrite Off ZTest Always
+
             HLSLPROGRAM
             #pragma vertex Vert
             #pragma fragment Frag
