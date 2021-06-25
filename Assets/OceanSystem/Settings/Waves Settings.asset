@@ -18,22 +18,22 @@ MonoBehaviour:
   foamDecayRate: 0.1
   local:
     energySpectrum: 0
-    windSpeed: 5.5
+    windSpeed: 7.1
     fetch: 100
     peaking: 3.3
     scale: 1
-    cutoffWavelength: 0.01
-    windDirection: 59
+    cutoffWavelength: 0
+    windDirection: 148
     alignment: 1
     extraAlignment: 0.192
   swell:
     energySpectrum: 1
-    windSpeed: 8
+    windSpeed: 23.2
     fetch: 100
     peaking: 10
-    scale: 0
+    scale: 0.102
     cutoffWavelength: 1
-    windDirection: 0
+    windDirection: 88
     alignment: 1
     extraAlignment: 0.8
-  showGraph: 1
+  showGraph: 0

@@ -37,10 +37,10 @@ TEXTURE2D(Ocean_SssGradientTexture);
 SAMPLER(samplerOcean_SssGradientTexture);
 TEXTURE2D(Ocean_TintGradientTexture);
 SAMPLER(samplerOcean_TintGradientTexture);
-
 float Ocean_FogGradientScale;
 float Ocean_TintGradientScale;
 float Ocean_FogDensity;
+float3 Ocean_MurkColor;
 
 // refelctions bottom hemisphere
 float Ocean_BottomHemisphereRadius;
@@ -81,5 +81,10 @@ float3 SssGradient(float t)
 float3 TintGradient(float t)
 {
     return SAMPLE_TEXTURE2D(Ocean_TintGradientTexture, samplerOcean_TintGradientTexture, t).rgb;
+}
+
+float3 MurkColor()
+{
+    
 }
 #endif

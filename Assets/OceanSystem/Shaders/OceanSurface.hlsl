@@ -152,6 +152,8 @@ float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
 	float3 color = FogGradient(0 * (1 - abs(li.viewDir.y)) * (1 - abs(li.viewDir.y)) * depthScale);
 	float3 sssColor = SssGradient(depthScale);
 	color += sssColor * (sss.x + sss.y);
+    float ndotl = saturate(dot(li.normal, li.lightDir));
+    color += li.lightColor * (ndotl * 0.8 + 0.2f) * Ocean_MurkColor;
 	
 	#ifdef TRANSPARENCY_ENABLED
 	float3 refractionCoords = RefractionCoords(_RefractionStrength, li.positionNDC, li.viewDepth, li.normal);
@@ -164,7 +166,7 @@ float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
 	#if defined(WAVES_FOAM_ENABLED) || defined(CONTACT_FOAM_ENABLED)
 	float underwaterFoamVisibility = 20 / (20 + li.viewDist);
 	float3 tint = TintGradient(0.8);
-	float light =  _WhitecapsColor.rgb * 0.5 * li.lightColor;
+	float light =  _WhitecapsColor.rgb * 0.3 * li.lightColor;
 	float3 underwaterFoamColor = foamData.tex * _WhitecapsColor.rgb 
 		* (OceanEnvironmentDiffuse(float3(0, 1, 0)) * tint + light * tint) * tint;
 	color = lerp(color, underwaterFoamColor, foamData.coverage.y * underwaterFoamVisibility);

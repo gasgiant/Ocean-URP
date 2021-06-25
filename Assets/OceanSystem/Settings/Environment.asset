@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4c61c97bc687064f82c335e011defef, type: 3}
   m_Name: Environment
   m_EditorClassIdentifier: 
-  bottomHemisphereColor: {r: 0.18583123, g: 0.29531455, b: 0.4245283, a: 1}
+  bottomHemisphereColor: {r: 0.21011034, g: 0.47173685, b: 0.49056602, a: 1}
   bottomHemisphereRadius: -1.38
   bottomHemisphereStrength: 25.16
   waterFog:
     serializedVersion: 2
-    key0: {r: 0.18561764, g: 0.26672673, b: 0.41509432, a: 1}
-    key1: {r: 0, g: 0.4292221, b: 0.5188679, a: 1}
+    key0: {r: 0.14117648, g: 0.19381864, b: 0.29411766, a: 1}
+    key1: {r: 0.14117648, g: 0.19381864, b: 0.29411766, a: 1}
     key2: {r: 0.43915984, g: 0.84532803, b: 0.9056604, a: 0}
     key3: {r: 1, g: 1, b: 1, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
@@ -46,8 +46,8 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   subsurfaceScattering:
     serializedVersion: 2
-    key0: {r: 0.2721253, g: 0.85487056, b: 0.9811321, a: 1}
-    key1: {r: 0.2721253, g: 0.85487056, b: 0.9811321, a: 1}
+    key0: {r: 0.2705882, g: 0.98039216, b: 0.7865028, a: 1}
+    key1: {r: 0.2705882, g: 0.98039216, b: 0.7865028, a: 1}
     key2: {r: 0.2721253, g: 0.85487056, b: 0.9811321, a: 0}
     key3: {r: 1, g: 1, b: 1, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
@@ -105,3 +105,4 @@ MonoBehaviour:
     m_NumColorKeys: 4
     m_NumAlphaKeys: 2
   tintGradientScale: 10
+  murkColor: {r: 0.039215688, g: 0.13333334, b: 0.10806108, a: 1}

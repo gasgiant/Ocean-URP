@@ -28,6 +28,7 @@ namespace OceanSystem
             Shader.SetGlobalFloat(fogGradientScaleID, environment.fogGradientScale);
             Shader.SetGlobalFloat(tintGradientScaleID, environment.tintGradientScale);
             Shader.SetGlobalFloat(fogDensityID, environment.fogDensity);
+            Shader.SetGlobalVector(murkColorID, environment.murkColor.linear);
             RenderSkyMap();
         }
 
@@ -55,6 +56,7 @@ namespace OceanSystem
         static readonly int fogGradientTextureID = Shader.PropertyToID("Ocean_FogGradientTexture");
         static readonly int sssGradientTextureID = Shader.PropertyToID("Ocean_SssGradientTexture");
         static readonly int tintGradientTextureID = Shader.PropertyToID("Ocean_TintGradientTexture");
+        static readonly int murkColorID = Shader.PropertyToID("Ocean_MurkColor");
         static readonly int fogGradientScaleID = Shader.PropertyToID("Ocean_FogGradientScale");
         static readonly int tintGradientScaleID = Shader.PropertyToID("Ocean_TintGradientScale");
         static readonly int fogDensityID = Shader.PropertyToID("Ocean_FogDensity");

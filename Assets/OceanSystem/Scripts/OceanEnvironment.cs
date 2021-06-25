@@ -16,6 +16,7 @@ namespace OceanSystem
         public float fogDensity = 0.1f;
         public Gradient tint;
         public float tintGradientScale = 10;
+        public Color murkColor;
 
         public Texture2D GetFogTex()
         {

@@ -98,14 +98,14 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EnvironmentReflections: 1
-    - _FoamCoverage: 0.644
+    - _FoamCoverage: 0.709
     - _FoamDensity: 8.4
     - _FoamNormalsDetail: 0.489
-    - _FoamPersistence: 0.853
+    - _FoamPersistence: 0.866
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _HorizonFog: 0.569
+    - _HorizonFog: 0.388
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _PLANAR_REFLECTIONS_ENABLED: 0
@@ -123,12 +123,12 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SpecularMinRoughness: 0
-    - _SpecularStrength: 1.54
+    - _SpecularStrength: 1
     - _SrcBlend: 1
     - _SssEnvironmentStrength: 0.21
     - _SssFadeDistance: 30
-    - _SssHeight: 0.58
-    - _SssHeightMult: 0.95
+    - _SssHeight: 0.2
+    - _SssHeightMult: 0.58
     - _SssNormalStrength: 1
     - _SssSpread: 0.2
     - _SssSunStrength: 0.35
@@ -148,6 +148,7 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FoamCascadesWeights: {r: 3, g: 1, b: 0.5, a: 0.3}
+    - _MurkColor: {r: 0.18867922, g: 0.16357076, b: 0.0950516, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _WhitecapsColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
