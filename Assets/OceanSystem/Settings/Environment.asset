@@ -12,13 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4c61c97bc687064f82c335e011defef, type: 3}
   m_Name: Environment
   m_EditorClassIdentifier: 
-  environmentCube: {fileID: 0}
-  bottomHemisphereColor: {r: 0, g: 0, b: 0, a: 0}
-  bottomHemisphereRadius: 0
-  bottomHemisphereStrength: 0
+  bottomHemisphereColor: {r: 0.18583123, g: 0.29531455, b: 0.4245283, a: 1}
+  bottomHemisphereRadius: -1.38
+  bottomHemisphereStrength: 25.16
   waterFog:
     serializedVersion: 2
-    key0: {r: 0, g: 0.18238996, b: 0.33962262, a: 1}
+    key0: {r: 0.18561764, g: 0.26672673, b: 0.41509432, a: 1}
     key1: {r: 0, g: 0.4292221, b: 0.5188679, a: 1}
     key2: {r: 0.43915984, g: 0.84532803, b: 0.9056604, a: 0}
     key3: {r: 1, g: 1, b: 1, a: 0}
@@ -49,7 +48,7 @@ MonoBehaviour:
     serializedVersion: 2
     key0: {r: 0.2721253, g: 0.85487056, b: 0.9811321, a: 1}
     key1: {r: 0.2721253, g: 0.85487056, b: 0.9811321, a: 1}
-    key2: {r: 0.43915984, g: 0.84532803, b: 0.9056604, a: 0}
+    key2: {r: 0.2721253, g: 0.85487056, b: 0.9811321, a: 0}
     key3: {r: 1, g: 1, b: 1, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
@@ -57,7 +56,7 @@ MonoBehaviour:
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
     ctime1: 65535
-    ctime2: 43652
+    ctime2: 65535
     ctime3: 65535
     ctime4: 0
     ctime5: 0

@@ -17,7 +17,7 @@ namespace OceanSystem
         {
             geoClipmap.InstantiateMesh(material);
             skyMapMaterial = new Material(Shader.Find("Ocean/StereographicSky"));
-            RenderSkyMap();
+            
         }
 
         void Update()
@@ -28,6 +28,7 @@ namespace OceanSystem
             Shader.SetGlobalFloat(fogGradientScaleID, environment.fogGradientScale);
             Shader.SetGlobalFloat(tintGradientScaleID, environment.tintGradientScale);
             Shader.SetGlobalFloat(fogDensityID, environment.fogDensity);
+            RenderSkyMap();
         }
 
         private void RenderSkyMap()

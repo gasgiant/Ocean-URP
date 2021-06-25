@@ -56,7 +56,16 @@ float3 SampleOceanSpecCube(float3 dir)
 
 float3 OceanEnvironmentDiffuse(float3 dir)
 {
-	return 0;//ShadeSH9(float4(dir, 1));
+	//return 0;//ShadeSH9(float4(dir, 1));
+    float4 coefficients[7];
+    coefficients[0] = unity_SHAr;
+    coefficients[1] = unity_SHAg;
+    coefficients[2] = unity_SHAb;
+    coefficients[3] = unity_SHBr;
+    coefficients[4] = unity_SHBg;
+    coefficients[5] = unity_SHBb;
+    coefficients[6] = unity_SHC;
+    return max(0.0, SampleSH9(coefficients, dir));
 }
 
 float3 FogGradient(float t)

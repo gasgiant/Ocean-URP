@@ -79,7 +79,7 @@ float3 Specular(LightingInput li, BrunetonInputs bi)
 		bi.normal_windSpace,
 		bi.tangentX_windSpace,
 		bi.tangentY_windSpace,
-		max(_SpecularMinRoughness * 0.01, bi.slopeVarianceSquared));
+		max(1e-4, bi.slopeVarianceSquared + _SpecularMinRoughness * 0.2));
 	return specular * _SpecularStrength;
 }
 
@@ -125,7 +125,7 @@ float2 SubsurfaceScatteringFactor(LightingInput li)
 	float normalFactor = saturate(dot(li.normal, li.viewDir) + 1 - _SssNormalStrength);
 	float heightFactor = saturate(li.positionWS.y * _SssHeightMult + _SssHeight);
 	float sun = _SssSunStrength * normalFactor * pow(saturate(dot(li.lightDir, -li.viewDir)), min(50, 1 / _SssSpread));
-	float environment = _SssEnvironmentStrength * normalFactor * heightFactor * MPow5(saturate(1 - li.viewDir.y));
+    float environment = _SssEnvironmentStrength * normalFactor * heightFactor * saturate(1 - li.viewDir.y);
 	float2 factor = float2(sun, environment);
 	factor *= _SssFadeDistance / (_SssFadeDistance + li.viewDist);
 	return factor;
@@ -163,8 +163,10 @@ float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
 	
 	#if defined(WAVES_FOAM_ENABLED) || defined(CONTACT_FOAM_ENABLED)
 	float underwaterFoamVisibility = 20 / (20 + li.viewDist);
+	float3 tint = TintGradient(0.8);
+	float light =  _WhitecapsColor.rgb * 0.5 * li.lightColor;
 	float3 underwaterFoamColor = foamData.tex * _WhitecapsColor.rgb 
-		* OceanEnvironmentDiffuse(float3(0, 1, 0)) * TintGradient(0.8);
+		* (OceanEnvironmentDiffuse(float3(0, 1, 0)) * tint + light * tint) * tint;
 	color = lerp(color, underwaterFoamColor, foamData.coverage.y * underwaterFoamVisibility);
 	#endif
 	return color;

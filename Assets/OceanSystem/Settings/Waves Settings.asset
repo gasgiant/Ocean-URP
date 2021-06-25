@@ -14,18 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timeScale: 1
   depth: 1000
-  chop: 1.12
+  chop: 1.61
   foamDecayRate: 0.1
   local:
     energySpectrum: 0
-    windSpeed: 5.2
+    windSpeed: 5.5
     fetch: 100
     peaking: 3.3
     scale: 1
     cutoffWavelength: 0.01
-    windDirection: 0
+    windDirection: 59
     alignment: 1
-    extraAlignment: 0
+    extraAlignment: 0.192
   swell:
     energySpectrum: 1
     windSpeed: 8

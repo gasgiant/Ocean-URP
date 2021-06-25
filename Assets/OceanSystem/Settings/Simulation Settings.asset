@@ -15,9 +15,9 @@ MonoBehaviour:
   resolution: 128
   cascadesNumber: 4
   anisoLevel: 6
-  simulateFoam: 0
+  simulateFoam: 1
   domainsMode: 0
-  simulationScale: 400
+  simulationScale: 389.76
   allowOverlap: 0
   minWavesInCascade: 6
   c0Scale: 0

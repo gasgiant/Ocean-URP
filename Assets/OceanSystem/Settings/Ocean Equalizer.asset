@@ -15,8 +15,8 @@ MonoBehaviour:
   scaleFilters:
   - type: 2
     center: -1.5
-    value: -0.39
-    width: 1.59
+    value: -0.55
+    width: 2.38
   chopFilters:
   - type: 0
     center: 0

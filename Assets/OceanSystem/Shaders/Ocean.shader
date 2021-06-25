@@ -29,7 +29,7 @@ Shader "Ocean/Ocean"
 
         // specular
         _SpecularStrength("Strength", Range(0.0, 10.0)) = 1
-        _SpecularMinRoughness("Min Roughness", Range(0.0, 1)) = 0.1
+        _SpecularMinRoughness("Sun Size", Range(0.0, 1)) = 0.1
 
         // horizon
         _RoughnessScale("Roughness Scale", Range(0.0, 2.0)) = 1
@@ -81,10 +81,10 @@ Shader "Ocean/Ocean"
             #pragma vertex Vert
             #pragma fragment Frag
 
-            #define OCEAN_FOUR_CASCADES;
+            #pragma multi_compile _ OCEAN_THREE_CASCADES OCEAN_FOUR_CASCADES
+            #pragma shader_feature WAVES_FOAM_ENABLED
+            #pragma shader_feature CONTACT_FOAM_ENABLED
 
-            //#define WAVES_FOAM_ENABLED
-            //#define CONTACT_FOAM_ENABLED
             //#define TRANSPARENCY_ENABLED
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
