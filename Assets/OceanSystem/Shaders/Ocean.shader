@@ -71,21 +71,22 @@ Shader "Ocean/Ocean"
 
     SubShader
     {
-        Tags { "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" "Queue" = "Geometry" }
+        Tags { "RenderPipeline" = "UniversalPipeline" }
 
         Pass
         {
-            Tags { "LightMode" = "UniversalForward" }
+            Tags { "LightMode" = "OceanMain" }
+            Cull Off ZWrite On
 
             HLSLPROGRAM
             #pragma vertex Vert
             #pragma fragment Frag
 
             #pragma multi_compile _ OCEAN_THREE_CASCADES OCEAN_FOUR_CASCADES
+            #pragma shader_feature TRANSPARENCY_ENABLED
+            #pragma shader_feature UNDERWATER_ENABLED
             #pragma shader_feature WAVES_FOAM_ENABLED
             #pragma shader_feature CONTACT_FOAM_ENABLED
-
-            //#define TRANSPARENCY_ENABLED
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -124,7 +125,7 @@ Shader "Ocean/Ocean"
 
                 float3 positionOS = TransformWorldToObject(OUT.positionWS);
                 VertexPositionInputs inputs = GetVertexPositionInputs(positionOS);
-                OUT.viewDepth = -inputs.positionVS.z;
+                OUT.viewDepth = -inputs.positionVS.z - _ProjectionParams.y;
                 OUT.positionNDC = inputs.positionNDC;
                 OUT.positionHCS = inputs.positionCS;
                 return OUT;
@@ -162,6 +163,7 @@ Shader "Ocean/Ocean"
                 li.positionWS = IN.positionWS;
                 li.shore = 0;
                 li.positionNDC = IN.positionNDC;
+                li.viewDepth = IN.viewDepth;
                 li.lightDir = mainLight.direction;
                 li.lightColor = mainLight.color;
                 li.cameraPos = _WorldSpaceCameraPos;
@@ -170,8 +172,8 @@ Shader "Ocean/Ocean"
                 float3 oceanColor;
 
                 #ifdef UNDERWATER_ENABLED
-                bool underwater = facing < 0
-                    || tex2D(Ocean_CameraSubmergenceTexture, i.screenPos.xy / i.screenPos.w).r < 0.3;
+                bool underwater = FACING < 0;
+                    //|| tex2D(Ocean_CameraSubmergenceTexture, IN.positionNDC.xy / IN.positionNDC.w).r < 0.3;
                 if (!underwater && backface)
                 {
                     li.normal = reflect(li.normal, li.viewDir);

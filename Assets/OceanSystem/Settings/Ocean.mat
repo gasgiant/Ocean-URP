@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Ocean
   m_Shader: {fileID: 4800000, guid: b8f769ad93da9b041abbe077590a2bce, type: 3}
-  m_ShaderKeywords: WAVES_FOAM_ENABLED
+  m_ShaderKeywords: TRANSPARENCY_ENABLED UNDERWATER_ENABLED WAVES_FOAM_ENABLED
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -133,8 +133,8 @@ Material:
     - _SssSpread: 0.2
     - _SssSunStrength: 0.35
     - _Surface: 0
-    - _TRANSPARENCY_ENABLED: 0
-    - _UNDERWATER_ENABLED: 0
+    - _TRANSPARENCY_ENABLED: 1
+    - _UNDERWATER_ENABLED: 1
     - _UnderwaterFoam: 0.36
     - _UnderwaterFoamParallax: 1.2
     - _WAVES_FOAM_ENABLED: 1

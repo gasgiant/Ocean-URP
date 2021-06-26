@@ -18,6 +18,10 @@ namespace OceanSystem
         public float tintGradientScale = 10;
         public Color murkColor;
 
+        private Texture2D fogTex;
+        private Texture2D sssTex;
+        private Texture2D tintTex;
+
         public Texture2D GetFogTex()
         {
             if (fogTex == null)
@@ -38,10 +42,6 @@ namespace OceanSystem
                 GradientTexture.BakeGradient(tint, ref tintTex);
             return tintTex;
         }
-
-        Texture2D fogTex;
-        Texture2D sssTex;
-        Texture2D tintTex;
 
         private void OnValidate()
         {

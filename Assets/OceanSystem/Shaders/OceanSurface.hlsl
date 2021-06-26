@@ -41,12 +41,12 @@ float MPow5(float x)
 	return x * x * x * x * x;
 }
 
-float3 PositionWsFromDepth(float rawDepth, float2 screenUV, float4x4 inverseProj, float4x4 cameraToWorld)
+float3 PositionWsFromDepth(float rawDepth, float2 screenUV, float4x4 inverseProj, float4x4 inverseView)
 {
-    float4 clipPos = float4(screenUV * 2 - 1, rawDepth, 1);
-    float4 viewPos = mul(inverseProj, clipPos);
-    viewPos /= viewPos.w;
-    return mul(cameraToWorld, viewPos).xyz;
+    float4 positionCS = float4(screenUV * 2 - 1, rawDepth, 1);
+    float4 positionVS = mul(inverseProj, positionCS);
+    positionVS /= positionVS.w;
+    return mul(inverseView, positionVS).xyz;
 }
 
 float2 SlopeVarianceSquared(float windSpeed, float viewDist, float alignement, float scale)
@@ -158,6 +158,7 @@ float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
 	#ifdef TRANSPARENCY_ENABLED
 	float3 refractionCoords = RefractionCoords(_RefractionStrength, li.positionNDC, li.viewDepth, li.normal);
 	float3 backgroundColor = SampleSceneColor(refractionCoords.xy);
+	
 	float3 backgroundPositionWS = PositionWsFromDepth(refractionCoords.z, refractionCoords.xy, Ocean_CameraInverseProjection, Ocean_CameraToWorld);
 	float backgroundDistance = length(backgroundPositionWS - li.cameraPos) - li.viewDist;
 	color = ColorThroughWater(backgroundColor, color, backgroundDistance, -backgroundPositionWS.y);
@@ -166,7 +167,7 @@ float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
 	#if defined(WAVES_FOAM_ENABLED) || defined(CONTACT_FOAM_ENABLED)
 	float underwaterFoamVisibility = 20 / (20 + li.viewDist);
 	float3 tint = TintGradient(0.8);
-	float light =  _WhitecapsColor.rgb * 0.3 * li.lightColor;
+	float3 light =  _WhitecapsColor.rgb * 0.3 * li.lightColor;
 	float3 underwaterFoamColor = foamData.tex * _WhitecapsColor.rgb 
 		* (OceanEnvironmentDiffuse(float3(0, 1, 0)) * tint + light * tint) * tint;
 	color = lerp(color, underwaterFoamColor, foamData.coverage.y * underwaterFoamVisibility);

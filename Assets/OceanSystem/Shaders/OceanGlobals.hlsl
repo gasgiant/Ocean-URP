@@ -5,8 +5,8 @@
 #define OCEAN_PI 3.1415926
 
 
-sampler2D Ocean_OpaqueColorTexture;
-sampler2D Ocean_CameraSubmergenceTexture;
+TEXTURE2D(Ocean_CameraSubmergenceTexture);
+SAMPLER(samplerOcean_CameraSubmergenceTexture);
 float Ocean_ElevationBelowCamera;
 
 float Ocean_WindSpeed;
@@ -21,14 +21,12 @@ float4x4 Ocean_CameraInverseProjection;
 // z - near clip plane
 float4 Ocean_CameraNearPlaneParams;
 
-//TEXTURECUBE(Ocean_SpecCube);
-//SAMPLER(samplerOcean_SpecCube);
-//float4 Ocean_SpecCube_HDR;
+TEXTURECUBE(Ocean_SpecCube);
+SAMPLER(samplerOcean_SpecCube);
+float4 Ocean_SpecCube_HDR;
 
 TEXTURE2D(Ocean_SkyMap);
 SAMPLER(samplerOcean_SkyMap);
-float4 Ocean_MainLightColor;
-float4 Ocean_MainLightDirection;
 
 // colors
 TEXTURE2D(Ocean_FogGradientTexture);
@@ -50,13 +48,14 @@ float4 Ocean_BottomHemisphereColor;
 
 float3 SampleOceanSpecCube(float3 dir)
 {
-    float4 envSample = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0, samplerunity_SpecCube0, dir, 0);
-    return DecodeHDREnvironment(envSample, unity_SpecCube0_HDR);
+    //float4 envSample = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0, samplerunity_SpecCube0, dir, 0);
+    //return DecodeHDREnvironment(envSample, unity_SpecCube0_HDR);
+    float4 envSample = SAMPLE_TEXTURECUBE_LOD(Ocean_SpecCube, samplerOcean_SpecCube, dir, 0);
+    return DecodeHDREnvironment(envSample, Ocean_SpecCube_HDR);
 }
 
 float3 OceanEnvironmentDiffuse(float3 dir)
 {
-	//return 0;//ShadeSH9(float4(dir, 1));
     float4 coefficients[7];
     coefficients[0] = unity_SHAr;
     coefficients[1] = unity_SHAg;
@@ -85,6 +84,6 @@ float3 TintGradient(float t)
 
 float3 MurkColor()
 {
-    
+    return 0;
 }
 #endif

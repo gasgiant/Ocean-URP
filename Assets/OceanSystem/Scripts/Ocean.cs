@@ -1,23 +1,26 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace OceanSystem
 {
     public class Ocean : MonoBehaviour
     {
+        [SerializeField] private Camera cam;
         [SerializeField] private GeoClipmap geoClipmap;
         [SerializeField] private Material material;
         [SerializeField] private OceanEnvironment environment;
 
-        private Material skyMapMaterial;
-        private RenderTexture skyMap;
+        RenderTexture skyMap;
+        Material skyMapMaterial;
 
         void Start()
         {
             geoClipmap.InstantiateMesh(material);
+            Shader.SetGlobalTexture(specCubeID, ReflectionProbe.defaultTexture);
+
             skyMapMaterial = new Material(Shader.Find("Ocean/StereographicSky"));
-            
+            RenderSkyMap();
         }
 
         void Update()
@@ -29,7 +32,8 @@ namespace OceanSystem
             Shader.SetGlobalFloat(tintGradientScaleID, environment.tintGradientScale);
             Shader.SetGlobalFloat(fogDensityID, environment.fogDensity);
             Shader.SetGlobalVector(murkColorID, environment.murkColor.linear);
-            RenderSkyMap();
+
+            
         }
 
         private void RenderSkyMap()
@@ -52,6 +56,8 @@ namespace OceanSystem
             Graphics.Blit(null, skyMap, skyMapMaterial);
             Shader.SetGlobalTexture(skyMapID, skyMap);
         }
+
+        static readonly int specCubeID = Shader.PropertyToID("Ocean_SpecCube");
 
         static readonly int fogGradientTextureID = Shader.PropertyToID("Ocean_FogGradientTexture");
         static readonly int sssGradientTextureID = Shader.PropertyToID("Ocean_SssGradientTexture");
