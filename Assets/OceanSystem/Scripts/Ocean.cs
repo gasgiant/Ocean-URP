@@ -25,15 +25,12 @@ namespace OceanSystem
 
         void Update()
         {
-            Shader.SetGlobalTexture(fogGradientTextureID, environment.GetFogTex());
-            Shader.SetGlobalTexture(sssGradientTextureID, environment.GetSssTex());
-            Shader.SetGlobalTexture(tintGradientTextureID, environment.GetTintTex());
+            material.SetFloat("_Cull", (float)
+                (Shader.IsKeywordEnabled("OCEAN_UNDERWATER_ENABLED") ? CullMode.Off : CullMode.Back));
+
             Shader.SetGlobalFloat(fogGradientScaleID, environment.fogGradientScale);
             Shader.SetGlobalFloat(tintGradientScaleID, environment.tintGradientScale);
             Shader.SetGlobalFloat(fogDensityID, environment.fogDensity);
-            Shader.SetGlobalVector(murkColorID, environment.murkColor.linear);
-
-            
         }
 
         private void RenderSkyMap()
@@ -57,19 +54,28 @@ namespace OceanSystem
             Shader.SetGlobalTexture(skyMapID, skyMap);
         }
 
-        static readonly int specCubeID = Shader.PropertyToID("Ocean_SpecCube");
+        public static readonly int[] TintGradientIDs =
+        {
+            Shader.PropertyToID("Ocean_TintGradientParams"),
+            Shader.PropertyToID("Ocean_TintColor0"),
+            Shader.PropertyToID("Ocean_TintColor1"),
+            Shader.PropertyToID("Ocean_TintColor2"),
+            Shader.PropertyToID("Ocean_TintColor3")
+    };
 
-        static readonly int fogGradientTextureID = Shader.PropertyToID("Ocean_FogGradientTexture");
-        static readonly int sssGradientTextureID = Shader.PropertyToID("Ocean_SssGradientTexture");
-        static readonly int tintGradientTextureID = Shader.PropertyToID("Ocean_TintGradientTexture");
-        static readonly int murkColorID = Shader.PropertyToID("Ocean_MurkColor");
-        static readonly int fogGradientScaleID = Shader.PropertyToID("Ocean_FogGradientScale");
-        static readonly int tintGradientScaleID = Shader.PropertyToID("Ocean_TintGradientScale");
-        static readonly int fogDensityID = Shader.PropertyToID("Ocean_FogDensity");
+        private static readonly int specCubeID = Shader.PropertyToID("Ocean_SpecCube");
 
-        static readonly int skyMapID = Shader.PropertyToID("Ocean_SkyMap");
-        static readonly int bottomHemisphereRadiusID = Shader.PropertyToID("Ocean_BottomHemisphereRadius");
-        static readonly int bottomHemisphereStrengthID = Shader.PropertyToID("Ocean_BottomHemisphereStrength");
-        static readonly int bottomHemisphereColorID = Shader.PropertyToID("Ocean_BottomHemisphereColor");
+        private static readonly int fogGradientTextureID = Shader.PropertyToID("Ocean_FogGradientTexture");
+        private static readonly int sssGradientTextureID = Shader.PropertyToID("Ocean_SssGradientTexture");
+        private static readonly int tintGradientTextureID = Shader.PropertyToID("Ocean_TintGradientTexture");
+        private static readonly int murkColorID = Shader.PropertyToID("Ocean_MurkColor");
+        private static readonly int fogGradientScaleID = Shader.PropertyToID("Ocean_FogGradientScale");
+        private static readonly int tintGradientScaleID = Shader.PropertyToID("Ocean_TintGradientScale");
+        private static readonly int fogDensityID = Shader.PropertyToID("Ocean_FogDensity");
+
+        private static readonly int skyMapID = Shader.PropertyToID("Ocean_SkyMap");
+        private static readonly int bottomHemisphereRadiusID = Shader.PropertyToID("Ocean_BottomHemisphereRadius");
+        private static readonly int bottomHemisphereStrengthID = Shader.PropertyToID("Ocean_BottomHemisphereStrength");
+        private static readonly int bottomHemisphereColorID = Shader.PropertyToID("Ocean_BottomHemisphereColor");
     }
 }

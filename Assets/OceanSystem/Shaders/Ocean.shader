@@ -6,26 +6,25 @@ Shader "Ocean/Ocean"
         sssEditorExpanded("", Float) = 0
         horizonEditorExpanded("", Float) = 0
 
-        [MaterialToggle]
-        _RenderDepthEnabled("Render Depth", Float) = 0
-
-        [Toggle(TRANSPARENCY_ENABLED)]
-        _TRANSPARENCY_ENABLED("Transparency", Float) = 0
-
-        [Toggle(PLANAR_REFLECTIONS_ENABLED)]
-        _PLANAR_REFLECTIONS_ENABLED("Planar Reflections", Float) = 0
-
-        [Toggle(UNDERWATER_ENABLED)]
-        _UNDERWATER_ENABLED("Underwater", Float) = 0
-
         [Toggle(WAVES_FOAM_ENABLED)]
         _WAVES_FOAM_ENABLED("Waves Foam", Float) = 0
 
         [Toggle(CONTACT_FOAM_ENABLED)]
         _CONTACT_FOAM_ENABLED("Contact Foam", Float) = 0
 
-        [Toggle(SHORE_ENABLED)]
-        _SHORE_ENABLED("Shore", Float) = 0
+        // colors
+        [HDR]
+        Ocean_FogColor("Fog", Color) = (0, 0, 0, 1)
+        [HDR]
+        Ocean_SssColor("Subsurface scattering", Color) = (0, 0, 0, 1)
+        [HDR]
+        Ocean_DiffuseColor("Diffuse", Color) = (0, 0, 0, 1)
+        Ocean_TintColor0("", Vector) = (1, 1, 1, 1)
+        Ocean_TintColor1("", Vector) = (1, 1, 1, 1)
+        Ocean_TintColor2("", Vector) = (1, 1, 1, 1)
+        Ocean_TintColor3("", Vector) = (1, 1, 1, 1)
+        Ocean_TintGradientParams("", Vector) = (1, 1, 1, 1)
+
 
         // specular
         _SpecularStrength("Strength", Range(0.0, 10.0)) = 1
@@ -76,15 +75,16 @@ Shader "Ocean/Ocean"
         Pass
         {
             Tags { "LightMode" = "OceanMain" }
-            Cull Off ZWrite On
+            Cull [_Cull]
+            ZWrite On
 
             HLSLPROGRAM
             #pragma vertex Vert
             #pragma fragment Frag
 
             #pragma multi_compile _ OCEAN_THREE_CASCADES OCEAN_FOUR_CASCADES
-            #pragma shader_feature TRANSPARENCY_ENABLED
-            #pragma shader_feature UNDERWATER_ENABLED
+            #pragma multi_compile _ OCEAN_UNDERWATER_ENABLED
+            #pragma multi_compile _ OCEAN_TRANSPARENCY_ENABLED
             #pragma shader_feature WAVES_FOAM_ENABLED
             #pragma shader_feature CONTACT_FOAM_ENABLED
 
@@ -171,9 +171,10 @@ Shader "Ocean/Ocean"
                 bool backface = dot(normal, viewDir) < 0;
                 float3 oceanColor;
 
-                #ifdef UNDERWATER_ENABLED
-                bool underwater = FACING < 0;
-                    //|| tex2D(Ocean_CameraSubmergenceTexture, IN.positionNDC.xy / IN.positionNDC.w).r < 0.3;
+                #ifdef OCEAN_UNDERWATER_ENABLED
+                bool underwater = FACING < 0
+                    || SAMPLE_TEXTURE2D(Ocean_CameraSubmergenceTexture, samplerOcean_CameraSubmergenceTexture,
+                        IN.positionNDC.xy / IN.positionNDC.w).r < 0.3;
                 if (!underwater && backface)
                 {
                     li.normal = reflect(li.normal, li.viewDir);

@@ -76,7 +76,6 @@ public class GeoClipmap : MonoBehaviour
         meshRenderer.motionVectorGenerationMode = MotionVectorGenerationMode.Camera;
         meshRenderer.allowOcclusionWhenDynamic = false;
         meshRenderer.material = mat;
-
         clipmapMeshFilter = meshFilter;
         clipmapMeshRenderer = meshRenderer;
     }

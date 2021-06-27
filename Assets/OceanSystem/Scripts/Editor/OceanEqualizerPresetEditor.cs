@@ -45,19 +45,19 @@ namespace OceanSystem
             EditorGUILayout.EndFoldoutHeaderGroup();
             if (oceanEqualizerPreset.showScale)
             {
-                EditorGUILayout.Space();
+                EditorGUILayout.Separator();
                 SpectrumGraphPlotter.DrawGraphWithEqualizer(
                     oceanEqualizerPreset.DisplayWavesSettings,
                     oceanEqualizerPreset.Ramp, 0, scaleFill, scaleLine);
                 ShowFiltersArray(scaleFilters);
-                EditorGUILayout.Space();
-                EditorGUILayout.Space();
+                EditorGUILayout.Separator();
+                EditorGUILayout.Separator();
             }
 
             oceanEqualizerPreset.showChop = EditorGUILayout.BeginFoldoutHeaderGroup(oceanEqualizerPreset.showChop, "Chop");
             if (oceanEqualizerPreset.showChop)
             {
-                EditorGUILayout.Space();
+                EditorGUILayout.Separator();
                 SpectrumGraphPlotter.DrawGraphWithEqualizer(
                    oceanEqualizerPreset.DisplayWavesSettings,
                    oceanEqualizerPreset.Ramp, 1, chopFill, chopLine);
@@ -87,7 +87,7 @@ namespace OceanSystem
                         EditorGUILayout.PropertyField(current);
                     }
                     EditorGUI.indentLevel -= 1;
-                    EditorGUILayout.Space();
+                    EditorGUILayout.Separator();
                 }
             }
 

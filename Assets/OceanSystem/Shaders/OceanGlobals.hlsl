@@ -1,44 +1,50 @@
 ﻿#if !defined(OCEAN_GLOBALS_INCLUDED)
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/EntityLighting.hlsl"
+#include "OceanGradient.hlsl"
 
 #define OCEAN_GLOBALS_INCLUDED
 #define OCEAN_PI 3.1415926
 
-
+// shore
 TEXTURE2D(Ocean_CameraSubmergenceTexture);
 SAMPLER(samplerOcean_CameraSubmergenceTexture);
 float Ocean_ElevationBelowCamera;
 
+// simulation
 float Ocean_WindSpeed;
 float Ocean_WavesScale;
 float Ocean_WavesAlignement;
 float2 Ocean_WindDirection;
 float4x4 Ocean_WorldToWindSpace;
 
+// camera
 float4x4 Ocean_CameraToWorld;
 float4x4 Ocean_CameraInverseProjection;
 // x, y - near clip plane width, height
 // z - near clip plane
 float4 Ocean_CameraNearPlaneParams;
 
+// environment maps
 TEXTURECUBE(Ocean_SpecCube);
 SAMPLER(samplerOcean_SpecCube);
 float4 Ocean_SpecCube_HDR;
-
 TEXTURE2D(Ocean_SkyMap);
 SAMPLER(samplerOcean_SkyMap);
 
 // colors
-TEXTURE2D(Ocean_FogGradientTexture);
-SAMPLER(samplerOcean_FogGradientTexture);
-TEXTURE2D(Ocean_SssGradientTexture);
-SAMPLER(samplerOcean_SssGradientTexture);
-TEXTURE2D(Ocean_TintGradientTexture);
-SAMPLER(samplerOcean_TintGradientTexture);
+float3 Ocean_FogColor;
+float3 Ocean_SssColor;
+float3 Ocean_DiffuseColor;
+
 float Ocean_FogGradientScale;
 float Ocean_TintGradientScale;
 float Ocean_FogDensity;
-float3 Ocean_MurkColor;
+
+float4 Ocean_TintColor0;
+float4 Ocean_TintColor1;
+float4 Ocean_TintColor2;
+float4 Ocean_TintColor3;
+float2 Ocean_TintGradientParams;
 
 // refelctions bottom hemisphere
 float Ocean_BottomHemisphereRadius;
@@ -67,23 +73,32 @@ float3 OceanEnvironmentDiffuse(float3 dir)
     return max(0.0, SampleSH9(coefficients, dir));
 }
 
-float3 FogGradient(float t)
+float3 FogColor(float t)
 {
-    return SAMPLE_TEXTURE2D(Ocean_FogGradientTexture, samplerOcean_FogGradientTexture, t).rgb;
+    return Ocean_FogColor;
 }
 
-float3 SssGradient(float t)
+float3 SssColor(float t)
 {
-    return SAMPLE_TEXTURE2D(Ocean_SssGradientTexture, samplerOcean_SssGradientTexture, t).rgb;
+    return Ocean_SssColor;
 }
 
-float3 TintGradient(float t)
+float3 DiffuseColor(float t)
 {
-    return SAMPLE_TEXTURE2D(Ocean_TintGradientTexture, samplerOcean_TintGradientTexture, t).rgb;
+    return Ocean_DiffuseColor;
 }
 
-float3 MurkColor()
+float3 TintColor(float t)
 {
-    return 0;
+    float4 colors[GRADIENT_MAX_KEYS] =
+    {
+        Ocean_TintColor0,
+        Ocean_TintColor1,
+        Ocean_TintColor2,
+        Ocean_TintColor3
+    };
+    Gradient g = CreateGradient(colors, Ocean_TintGradientParams);
+    return SampleGradient(g, t);
 }
+
 #endif

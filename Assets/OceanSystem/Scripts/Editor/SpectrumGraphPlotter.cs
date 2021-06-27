@@ -174,7 +174,7 @@ namespace OceanSystem
                 new Vector2(graphSpace.width, tickLabelsHeight * 1.5f));
             EditorGUI.LabelField(yLabelRect, "Wavelength", boldLabelStyle);
             GUILayout.Space(tickLabelsHeight + padding);
-            EditorGUILayout.Space();
+            EditorGUILayout.Separator();
         }
 
         public static void AddCascadesLegend(Rect graphSpace, OceanSimulationSettings simulationSettings)

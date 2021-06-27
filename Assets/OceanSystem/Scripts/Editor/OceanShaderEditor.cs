@@ -9,13 +9,13 @@ namespace OceanSystem
 		MaterialEditor editor;
 
 		// toggles
-		MaterialProperty transparencyEnabled = null;
-		MaterialProperty planarReflectionsEnabled = null;
-		MaterialProperty underwaterEnabled = null;
 		MaterialProperty wavesFoamEnabled = null;
 		MaterialProperty contactFoamEnabled = null;
-		MaterialProperty shoreEnabled = null;
-		MaterialProperty renderDepthEnabled = null;
+
+		// colors
+		MaterialProperty fogColor = null;
+		MaterialProperty sssColor = null;
+		MaterialProperty diffuseColor = null;
 
 		// specular
 		MaterialProperty specularStrength = null;
@@ -70,13 +70,13 @@ namespace OceanSystem
 		void FindProperties(MaterialProperty[] properties)
 		{
 			// keywords
-			transparencyEnabled = FindProperty("_TRANSPARENCY_ENABLED", properties);
-			planarReflectionsEnabled = FindProperty("_PLANAR_REFLECTIONS_ENABLED", properties);
-			underwaterEnabled = FindProperty("_UNDERWATER_ENABLED", properties);
 			wavesFoamEnabled = FindProperty("_WAVES_FOAM_ENABLED", properties);
 			contactFoamEnabled = FindProperty("_CONTACT_FOAM_ENABLED", properties);
-			shoreEnabled = FindProperty("_SHORE_ENABLED", properties);
-			renderDepthEnabled = FindProperty("_RenderDepthEnabled", properties);
+
+			// specular
+			fogColor = FindProperty("Ocean_FogColor", properties);
+			sssColor = FindProperty("Ocean_SssColor", properties);
+			diffuseColor = FindProperty("Ocean_DiffuseColor", properties);
 
 			// specular
 			specularStrength = FindProperty("_SpecularStrength", properties);
@@ -125,33 +125,36 @@ namespace OceanSystem
 		{
 			EditorGUILayout.LabelField("General", EditorStyles.boldLabel);
 			EditorGUI.indentLevel += 1;
-			editor.ShaderProperty(transparencyEnabled, MakeLabel(transparencyEnabled));
-			editor.ShaderProperty(underwaterEnabled, MakeLabel(underwaterEnabled));
-			editor.ShaderProperty(shoreEnabled, MakeLabel(shoreEnabled));
-			editor.ShaderProperty(renderDepthEnabled, MakeLabel(renderDepthEnabled));
+			editor.ShaderProperty(fogColor, MakeLabel(fogColor));
+			editor.ShaderProperty(sssColor, MakeLabel(sssColor));
+			editor.ShaderProperty(diffuseColor, MakeLabel(diffuseColor));
+			Gradient tint = EditorGUILayout.GradientField(new GUIContent("Tint Gradient"), GetGradient(Ocean.TintGradientIDs), false);
+			EditorGUILayout.LabelField("Ocean gradient supports up to 4 color keys. Keys above the limit are ignored.", EditorStyles.helpBox);
+			SetGradient(Ocean.TintGradientIDs, tint);
+			
+
 			EditorGUI.indentLevel -= 1;
-			EditorGUILayout.Space();
+			EditorGUILayout.Separator();
 
 			EditorGUILayout.LabelField("Specular", EditorStyles.boldLabel);
 			EditorGUI.indentLevel += 1;
 			editor.ShaderProperty(specularStrength, MakeLabel(specularStrength));
 			editor.ShaderProperty(specularMinRoughness, MakeLabel(specularMinRoughness));
 			EditorGUI.indentLevel -= 1;
-			EditorGUILayout.Space();
+			EditorGUILayout.Separator();
 
 			EditorGUILayout.LabelField("Planar Reflections", EditorStyles.boldLabel);
 			EditorGUI.indentLevel += 1;
-			editor.ShaderProperty(planarReflectionsEnabled, MakeLabel(planarReflectionsEnabled));
 			editor.ShaderProperty(reflectionNormalStength, MakeLabel(reflectionNormalStength));
 			EditorGUI.indentLevel -= 1;
-			EditorGUILayout.Space();
+			EditorGUILayout.Separator();
 
 			EditorGUILayout.LabelField("Refraction", EditorStyles.boldLabel);
 			EditorGUI.indentLevel += 1;
 			editor.ShaderProperty(refractionStrength, MakeLabel(refractionStrength));
 			editor.ShaderProperty(refractionStrengthUnderwater, MakeLabel(refractionStrengthUnderwater));
 			EditorGUI.indentLevel -= 1;
-			EditorGUILayout.Space();
+			EditorGUILayout.Separator();
 
 			horizonEditorExpanded.floatValue = EditorGUILayout.BeginFoldoutHeaderGroup(horizonEditorExpanded.floatValue > 0, "Horizon") ? 1 : 0;
 			if (horizonEditorExpanded.floatValue > 0)
@@ -162,7 +165,7 @@ namespace OceanSystem
 				editor.ShaderProperty(horizonFog, MakeLabel(horizonFog));
 				editor.ShaderProperty(cascadesFadeDist, MakeLabel(cascadesFadeDist));
 				EditorGUI.indentLevel -= 1;
-				EditorGUILayout.Space();
+				EditorGUILayout.Separator();
 			}
 			EditorGUILayout.EndFoldoutHeaderGroup();
 
@@ -178,7 +181,7 @@ namespace OceanSystem
 				editor.ShaderProperty(sssHeightMult, MakeLabel(sssHeightMult));
 				editor.ShaderProperty(sssFadeDistance, MakeLabel(sssFadeDistance));
 				EditorGUI.indentLevel -= 1;
-				EditorGUILayout.Space();
+				EditorGUILayout.Separator();
 			}
 			EditorGUILayout.EndFoldoutHeaderGroup();
 
@@ -202,6 +205,38 @@ namespace OceanSystem
 				EditorGUI.indentLevel -= 1;
 			}
 			EditorGUILayout.EndFoldoutHeaderGroup();
+		}
+
+		Gradient GetGradient(int[] propIDs)
+        {
+			Gradient grad = new Gradient();
+			Vector2 pars = targetMaterial.GetVector(propIDs[0]);
+			grad.mode = (GradientMode)pars.y;
+			int count = (int)pars.x;
+			var keys = new GradientColorKey[count];
+            for (int i = 0; i < count; i++)
+            {
+				Vector4 value = targetMaterial.GetVector(propIDs[i + 1]);
+				keys[i].color = new Color(Mathf.LinearToGammaSpace(value.x),
+					Mathf.LinearToGammaSpace(value.y),
+					Mathf.LinearToGammaSpace(value.z));
+				keys[i].time = value.w;
+			}
+			grad.colorKeys = keys;
+			return grad;
+		}
+
+		void SetGradient(int[] propIDs, Gradient grad)
+		{
+			int keysCount = Mathf.Min(grad.colorKeys.Length, 4);
+			for (int i = 0; i < keysCount; i++)
+			{
+				Vector4 v = grad.colorKeys[i].color.linear;
+				v.w = grad.colorKeys[i].time;
+				targetMaterial.SetVector(propIDs[i + 1], v);
+			}
+			targetMaterial.SetVector(propIDs[0],
+				new Vector2(keysCount, (float)grad.mode));
 		}
 
 		static GUIContent staticLabel = new GUIContent();

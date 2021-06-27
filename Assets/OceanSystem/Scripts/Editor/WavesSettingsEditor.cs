@@ -82,7 +82,7 @@ namespace OceanSystem
                 EditorGUILayout.PropertyField(props.alignment);
                 EditorGUILayout.PropertyField(props.extraAlignment);
                 EditorGUI.indentLevel -= 1;
-                EditorGUILayout.Space();
+                EditorGUILayout.Separator();
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
         }

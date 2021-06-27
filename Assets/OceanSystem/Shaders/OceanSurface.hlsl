@@ -36,7 +36,7 @@ struct BrunetonInputs
 	float2 slopeVarianceSquared;
 };
 
-float MPow5(float x)
+float Pow5(float x)
 {
 	return x * x * x * x * x;
 }
@@ -68,7 +68,7 @@ float EffectiveFresnel(BrunetonInputs bi)
 float ShlickFresnel(float3 viewDir, float3 normal)
 {
 	const float R = 0.02;
-	return R + (1 - R) * MPow5(1 - saturate(abs(dot(viewDir, normal))));
+	return R + (1 - R) * Pow5(1 - saturate(abs(dot(viewDir, normal))));
 }
 
 float3 Specular(LightingInput li, BrunetonInputs bi)
@@ -149,13 +149,13 @@ float3 RefractionCoords(float refractionStrength, float4 positionNDC, float view
 float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
 {
 	float depthScale = exp(li.shore.x / Ocean_FogGradientScale);
-	float3 color = FogGradient(0 * (1 - abs(li.viewDir.y)) * (1 - abs(li.viewDir.y)) * depthScale);
-	float3 sssColor = SssGradient(depthScale);
+	float3 color = FogColor(0 * (1 - abs(li.viewDir.y)) * (1 - abs(li.viewDir.y)) * depthScale);
+	float3 sssColor = SssColor(depthScale);
 	color += sssColor * (sss.x + sss.y);
     float ndotl = saturate(dot(li.normal, li.lightDir));
-    color += li.lightColor * (ndotl * 0.8 + 0.2f) * Ocean_MurkColor;
+    color += li.lightColor * (ndotl * 0.8 + 0.2f) * Ocean_DiffuseColor;
 	
-	#ifdef TRANSPARENCY_ENABLED
+	#ifdef OCEAN_TRANSPARENCY_ENABLED
 	float3 refractionCoords = RefractionCoords(_RefractionStrength, li.positionNDC, li.viewDepth, li.normal);
 	float3 backgroundColor = SampleSceneColor(refractionCoords.xy);
 	
@@ -166,7 +166,7 @@ float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
 	
 	#if defined(WAVES_FOAM_ENABLED) || defined(CONTACT_FOAM_ENABLED)
 	float underwaterFoamVisibility = 20 / (20 + li.viewDist);
-	float3 tint = TintGradient(0.8);
+	float3 tint = TintColor(0.8);
 	float3 light =  _WhitecapsColor.rgb * 0.3 * li.lightColor;
 	float3 underwaterFoamColor = foamData.tex * _WhitecapsColor.rgb 
 		* (OceanEnvironmentDiffuse(float3(0, 1, 0)) * tint + light * tint) * tint;
@@ -177,7 +177,7 @@ float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
 
 float3 RefractionBackface(LightingInput li, float3 refractionDir)
 {
-	#ifdef TRANSPARENCY_ENABLED
+	#ifdef OCEAN_TRANSPARENCY_ENABLED
 	float3 refractionCoords = RefractionCoords(_RefractionStrengthUnderwater, li.positionNDC, li.viewDepth, li.normal);
 	return SampleSceneColor(refractionCoords.xy);
 	#else
@@ -223,7 +223,7 @@ float3 GetOceanColor(LightingInput li, FoamData foamData)
 	float2 sss = SubsurfaceScatteringFactor(li);
 	
 	float fresnel = EffectiveFresnel(bi);
-	float3 specular = Specular(li, bi) * MPow5(1 - foamData.coverage.y);
+	float3 specular = Specular(li, bi) * Pow5(1 - foamData.coverage.y);
 	float3 reflected = Reflection(li, bi);
 	float3 refracted = Refraction(li, foamData, sss);
 	float4 horizon = HorizonBlend(li);

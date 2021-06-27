@@ -62,7 +62,7 @@ namespace OceanSystem
             EditorGUILayout.PropertyField(anisoLevel);
             GUI.enabled = true;
             EditorGUILayout.PropertyField(simulateFoam);
-            EditorGUILayout.Space();
+            EditorGUILayout.Separator();
 
             EditorGUILayout.LabelField("Physics Readback", EditorStyles.boldLabel);
             EditorGUI.indentLevel += 1;
@@ -70,7 +70,7 @@ namespace OceanSystem
             if (simulationSettings.readbackCascades != OceanSimulationSettings.ReadbackCascadesValue.None)
                 EditorGUILayout.PropertyField(samplingIterations);
             EditorGUI.indentLevel -= 1;
-            EditorGUILayout.Space();
+            EditorGUILayout.Separator();
 
             EditorGUILayout.LabelField("Cascade Domains", EditorStyles.boldLabel);
             EditorGUI.indentLevel += 1;
@@ -92,7 +92,7 @@ namespace OceanSystem
             }
             EditorGUI.indentLevel -= 1;
 
-            EditorGUILayout.Space();
+            EditorGUILayout.Separator();
             EditorGUILayout.EndFoldoutHeaderGroup();
             EditorGUILayout.PropertyField(showSpectrumGraph);
             if (simulationSettings.showSpectrumGraph)

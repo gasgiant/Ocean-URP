@@ -161,16 +161,17 @@ float TMACorrection(float omega, float depth)
 	float omegaH = omega * sqrt(depth / g);
 	if (omegaH <= 1)
 		return 0.5 * omegaH * omegaH;
-	if (omegaH < 2)
+	else if (omegaH < 2)
 		return 1.0 - 0.5 * (2.0 - omegaH) * (2.0 - omegaH);
-	return 1;
+	else 
+		return 1;
 }
 
 float FullSpectrum(float omega, float theta, SpectrumParameters pars)
 {
-	float energySpectrum;
+	float energySpectrum = 1;
 	float spread;
-	float peakOmega;
+	float peakOmega = 1;
 	
 	float chi = abs(g * pars.fetch * 1000 / pars.windSpeed / pars.windSpeed);
 	chi = min(1e4, chi);

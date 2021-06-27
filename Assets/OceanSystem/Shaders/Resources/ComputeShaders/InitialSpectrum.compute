@@ -37,12 +37,16 @@ float CascadeContribution(float k, int cascade)
 {
 	if (k > CutoffsHigh[cascade] || k < CutoffsLow[cascade])
 		return 0;
-	float total = 0;
-	for (uint i = 0; i < CascadesCount; i++)
-	{
-		total += k <= CutoffsHigh[i] && k >= CutoffsLow[i];
-	}
-	return 1 / total;
+	else
+    {
+        float total = 0;
+        for (uint i = 0; i < CascadesCount; i++)
+        {
+            total += k <= CutoffsHigh[i] && k >= CutoffsLow[i];
+        }
+        return 1 / total;
+    }
+	
 }
 
 

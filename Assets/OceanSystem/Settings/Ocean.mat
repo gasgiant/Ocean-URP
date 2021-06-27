@@ -92,7 +92,7 @@ Material:
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _ContactFoam: 0
-    - _Cull: 2
+    - _Cull: 0
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
@@ -140,10 +140,18 @@ Material:
     - _WAVES_FOAM_ENABLED: 1
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - foamEditorExpanded: 1
+    - foamEditorExpanded: 0
     - horizonEditorExpanded: 0
     - sssEditorExpanded: 0
     m_Colors:
+    - Ocean_DiffuseColor: {r: 0, g: 0.008263334, b: 0.011792451, a: 1}
+    - Ocean_FogColor: {r: 0.009803922, g: 0.023529412, b: 0.04901961, a: 1}
+    - Ocean_SssColor: {r: 0.13333334, g: 0.9411765, b: 0.6039216, a: 1}
+    - Ocean_TintColor0: {r: 0, g: 0.040927403, b: 0.09425316, a: 0}
+    - Ocean_TintColor1: {r: 0, g: 0.17351386, b: 0.43203577, a: 0.2}
+    - Ocean_TintColor2: {r: 0.1617667, g: 0.68352747, b: 0.79865986, a: 0.66608685}
+    - Ocean_TintColor3: {r: 1, g: 1, b: 1, a: 1}
+    - Ocean_TintGradientParams: {r: 4, g: 0, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
