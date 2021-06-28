@@ -5,7 +5,7 @@
 #define OCEAN_GLOBALS_INCLUDED
 #define OCEAN_PI 3.1415926
 
-// shore
+// submergence
 TEXTURE2D(Ocean_CameraSubmergenceTexture);
 SAMPLER(samplerOcean_CameraSubmergenceTexture);
 float Ocean_ElevationBelowCamera;
@@ -37,6 +37,10 @@ SAMPLER(samplerOcean_SpecCube);
 float4 Ocean_SpecCube_HDR;
 TEXTURE2D(Ocean_SkyMap);
 SAMPLER(samplerOcean_SkyMap);
+// downward reflections mask
+float4 Ocean_DownwardReflectionsColor;
+float Ocean_DownwardReflectionsRadius;
+float Ocean_DownwardReflectionsSharpness;
 
 // colors
 float3 Ocean_FogColor;
@@ -53,11 +57,6 @@ float4 Ocean_TintColor5;
 float4 Ocean_TintColor6;
 float4 Ocean_TintColor7;
 float2 Ocean_TintGradientParams;
-
-// refelctions bottom hemisphere
-float Ocean_BottomHemisphereRadius;
-float Ocean_BottomHemisphereStrength;
-float4 Ocean_BottomHemisphereColor;
 
 
 float3 SampleOceanSpecCube(float3 dir)

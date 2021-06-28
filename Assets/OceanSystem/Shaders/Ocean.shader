@@ -31,6 +31,11 @@ Shader "Ocean/Ocean"
         Ocean_TintGradientParams("", Vector) = (1, 1, 1, 1)
         Ocean_TintDepthScale("Tint Depth Scale", Float) = 10
 
+        // downward reflections mask
+        [HDR]
+        Ocean_DownwardReflectionsColor("Color", Color) = (0, 0, 0, 0)
+        Ocean_DownwardReflectionsRadius("Radius", Range(-0.5, 1.1)) = 0.1
+        Ocean_DownwardReflectionsSharpness("Sharpness", Range(0, 30)) = 4
 
         // specular
         _SpecularStrength("Strength", Range(0.0, 10.0)) = 1

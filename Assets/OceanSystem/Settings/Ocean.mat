@@ -84,6 +84,12 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Ocean_BottomHemisphereRadius: 0.03
+    - Ocean_BottomHemisphereStrength: 2.68
+    - Ocean_DownwardReflectionsRadius: 0.1
+    - Ocean_DownwardReflectionsSharpness: 4
+    - Ocean_DownwardReflectionsShrpness: 0
+    - Ocean_DownwardReflectionsSmoothness: 0
     - Ocean_FogDensity: 0.1
     - Ocean_TintDepthScale: 10
     - _AlphaClip: 0
@@ -146,12 +152,14 @@ Material:
     - horizonEditorExpanded: 0
     - sssEditorExpanded: 0
     m_Colors:
+    - Ocean_BottomHemisphereColor: {r: 0.5566038, g: 0, b: 0, a: 1}
     - Ocean_DiffuseColor: {r: 0, g: 0.008263334, b: 0.011792451, a: 1}
+    - Ocean_DownwardReflectionsColor: {r: 0, g: 0.08183117, b: 0.11320752, a: 1}
     - Ocean_FogColor: {r: 0.010893557, g: 0.029177655, b: 0.05660379, a: 1}
     - Ocean_SssColor: {r: 0.13333334, g: 0.9411765, b: 0.6039216, a: 1}
-    - Ocean_TintColor0: {r: 0, g: 0.040705834, b: 0.09389254, a: 0}
+    - Ocean_TintColor0: {r: 0, g: 0.039987527, b: 0.092721134, a: 0}
     - Ocean_TintColor1: {r: 0, g: 0.17351386, b: 0.43203577, a: 0.2}
-    - Ocean_TintColor2: {r: 0.16127239, g: 0.68352747, b: 0.79865986, a: 0.66608685}
+    - Ocean_TintColor2: {r: 0.1596652, g: 0.68352747, b: 0.79865986, a: 0.66608685}
     - Ocean_TintColor3: {r: 1, g: 1, b: 1, a: 1}
     - Ocean_TintColor4: {r: 1, g: 1, b: 1, a: 1}
     - Ocean_TintColor5: {r: 1, g: 1, b: 1, a: 1}

@@ -101,8 +101,6 @@ namespace OceanSystem
                 AddCascadesLegend(graphSpace, simulationSettings);
         }
 
-
-
         static float GraphXToPositionX(float graphX, Rect rect)
         {
             graphX -= leftBottom.x;
