@@ -100,7 +100,6 @@ Shader "Ocean/Ocean"
             #pragma shader_feature_local _RECEIVE_SHADOWS_OFF
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
-            #pragma multi_compile_fragment _ _SHADOWS_SOFT
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -174,11 +173,16 @@ Shader "Ocean/Ocean"
                 fi.normal = normal;
                 FoamData foamData = GetFoamData(fi);
 
-                #ifdef REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR
-                Light mainLight = GetMainLight(IN.shadowCoord);
+                float4 shadowCoord;
+                #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
+                    shadowCoord = IN.shadowCoord;
+                #elif defined(MAIN_LIGHT_CALCULATE_SHADOWS)
+                    shadowCoord = TransformWorldToShadowCoord(IN.positionWS);
                 #else
-                Light mainLight = GetMainLight();
+                    shadowCoord = float4(0, 0, 0, 0);
                 #endif
+
+                Light mainLight = GetMainLight(shadowCoord);
 
                 LightingInput li;
                 li.normal = normal;
