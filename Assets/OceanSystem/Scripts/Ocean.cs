@@ -6,7 +6,9 @@ namespace OceanSystem
 {
     public class Ocean : MonoBehaviour
     {
-        [SerializeField] private Camera cam;
+        public enum OceanReflectionsMode { Default, RealtimeProbe, Custom }
+
+        [SerializeField] OceanReflectionsMode reflectionsMode;
         [SerializeField] private GeoClipmap geoClipmap;
         [SerializeField] private Material material;
         [SerializeField] private OceanEnvironment environment;

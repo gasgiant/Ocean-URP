@@ -457,7 +457,6 @@ MonoBehaviour:
   simulationSettings: {fileID: 11400000, guid: 59c5d1e11cdd336428ee3e1f68810c3f, type: 2}
   wavesSettings: {fileID: 11400000, guid: 07b4d7e62a3e90d4cb735581891aeb1c, type: 2}
   equalizerPreset: {fileID: 11400000, guid: 1fd9d91ff7b9c9a4c91fe8d00b1d9ef0, type: 2}
-  recalculateSpectrumEveryFrame: 1
 --- !u!4 &1777309716
 Transform:
   m_ObjectHideFlags: 0
@@ -500,7 +499,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69112c270b4b834429cb51724e4a421f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 1687258584}
+  reflectionsMode: 0
   geoClipmap: {fileID: 1777309717}
   material: {fileID: 2100000, guid: 10252c97548dc8b47995a41628c2d275, type: 2}
   environment: {fileID: 11400000, guid: 6f764a47425ae89449cf1b595e2d7bcf, type: 2}
