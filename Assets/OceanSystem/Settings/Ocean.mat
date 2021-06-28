@@ -9,7 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Ocean
   m_Shader: {fileID: 4800000, guid: b8f769ad93da9b041abbe077590a2bce, type: 3}
-  m_ShaderKeywords: TRANSPARENCY_ENABLED UNDERWATER_ENABLED WAVES_FOAM_ENABLED
+  m_ShaderKeywords: TRANSPARENCY_ENABLED UNDERWATER_ENABLED WAVES_FOAM_ENABLED _RECEIVE_SHADOWS_OFF
+    _RECIEVE_SHADOWS_OFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -119,7 +120,8 @@ Material:
     - _PLANAR_REFLECTIONS_ENABLED: 0
     - _Parallax: 0.005
     - _QueueOffset: 0
-    - _ReceiveShadows: 1
+    - _ReceiveShadows: 0
+    - _RecieveShadowsOff: 1
     - _ReflectionNormalStength: 0.25
     - _RefractionStrength: 0.25
     - _RefractionStrengthUnderwater: 0.75
@@ -157,9 +159,9 @@ Material:
     - Ocean_DownwardReflectionsColor: {r: 0, g: 0.08183117, b: 0.11320752, a: 1}
     - Ocean_FogColor: {r: 0.010893557, g: 0.029177655, b: 0.05660379, a: 1}
     - Ocean_SssColor: {r: 0.13333334, g: 0.9411765, b: 0.6039216, a: 1}
-    - Ocean_TintColor0: {r: 0, g: 0.039987527, b: 0.092721134, a: 0}
+    - Ocean_TintColor0: {r: 0, g: 0.03988276, b: 0.09254998, a: 0}
     - Ocean_TintColor1: {r: 0, g: 0.17351386, b: 0.43203577, a: 0.2}
-    - Ocean_TintColor2: {r: 0.1596652, g: 0.68352747, b: 0.79865986, a: 0.66608685}
+    - Ocean_TintColor2: {r: 0.15943016, g: 0.68352747, b: 0.79865986, a: 0.66608685}
     - Ocean_TintColor3: {r: 1, g: 1, b: 1, a: 1}
     - Ocean_TintColor4: {r: 1, g: 1, b: 1, a: 1}
     - Ocean_TintColor5: {r: 1, g: 1, b: 1, a: 1}

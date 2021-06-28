@@ -12,6 +12,8 @@ Shader "Ocean/Ocean"
         [Toggle(CONTACT_FOAM_ENABLED)]
         _CONTACT_FOAM_ENABLED("Contact Foam", Float) = 0
 
+        [MaterialToggle] _ReceiveShadows("Receive Shadows", Float) = 0
+
         // colors
         [HDR]
         Ocean_FogColor("Main", Color) = (0, 0, 0, 1)
@@ -33,7 +35,7 @@ Shader "Ocean/Ocean"
 
         // downward reflections mask
         [HDR]
-        Ocean_DownwardReflectionsColor("Color", Color) = (0, 0, 0, 0)
+        Ocean_DownwardReflectionsColor("Downward Reflections", Color) = (0, 0, 0, 0)
         Ocean_DownwardReflectionsRadius("Radius", Range(-0.5, 1.1)) = 0.1
         Ocean_DownwardReflectionsSharpness("Sharpness", Range(0, 30)) = 4
 
@@ -91,8 +93,14 @@ Shader "Ocean/Ocean"
             #pragma multi_compile _ OCEAN_THREE_CASCADES OCEAN_FOUR_CASCADES
             #pragma multi_compile _ OCEAN_UNDERWATER_ENABLED
             #pragma multi_compile _ OCEAN_TRANSPARENCY_ENABLED
-            #pragma shader_feature WAVES_FOAM_ENABLED
-            #pragma shader_feature CONTACT_FOAM_ENABLED
+            #pragma shader_feature_local WAVES_FOAM_ENABLED
+            #pragma shader_feature_local CONTACT_FOAM_ENABLED
+
+            // URP Keywords
+            #pragma shader_feature_local _RECEIVE_SHADOWS_OFF
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -115,6 +123,9 @@ Shader "Ocean/Ocean"
                 float viewDepth : TEXCOORD1;
                 float4 positionNDC: TEXCOORD2;
                 float2 worldXZ : TEXCOORD3;
+                #ifdef REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR
+                float4 shadowCoord : TEXCOORD4;
+                #endif
             };
 
             Varyings Vert(Attributes IN)
@@ -134,6 +145,9 @@ Shader "Ocean/Ocean"
                 OUT.viewDepth = -inputs.positionVS.z - _ProjectionParams.y;
                 OUT.positionNDC = inputs.positionNDC;
                 OUT.positionHCS = inputs.positionCS;
+                #ifdef REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR
+                OUT.shadowCoord = GetShadowCoord(inputs);
+                #endif
                 return OUT;
             }
 
@@ -160,7 +174,11 @@ Shader "Ocean/Ocean"
                 fi.normal = normal;
                 FoamData foamData = GetFoamData(fi);
 
+                #ifdef REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR
+                Light mainLight = GetMainLight(IN.shadowCoord);
+                #else
                 Light mainLight = GetMainLight();
+                #endif
 
                 LightingInput li;
                 li.normal = normal;
@@ -171,7 +189,7 @@ Shader "Ocean/Ocean"
                 li.positionNDC = IN.positionNDC;
                 li.viewDepth = IN.viewDepth;
                 li.lightDir = mainLight.direction;
-                li.lightColor = mainLight.color;
+                li.lightColor = mainLight.color * mainLight.shadowAttenuation;
                 li.cameraPos = _WorldSpaceCameraPos;
 
                 bool backface = dot(normal, viewDir) < 0;

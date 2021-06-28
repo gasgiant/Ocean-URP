@@ -27,6 +27,7 @@ namespace OceanSystem
 		// specular
 		MaterialProperty specularStrength = null;
 		MaterialProperty specularMinRoughness = null;
+		MaterialProperty receiveShadows = null;
 
 		// horizon
 		MaterialProperty horizonEditorExpanded = null;
@@ -93,6 +94,7 @@ namespace OceanSystem
 			// specular
 			specularStrength = FindProperty("_SpecularStrength", properties);
 			specularMinRoughness = FindProperty("_SpecularMinRoughness", properties);
+			receiveShadows = FindProperty("_ReceiveShadows", properties);
 
 			// horizon
 			horizonEditorExpanded = FindProperty("horizonEditorExpanded", properties);
@@ -136,6 +138,7 @@ namespace OceanSystem
 			editor.ShaderProperty(fogDensity, MakeLabel(fogDensity));
 			editor.ShaderProperty(sssColor, MakeLabel(sssColor));
 			editor.ShaderProperty(diffuseColor, MakeLabel(diffuseColor));
+			editor.ShaderProperty(downwardReflectionsColor, MakeLabel(downwardReflectionsColor));
 			Gradient tint = EditorGUILayout.GradientField(new GUIContent("Tint Gradient"), GetGradient(OceanShaderPropIds.TintGradientIDs), false);
 			SetGradient(OceanShaderPropIds.TintGradientIDs, tint);
 			editor.ShaderProperty(tintDepthScale, MakeLabel(tintDepthScale));
@@ -147,7 +150,6 @@ namespace OceanSystem
 			Shader.SetGlobalVector(OceanShaderPropIds.DownwardReflectionsColorID, targetMaterial.GetVector(OceanShaderPropIds.DownwardReflectionsColorID));
 			Shader.SetGlobalFloat(OceanShaderPropIds.DownwardReflectionsRadiusID, targetMaterial.GetFloat(OceanShaderPropIds.DownwardReflectionsRadiusID));
 			Shader.SetGlobalFloat(OceanShaderPropIds.DownwardReflectionsSharpnessID, targetMaterial.GetFloat(OceanShaderPropIds.DownwardReflectionsSharpnessID));
-			editor.ShaderProperty(downwardReflectionsColor, MakeLabel(downwardReflectionsColor));
 			editor.ShaderProperty(downwardReflectionsRadius, MakeLabel(downwardReflectionsRadius));
 			editor.ShaderProperty(downwardReflectionsSharpness, MakeLabel(downwardReflectionsSharpness));
 			Rect skyPreviewRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(50));
@@ -162,6 +164,11 @@ namespace OceanSystem
 
 			EditorGUILayout.LabelField("Specular", EditorStyles.boldLabel);
 			EditorGUI.indentLevel += 1;
+			editor.ShaderProperty(receiveShadows, MakeLabel(receiveShadows));
+			if (targetMaterial.GetFloat("_ReceiveShadows") > 0)
+				targetMaterial.DisableKeyword("_RECEIVE_SHADOWS_OFF");
+			else
+				targetMaterial.EnableKeyword("_RECEIVE_SHADOWS_OFF");
 			editor.ShaderProperty(specularStrength, MakeLabel(specularStrength));
 			editor.ShaderProperty(specularMinRoughness, MakeLabel(specularMinRoughness));
 			EditorGUI.indentLevel -= 1;

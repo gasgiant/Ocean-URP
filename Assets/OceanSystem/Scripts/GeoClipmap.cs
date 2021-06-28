@@ -72,7 +72,6 @@ public class GeoClipmap : MonoBehaviour
         MeshRenderer meshRenderer = go.AddComponent<MeshRenderer>();
         //meshRenderer.enabled = false;
         meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        meshRenderer.receiveShadows = false;
         meshRenderer.motionVectorGenerationMode = MotionVectorGenerationMode.Camera;
         meshRenderer.allowOcclusionWhenDynamic = false;
         meshRenderer.material = mat;
