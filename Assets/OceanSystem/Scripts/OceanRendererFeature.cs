@@ -21,9 +21,16 @@ namespace OceanSystem
             renderer.EnqueuePass(renderOceanPass);
         }
 
+        private void OnValidate()
+        {
+            settings.skyMapResolution = Mathf.Clamp(settings.skyMapResolution, 16, 2048);
+        }
+
         [System.Serializable]
         public class OceanRenderingSettings
         {
+            public int skyMapResolution = 256;
+            public bool updateSkyMap;
             public bool transparency;
             public bool underwaterEffect;
         }

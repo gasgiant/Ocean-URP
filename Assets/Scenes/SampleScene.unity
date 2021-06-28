@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: 260ffdb6899e32b4aa27eee23365e4b9, type: 2}
+  m_LightingDataAsset: {fileID: 0}
   m_LightingSettings: {fileID: 4890085278179872738, guid: 477cc4148fad3449482a3bc3178594e2, type: 2}
 --- !u!196 &4
 NavMeshSettings:
@@ -504,6 +504,7 @@ MonoBehaviour:
   geoClipmap: {fileID: 1777309717}
   material: {fileID: 2100000, guid: 10252c97548dc8b47995a41628c2d275, type: 2}
   environment: {fileID: 11400000, guid: 6f764a47425ae89449cf1b595e2d7bcf, type: 2}
+  probe: {fileID: 0}
 --- !u!1 &2138677391
 GameObject:
   m_ObjectHideFlags: 0

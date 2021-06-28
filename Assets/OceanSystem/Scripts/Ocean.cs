@@ -10,21 +10,24 @@ namespace OceanSystem
         [SerializeField] private GeoClipmap geoClipmap;
         [SerializeField] private Material material;
         [SerializeField] private OceanEnvironment environment;
-
-        RenderTexture skyMap;
-        Material skyMapMaterial;
+        [SerializeField] private ReflectionProbe probe;
 
         void Start()
         {
             geoClipmap.InstantiateMesh(material);
-            Shader.SetGlobalTexture(specCubeID, ReflectionProbe.defaultTexture);
-
-            skyMapMaterial = new Material(Shader.Find("Ocean/StereographicSky"));
-            RenderSkyMap();
+            
         }
 
         void Update()
         {
+            //probe.RenderProbe();
+            //Shader.SetGlobalTexture(specCubeID, probe.realtimeTexture);
+            Shader.SetGlobalTexture(specCubeID, ReflectionProbe.defaultTexture);
+            Shader.SetGlobalVector(bottomHemisphereColorID, environment.bottomHemisphereColor.linear);
+            Shader.SetGlobalFloat(bottomHemisphereRadiusID, environment.bottomHemisphereRadius);
+            Shader.SetGlobalFloat(bottomHemisphereStrengthID, environment.bottomHemisphereStrength);
+
+
             material.SetFloat("_Cull", (float)
                 (Shader.IsKeywordEnabled("OCEAN_UNDERWATER_ENABLED") ? CullMode.Off : CullMode.Back));
             SetGlobalColorVariables();
@@ -41,27 +44,6 @@ namespace OceanSystem
             {
                 Shader.SetGlobalVector(TintGradientIDs[i], material.GetVector(TintGradientIDs[i]));
             }
-        }
-
-        private void RenderSkyMap()
-        {
-            int res = Mathf.Min(2048, 256);
-            if (skyMap == null || skyMap.height != res)
-            {
-                skyMap = new RenderTexture(res, res, 0,
-                RenderTextureFormat.DefaultHDR, RenderTextureReadWrite.Linear);
-                skyMap.wrapMode = TextureWrapMode.Clamp;
-                skyMap.useMipMap = true;
-                skyMap.autoGenerateMips = true;
-                skyMap.filterMode = FilterMode.Trilinear;
-                skyMap.anisoLevel = 9;
-                skyMap.Create();
-            }
-            Shader.SetGlobalVector(bottomHemisphereColorID, environment.bottomHemisphereColor.linear);
-            Shader.SetGlobalFloat(bottomHemisphereRadiusID, environment.bottomHemisphereRadius);
-            Shader.SetGlobalFloat(bottomHemisphereStrengthID, environment.bottomHemisphereStrength);
-            Graphics.Blit(null, skyMap, skyMapMaterial);
-            Shader.SetGlobalTexture(skyMapID, skyMap);
         }
 
         private static readonly int FogColorID = Shader.PropertyToID("Ocean_FogColor");
@@ -83,7 +65,6 @@ namespace OceanSystem
         };
 
         private static readonly int specCubeID = Shader.PropertyToID("Ocean_SpecCube");
-        private static readonly int skyMapID = Shader.PropertyToID("Ocean_SkyMap");
         private static readonly int bottomHemisphereRadiusID = Shader.PropertyToID("Ocean_BottomHemisphereRadius");
         private static readonly int bottomHemisphereStrengthID = Shader.PropertyToID("Ocean_BottomHemisphereStrength");
         private static readonly int bottomHemisphereColorID = Shader.PropertyToID("Ocean_BottomHemisphereColor");

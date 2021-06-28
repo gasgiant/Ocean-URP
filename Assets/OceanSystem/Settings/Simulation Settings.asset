@@ -16,6 +16,7 @@ MonoBehaviour:
   cascadesNumber: 4
   anisoLevel: 6
   simulateFoam: 1
+  updateSpectrum: 1
   domainsMode: 0
   simulationScale: 762
   allowOverlap: 0

@@ -20,8 +20,6 @@ namespace OceanSystem
         private WavesSettings wavesSettings;
         [SerializeField]
         private OceanEqualizerPreset equalizerPreset;
-        [SerializeField]
-        private bool recalculateSpectrumEveryFrame = false;
 
         private int size;
         private ComputeShader initialSpectrumShader;
@@ -68,7 +66,7 @@ namespace OceanSystem
 
         private void Update()
         {
-            if (recalculateSpectrumEveryFrame)
+            if (simulationSettings.updateSpectrum)
             {
                 CalculateSpectrum();
             }

@@ -9,6 +9,7 @@ namespace OceanSystem
         SerializedProperty resolution;
         SerializedProperty cascadesNumber;
         SerializedProperty simulateFoam;
+        SerializedProperty updateSpectrum;
         SerializedProperty domainsMode;
         SerializedProperty simulationScale;
         SerializedProperty allowOverlap;
@@ -32,6 +33,7 @@ namespace OceanSystem
             resolution = serializedObject.FindProperty("resolution");
             cascadesNumber = serializedObject.FindProperty("cascadesNumber");
             simulateFoam = serializedObject.FindProperty("simulateFoam");
+            updateSpectrum = serializedObject.FindProperty("updateSpectrum");
             domainsMode = serializedObject.FindProperty("domainsMode");
             simulationScale = serializedObject.FindProperty("simulationScale");
             allowOverlap = serializedObject.FindProperty("allowOverlap");
@@ -61,6 +63,7 @@ namespace OceanSystem
             EditorGUILayout.PropertyField(cascadesNumber);
             EditorGUILayout.PropertyField(anisoLevel);
             GUI.enabled = true;
+            EditorGUILayout.PropertyField(updateSpectrum);
             EditorGUILayout.PropertyField(simulateFoam);
             EditorGUILayout.Space();
 

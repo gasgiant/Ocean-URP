@@ -14,6 +14,8 @@ namespace OceanSystem
         [Range(0, 9)]
         public int anisoLevel = 6;
         public bool simulateFoam;
+        public bool updateSpectrum = false;
+
         public CascadeDomainsMode domainsMode;
         public float simulationScale = 400;
         public bool allowOverlap = false;
