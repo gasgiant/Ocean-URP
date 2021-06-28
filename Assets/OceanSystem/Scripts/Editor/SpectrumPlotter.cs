@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace OceanSystem
 {
-    public static class SpectrumGraphPlotter
+    public static class SpectrumPlotter
     {
         static float padding = 2;
         static float tickLabelsHeight = 10;
@@ -41,25 +41,25 @@ namespace OceanSystem
             }
         }
 
-        public static void DrawGraphOnly(WavesSettings wavesSettings)
+        public static void DrawSpectrumOnly(WavesSettings wavesSettings)
         {
-            DrawGraph(wavesSettings);
+            DrawSpectrum(wavesSettings);
         }
 
         public static void DrawGraphWithCascades(OceanSimulationSettings simulationSettings)
         {
-            DrawGraph(simulationSettings.DisplayWavesSettings, simulationSettings);
+            DrawSpectrum(simulationSettings.DisplayWavesSettings, simulationSettings);
         }
 
-        public static void DrawGraphWithEqualizer(WavesSettings wavesSettings, Texture2D ramp, int channel, Color fill, Color line)
+        public static void DrawSpectrumWithEqualizer(WavesSettings wavesSettings, Texture2D ramp, int channel, Color fill, Color line)
         {
             material.SetInt("equalizerChannel", channel);
             material.SetVector("rampFill", fill);
             material.SetVector("rampLine", line);
-            DrawGraph(wavesSettings, null, ramp);
+            DrawSpectrum(wavesSettings, null, ramp);
         }
 
-        static void DrawGraph(WavesSettings wavesSettings, OceanSimulationSettings simulationSettings = null, Texture2D ramp = null)
+        static void DrawSpectrum(WavesSettings wavesSettings, OceanSimulationSettings simulationSettings = null, Texture2D ramp = null)
         {
             Rect space = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(150));
             Rect graphSpace = space;
@@ -174,7 +174,7 @@ namespace OceanSystem
                 new Vector2(graphSpace.width, tickLabelsHeight * 1.5f));
             EditorGUI.LabelField(yLabelRect, "Wavelength", boldLabelStyle);
             GUILayout.Space(tickLabelsHeight + padding);
-            EditorGUILayout.Separator();
+            EditorGUILayout.Space();
         }
 
         public static void AddCascadesLegend(Rect graphSpace, OceanSimulationSettings simulationSettings)

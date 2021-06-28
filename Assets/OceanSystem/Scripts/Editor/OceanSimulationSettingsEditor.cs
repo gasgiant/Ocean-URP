@@ -21,7 +21,7 @@ namespace OceanSystem
         SerializedProperty readbackCascades;
         SerializedProperty samplingIterations;
 
-        SerializedProperty showSpectrumGraph;
+        SerializedProperty spectrumPlot;
 
         OceanSimulationSettings simulationSettings;
 
@@ -45,7 +45,7 @@ namespace OceanSystem
             readbackCascades = serializedObject.FindProperty("readbackCascades");
             samplingIterations = serializedObject.FindProperty("samplingIterations");
 
-            showSpectrumGraph = serializedObject.FindProperty("showSpectrumGraph");
+            spectrumPlot = serializedObject.FindProperty("spectrumPlot");
         }
 
         public override void OnInspectorGUI()
@@ -62,7 +62,7 @@ namespace OceanSystem
             EditorGUILayout.PropertyField(anisoLevel);
             GUI.enabled = true;
             EditorGUILayout.PropertyField(simulateFoam);
-            EditorGUILayout.Separator();
+            EditorGUILayout.Space();
 
             EditorGUILayout.LabelField("Physics Readback", EditorStyles.boldLabel);
             EditorGUI.indentLevel += 1;
@@ -70,7 +70,7 @@ namespace OceanSystem
             if (simulationSettings.readbackCascades != OceanSimulationSettings.ReadbackCascadesValue.None)
                 EditorGUILayout.PropertyField(samplingIterations);
             EditorGUI.indentLevel -= 1;
-            EditorGUILayout.Separator();
+            EditorGUILayout.Space();
 
             EditorGUILayout.LabelField("Cascade Domains", EditorStyles.boldLabel);
             EditorGUI.indentLevel += 1;
@@ -92,14 +92,14 @@ namespace OceanSystem
             }
             EditorGUI.indentLevel -= 1;
 
-            EditorGUILayout.Separator();
+            EditorGUILayout.Space();
             EditorGUILayout.EndFoldoutHeaderGroup();
-            EditorGUILayout.PropertyField(showSpectrumGraph);
-            if (simulationSettings.showSpectrumGraph)
+            EditorGUILayout.PropertyField(spectrumPlot);
+            if (simulationSettings.spectrumPlot)
             {
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("DisplayWavesSettings"));
                 if (simulationSettings.DisplayWavesSettings != null)
-                    SpectrumGraphPlotter.DrawGraphWithCascades(simulationSettings);
+                    SpectrumPlotter.DrawGraphWithCascades(simulationSettings);
             }
 
             serializedObject.ApplyModifiedProperties();

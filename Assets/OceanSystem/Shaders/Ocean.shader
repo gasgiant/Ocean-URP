@@ -14,7 +14,8 @@ Shader "Ocean/Ocean"
 
         // colors
         [HDR]
-        Ocean_FogColor("Fog", Color) = (0, 0, 0, 1)
+        Ocean_FogColor("Main", Color) = (0, 0, 0, 1)
+        Ocean_FogDensity("Fog Density", Float) = 0.1
         [HDR]
         Ocean_SssColor("Subsurface scattering", Color) = (0, 0, 0, 1)
         [HDR]
@@ -23,7 +24,12 @@ Shader "Ocean/Ocean"
         Ocean_TintColor1("", Vector) = (1, 1, 1, 1)
         Ocean_TintColor2("", Vector) = (1, 1, 1, 1)
         Ocean_TintColor3("", Vector) = (1, 1, 1, 1)
+        Ocean_TintColor4("", Vector) = (1, 1, 1, 1)
+        Ocean_TintColor5("", Vector) = (1, 1, 1, 1)
+        Ocean_TintColor6("", Vector) = (1, 1, 1, 1)
+        Ocean_TintColor7("", Vector) = (1, 1, 1, 1)
         Ocean_TintGradientParams("", Vector) = (1, 1, 1, 1)
+        Ocean_TintDepthScale("Tint Depth Scale", Float) = 10
 
 
         // specular
@@ -55,13 +61,8 @@ Shader "Ocean/Ocean"
         // foam
         _FoamTexture("Foam Noise", 2D) = "gray" {}
         _ContactFoamTexture("Contact Foam Texture", 2D) = "white" {}
-        _FoamCoverage("Coverage", Range(-0.1, 1.0)) = 0
-        _FoamDensity("Density", Float) = 8.4
-        _FoamPersistence("Persistence", Range(0, 1.0)) = 0.5
         _FoamNormalsDetail("Normal Strength", Range(0, 1.0)) = 0.5
-        _FoamCascadesWeights("Cascades Weights", Vector) = (1, 1, 1, 1)
         _WhitecapsColor("Whitecaps Albedo", Color) = (1, 1, 1, 1)
-        _UnderwaterFoam("Underwater Foam", Range(0, 1.0)) = 0
         _UnderwaterFoamParallax("Underwater Parallax", Range(0, 3.0)) = 1.2
         _ContactFoam("Contact Foam", Range(0, 1.0)) = 0
     }

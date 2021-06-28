@@ -27,4 +27,4 @@ MonoBehaviour:
   readbackCascades: 0
   samplingIterations: 3
   DisplayWavesSettings: {fileID: 11400000, guid: 07b4d7e62a3e90d4cb735581891aeb1c, type: 2}
-  showSpectrumGraph: 1
+  spectrumPlot: 1

@@ -17,6 +17,13 @@ float Ocean_WavesAlignement;
 float2 Ocean_WindDirection;
 float4x4 Ocean_WorldToWindSpace;
 
+// foam
+float Ocean_FoamCoverage;
+float Ocean_FoamUnderwater;
+float Ocean_FoamDensity;
+float Ocean_FoamPersistence;
+float4 Ocean_FoamCascadesWeights;
+
 // camera
 float4x4 Ocean_CameraToWorld;
 float4x4 Ocean_CameraInverseProjection;
@@ -35,15 +42,16 @@ SAMPLER(samplerOcean_SkyMap);
 float3 Ocean_FogColor;
 float3 Ocean_SssColor;
 float3 Ocean_DiffuseColor;
-
-float Ocean_FogGradientScale;
-float Ocean_TintGradientScale;
+float Ocean_TintDepthScale;
 float Ocean_FogDensity;
-
 float4 Ocean_TintColor0;
 float4 Ocean_TintColor1;
 float4 Ocean_TintColor2;
 float4 Ocean_TintColor3;
+float4 Ocean_TintColor4;
+float4 Ocean_TintColor5;
+float4 Ocean_TintColor6;
+float4 Ocean_TintColor7;
 float2 Ocean_TintGradientParams;
 
 // refelctions bottom hemisphere
@@ -95,7 +103,11 @@ float3 TintColor(float t)
         Ocean_TintColor0,
         Ocean_TintColor1,
         Ocean_TintColor2,
-        Ocean_TintColor3
+        Ocean_TintColor3,
+        Ocean_TintColor4,
+        Ocean_TintColor5,
+        Ocean_TintColor6,
+        Ocean_TintColor7
     };
     Gradient g = CreateGradient(colors, Ocean_TintGradientParams);
     return SampleGradient(g, t);

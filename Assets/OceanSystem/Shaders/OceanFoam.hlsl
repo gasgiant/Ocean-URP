@@ -43,13 +43,13 @@ float Bubbles(float2 worldXZ, float3 viewDir, float3 normal, float time)
 
 float2 Coverage(float4x4 t, float4 mixWeights, float2 worldXZ, float bubblesTex)
 {
-	float4 turbulence = MixTurbulence(t, _FoamCascadesWeights, mixWeights * ACTIVE_CASCADES);
-	float foamValue = lerp(turbulence.x, (turbulence.z + turbulence.w) * 0.5, _FoamPersistence);
+	float4 turbulence = MixTurbulence(t, Ocean_FoamCascadesWeights, mixWeights * ACTIVE_CASCADES);
+    float foamValue = lerp(turbulence.x, (turbulence.z + turbulence.w) * 0.5, Ocean_FoamPersistence);
 	foamValue -= 1;
 	
-	float whiteCaps = saturate((foamValue + _FoamCoverage) * _FoamDensity);
-	float underwater = saturate((foamValue + _FoamCoverage + 0.05 * _UnderwaterFoam) * _FoamDensity);
-	float bubbles = bubblesTex * saturate((foamValue + _FoamCoverage + _UnderwaterFoam * 0.2) * _FoamDensity);
+    float whiteCaps = saturate((foamValue + Ocean_FoamCoverage) * Ocean_FoamDensity);
+    float underwater = saturate((foamValue + Ocean_FoamCoverage + 0.05 * Ocean_FoamUnderwater) * Ocean_FoamDensity);
+    float bubbles = bubblesTex * saturate((foamValue + Ocean_FoamCoverage + Ocean_FoamUnderwater * 0.2) * Ocean_FoamDensity);
 	return float2(whiteCaps, max(underwater, bubbles));
 }
 

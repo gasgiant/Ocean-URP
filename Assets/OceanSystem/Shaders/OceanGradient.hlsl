@@ -1,6 +1,6 @@
 ﻿#if !defined(OCEAN_GRADIENT_INCLUDED)
 #define OCEAN_GRADIENT_INCLUDED
-#define GRADIENT_MAX_KEYS 4
+#define GRADIENT_MAX_KEYS 8
 
 struct Gradient
 {

@@ -13,7 +13,6 @@ namespace OceanSystem
     [System.Serializable]
     public struct SpectrumSettings
     {
-        [Header("Energy")]
         public EnergySpectrum energySpectrum;
         [Range(0.1f, 30)]
         public float windSpeed;
@@ -24,7 +23,6 @@ namespace OceanSystem
         public float scale;
         public float cutoffWavelength;
 
-        [Header("Spread")]
         [Range(0, 360)]
         public float windDirection;
         [Range(0, 1)]
@@ -63,6 +61,20 @@ namespace OceanSystem
         }
     }
 
+    [System.Serializable]
+    public class FoamSettings
+    {
+        [Range(-0.1f, 1)]
+        public float coverage;
+        [Range(0, 1)]
+        public float underwater;
+        public float density = 8.4f;
+        [Range(0, 1)]
+        public float persistence = 0.5f;
+        public float decayRate = 0.1f;
+        public Vector4 cascadesWeights = Vector4.one;
+    }
+
     [CreateAssetMenu(fileName = "New Waves Settings", menuName = "Ocean/Waves Settings")]
     public class WavesSettings : ScriptableObject
     {
@@ -71,12 +83,12 @@ namespace OceanSystem
         public float depth = 1000;
         [Range(0, 4)]
         public float chop = 1;
-        public float foamDecayRate = 0.1f;
+        public FoamSettings foam;
         public SpectrumSettings local;
         public SpectrumSettings swell;
 
 #if UNITY_EDITOR
-        public bool showGraph;
+        public bool spectrumPlot;
 #endif
     }
 }

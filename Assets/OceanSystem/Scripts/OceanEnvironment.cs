@@ -9,9 +9,5 @@ namespace OceanSystem
         public Color bottomHemisphereColor;
         public float bottomHemisphereRadius;
         public float bottomHemisphereStrength;
-
-        public float fogGradientScale = 25;
-        public float fogDensity = 0.1f;
-        public float tintGradientScale = 10;
     }
 }

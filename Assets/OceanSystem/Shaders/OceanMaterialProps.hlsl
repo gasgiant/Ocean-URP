@@ -32,14 +32,9 @@ TEXTURE2D(_FoamTexture);
 SAMPLER(sampler_FoamTexture);
 TEXTURE2D(_ContactFoamTexture);
 SAMPLER(sampler_ContactFoamTexture);
-float _FoamCoverage;
-float _FoamDensity;
-float _FoamPersistence;
 float _FoamNormalsDetail;
-float4 _FoamCascadesWeights;
 float4 _WhitecapsColor;
 float4 _UnderwaterFoamColor;
-float _UnderwaterFoam;
 float _UnderwaterFoamParallax;
 float _ContactFoam;
 

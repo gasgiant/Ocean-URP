@@ -33,7 +33,7 @@ namespace OceanSystem
 
 #if UNITY_EDITOR
         public WavesSettings DisplayWavesSettings;
-        public bool showSpectrumGraph;
+        public bool spectrumPlot;
 #endif
 
         public Vector4 LengthScales()

@@ -237,7 +237,7 @@ namespace OceanSystem
                 foamCbuff.SetComputeIntParam(foamSimulationShader,
                     CascadesCountID, simulationSettings.CascadesNumber);
                 foamCbuff.SetComputeFloatParam(foamSimulationShader, DeltaTimeID, deltaTime);
-                foamCbuff.SetComputeFloatParam(foamSimulationShader, FoamDecayRateID, wavesSettings.foamDecayRate);
+                foamCbuff.SetComputeFloatParam(foamSimulationShader, FoamDecayRateID, wavesSettings.foam.decayRate);
 
                 foamCbuff.SetComputeTextureParam(foamSimulationShader,
                     SimulateFoamKernel, InputID, fftInOut);
@@ -248,6 +248,13 @@ namespace OceanSystem
                     SimulateFoamKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
                 foamCbuff.GenerateMips(turbulence);
                 Graphics.ExecuteCommandBuffer(foamCbuff);
+
+                // Setting global foam variables for ocean shader
+                Shader.SetGlobalFloat(FoamCoverageID, wavesSettings.foam.coverage);
+                Shader.SetGlobalFloat(FoamUnderwaterID, wavesSettings.foam.underwater);
+                Shader.SetGlobalFloat(FoamDensityID, wavesSettings.foam.density);
+                Shader.SetGlobalFloat(FoamPersistenceID, wavesSettings.foam.persistence);
+                Shader.SetGlobalVector(FoamCascadesWeightsID, wavesSettings.foam.cascadesWeights);
             }
         }
 
@@ -317,7 +324,6 @@ namespace OceanSystem
         private static readonly int SpectrumsID = Shader.PropertyToID("Spectrums");
         private static readonly int TimeID = Shader.PropertyToID("Time");
         private static readonly int DeltaTimeID = Shader.PropertyToID("DeltaTime");
-        private static readonly int FoamDecayRateID = Shader.PropertyToID("FoamDecayRate");
         private static readonly int EqualizerRampID = Shader.PropertyToID("EqualizerRamp");
         private static readonly int H0KID = Shader.PropertyToID("H0K");
         private static readonly int WavesDataID = Shader.PropertyToID("WavesData");
@@ -336,6 +342,13 @@ namespace OceanSystem
         private static readonly int WavesAlignementID = Shader.PropertyToID("Ocean_WavesAlignement");
         private static readonly int WindDirectionID = Shader.PropertyToID("Ocean_WindDirection");
         private static readonly int WorldToWindSpaceID = Shader.PropertyToID("Ocean_WorldToWindSpace");
+
+        private static readonly int FoamDecayRateID = Shader.PropertyToID("FoamDecayRate");
+        private static readonly int FoamCoverageID = Shader.PropertyToID("Ocean_FoamCoverage");
+        private static readonly int FoamUnderwaterID = Shader.PropertyToID("Ocean_FoamUnderwater");
+        private static readonly int FoamDensityID = Shader.PropertyToID("Ocean_FoamDensity");
+        private static readonly int FoamPersistenceID = Shader.PropertyToID("Ocean_FoamPersistence");
+        private static readonly int FoamCascadesWeightsID = Shader.PropertyToID("Ocean_FoamCascadesWeights");
 
         // Kernel IDs
         private int GenerateNoiseKernel;

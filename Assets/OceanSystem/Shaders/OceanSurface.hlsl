@@ -148,7 +148,7 @@ float3 RefractionCoords(float refractionStrength, float4 positionNDC, float view
 
 float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
 {
-	float depthScale = exp(li.shore.x / Ocean_FogGradientScale);
+	float depthScale = 0;//exp(li.shore.x / Ocean_FogGradientScale);
 	float3 color = FogColor(0 * (1 - abs(li.viewDir.y)) * (1 - abs(li.viewDir.y)) * depthScale);
 	float3 sssColor = SssColor(depthScale);
 	color += sssColor * (sss.x + sss.y);

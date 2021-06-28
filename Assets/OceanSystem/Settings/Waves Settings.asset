@@ -15,7 +15,13 @@ MonoBehaviour:
   timeScale: 1
   depth: 1000
   chop: 1.61
-  foamDecayRate: 0.1
+  foam:
+    coverage: 0.727
+    underwater: 0.505
+    density: 8.4
+    persistence: 0.671
+    decayRate: 0.1
+    cascadesWeights: {x: 3, y: 1, z: 1, w: 0.5}
   local:
     energySpectrum: 0
     windSpeed: 7.1
@@ -36,4 +42,4 @@ MonoBehaviour:
     windDirection: 88
     alignment: 1
     extraAlignment: 0.8
-  showGraph: 0
+  spectrumPlot: 0
