@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace OceanSystem
 {
-    [CustomEditor(typeof(OceanRendererFeature))]
+    [CustomEditor(typeof(OceanRenderer))]
     public class OceanRenderingSettingsPropertyDrawer : Editor
     {
         SerializedProperty settings;

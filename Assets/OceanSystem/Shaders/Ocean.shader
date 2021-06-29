@@ -199,9 +199,12 @@ Shader "Ocean/Ocean"
                 float3 oceanColor;
 
                 #ifdef OCEAN_UNDERWATER_ENABLED
-                bool underwater = FACING < 0
-                    || SAMPLE_TEXTURE2D(Ocean_CameraSubmergenceTexture, samplerOcean_CameraSubmergenceTexture,
-                        IN.positionNDC.xy / IN.positionNDC.w).r < 0.3;
+                float submergence = SAMPLE_TEXTURE2D(Ocean_CameraSubmergenceTexture, 
+                    samplerOcean_CameraSubmergenceTexture,
+                    IN.positionNDC.xy / IN.positionNDC.w).r;
+                clip(-(FACING < 0 && submergence > 0.6));
+
+                bool underwater = FACING < 0 || submergence < 0.3;
                 if (!underwater && backface)
                 {
                     li.normal = reflect(li.normal, li.viewDir);

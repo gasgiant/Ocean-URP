@@ -15,42 +15,11 @@ Shader "Ocean/UnderwaterEffect"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareOpaqueTexture.hlsl"
+        #include "FullscreenProceduralVert.hlsl"
         #include "../OceanSimulationSampling.hlsl"
         #include "../OceanGlobals.hlsl"
         //#include "../OceanShoreMap.hlsl"
         #include "../OceanVolume.hlsl"
-
-        struct Attributes
-        {
-            uint vertexID       : SV_VertexID;
-        };
-
-        struct Varyings
-        {
-            float4 positionCS  : SV_POSITION;
-            float2 uv           : TEXCOORD0;
-        };
-
-        //Varyings Vert(Attributes IN)
-        //{
-        //    Varyings OUT;
-        //    OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
-        //    OUT.uv = IN.uv;
-        //    return OUT;
-        //}
-
-        Varyings FullscreenVert(Attributes IN)
-        {
-            Varyings OUT;
-            UNITY_SETUP_INSTANCE_ID(IN);
-            UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(OUT);
-
-            //UNITY_NEAR_CLIP_VALUE
-            OUT.positionCS = GetQuadVertexPosition(IN.vertexID);
-            OUT.positionCS.xy = OUT.positionCS.xy * float2(2.0f, -2.0f) + float2(-1.0f, 1.0f); //convert to -1..1
-            OUT.uv = GetQuadTexCoord(IN.vertexID);
-            return OUT;
-        }
 
         float SubmergenceFrag(Varyings IN) : SV_Target
         {
