@@ -7,18 +7,30 @@ namespace OceanSystem
     {
         [SerializeField] private OceanRenderingSettings settings;
 
-        RenderOceanPass renderOceanPass;
+        RenderOceanGeometryPass geometryPass;
+        RenderOceanSubmergencePass submergencePass;
+        RenderOceanUnderwaterEffectPass underwaterPass;
+        RenderOceanSkyMapPass skyMapPass;
 
         public override void Create()
         {
-            renderOceanPass = new RenderOceanPass(settings);
+            submergencePass = new RenderOceanSubmergencePass(settings);
+            underwaterPass = new RenderOceanUnderwaterEffectPass(settings);
+            skyMapPass = new RenderOceanSkyMapPass(settings);
+            geometryPass = new RenderOceanGeometryPass(settings);
             name = "Ocean";
         }
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            renderOceanPass.renderPassEvent = RenderPassEvent.BeforeRenderingTransparents;
-            renderer.EnqueuePass(renderOceanPass);
+            submergencePass.renderPassEvent = RenderPassEvent.BeforeRenderingTransparents;
+            renderer.EnqueuePass(submergencePass);
+            //underwaterPass.renderPassEvent = RenderPassEvent.BeforeRenderingTransparents;
+            //renderer.EnqueuePass(underwaterPass);
+            //skyMapPass.renderPassEvent = RenderPassEvent.BeforeRenderingTransparents;
+            //renderer.EnqueuePass(skyMapPass);
+            geometryPass.renderPassEvent = RenderPassEvent.BeforeRenderingTransparents;
+            renderer.EnqueuePass(geometryPass);
         }
 
         private void OnValidate()

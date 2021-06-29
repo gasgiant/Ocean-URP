@@ -12,9 +12,11 @@ Shader "Ocean/StereographicSky"
 
         Pass
         {
+            Name "Stereographic Sky"
+
             HLSLPROGRAM
             #pragma vertex Vert
-            #pragma fragment Frag
+            #pragma fragment StereographicSkyFrag
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "../OceanGlobals.hlsl"
@@ -22,13 +24,13 @@ Shader "Ocean/StereographicSky"
             struct Attributes
             {
                 float4 positionOS   : POSITION;
-                float2 uv : TEXCOORD0;
+                float2 uv           : TEXCOORD0;
             };
 
             struct Varyings
             {
                 float4 positionHCS  : SV_POSITION;
-                float2 uv : TEXCOORD0;
+                float2 uv           : TEXCOORD0;
             };
 
             Varyings Vert(Attributes IN)
@@ -39,7 +41,7 @@ Shader "Ocean/StereographicSky"
                 return OUT;
             }
 
-            half4 Frag(Varyings IN, float FACING : VFACE) : SV_Target
+            half4 StereographicSkyFrag(Varyings IN, float FACING : VFACE) : SV_Target
             {
                 float2 xy = (IN.uv - 0.5) * 2 * 1.1;
                 float sqrs = dot(xy, xy);

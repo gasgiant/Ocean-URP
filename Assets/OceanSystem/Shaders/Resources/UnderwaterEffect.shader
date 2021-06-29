@@ -9,6 +9,8 @@ Shader "Ocean/UnderwaterEffect"
         Tags { "RenderPipeline" = "UniversalPipeline" }
 
         HLSLINCLUDE
+        #pragma exclude_renderers gles
+
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
@@ -20,25 +22,37 @@ Shader "Ocean/UnderwaterEffect"
 
         struct Attributes
         {
-            float4 positionOS   : POSITION;
-            float2 uv : TEXCOORD0;
+            uint vertexID       : SV_VertexID;
         };
 
         struct Varyings
         {
-            float4 positionHCS  : SV_POSITION;
-            float2 uv : TEXCOORD0;
+            float4 positionCS  : SV_POSITION;
+            float2 uv           : TEXCOORD0;
         };
 
-        Varyings Vert(Attributes IN)
+        //Varyings Vert(Attributes IN)
+        //{
+        //    Varyings OUT;
+        //    OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
+        //    OUT.uv = IN.uv;
+        //    return OUT;
+        //}
+
+        Varyings FullscreenVert(Attributes IN)
         {
             Varyings OUT;
-            OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
-            OUT.uv = IN.uv;
+            UNITY_SETUP_INSTANCE_ID(IN);
+            UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(OUT);
+
+            //UNITY_NEAR_CLIP_VALUE
+            OUT.positionCS = GetQuadVertexPosition(IN.vertexID);
+            OUT.positionCS.xy = OUT.positionCS.xy * float2(2.0f, -2.0f) + float2(-1.0f, 1.0f); //convert to -1..1
+            OUT.uv = GetQuadTexCoord(IN.vertexID);
             return OUT;
         }
 
-        float SubmergenceFrag(Attributes IN) : SV_Target
+        float SubmergenceFrag(Varyings IN) : SV_Target
         {
             float4 pos = mul(Ocean_CameraToWorld,
                 float4((IN.uv - 0.5) * Ocean_CameraNearPlaneParams.xy, -Ocean_CameraNearPlaneParams.z, 1));
@@ -46,7 +60,7 @@ Shader "Ocean/UnderwaterEffect"
             return pos.y - waterHeight + 0.5;
         }
 
-        half4 PostEffectFrag(Varyings IN, float FACING : VFACE) : SV_Target
+        half4 UnderwaterPostEffectFrag(Varyings IN, float FACING : VFACE) : SV_Target
         {
             float3 backgroundColor = SampleSceneColor(IN.uv);
             float rawDepth = SampleSceneDepth(IN.uv);
@@ -80,8 +94,9 @@ Shader "Ocean/UnderwaterEffect"
             Cull Off ZWrite Off ZTest Always
 
             HLSLPROGRAM
-            #pragma vertex Vert
+            #pragma vertex FullscreenVert
             #pragma fragment SubmergenceFrag
+            #pragma target 3.5
             #pragma multi_compile _ OCEAN_THREE_CASCADES OCEAN_FOUR_CASCADES
             ENDHLSL
         }
@@ -92,8 +107,9 @@ Shader "Ocean/UnderwaterEffect"
             Cull Off ZWrite Off ZTest Always
 
             HLSLPROGRAM
-            #pragma vertex Vert
-            #pragma fragment PostEffectFrag
+            #pragma vertex FullscreenVert
+            #pragma fragment UnderwaterPostEffectFrag
+            #pragma target 3.5
             ENDHLSL
         }
     }

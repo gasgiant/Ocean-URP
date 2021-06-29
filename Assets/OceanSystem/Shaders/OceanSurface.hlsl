@@ -1,6 +1,7 @@
 ﻿#if !defined(OCEAN_SURFACE_INCLUDED)
 #define OCEAN_SURFACE_INCLUDED
 
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareOpaqueTexture.hlsl"
 float4 _CameraDepthTexture_TexelSize;
@@ -21,9 +22,8 @@ struct LightingInput
 	float4 shore;
 	float4 positionNDC;
     float viewDepth;
-	float3 lightDir;
-	float3 lightColor;
 	float3 cameraPos;
+    Light mainLight;
 };
 
 struct BrunetonInputs
@@ -73,14 +73,14 @@ float ShlickFresnel(float3 viewDir, float3 normal)
 
 float3 Specular(LightingInput li, BrunetonInputs bi)
 {
-	float3 specular = li.lightColor * ReflectedSunRadiance(
+    float radiance = li.mainLight.shadowAttenuation * ReflectedSunRadiance(
 		bi.lightDir_windSpace,
 		bi.viewDir_windSpace,
 		bi.normal_windSpace,
 		bi.tangentX_windSpace,
 		bi.tangentY_windSpace,
 		max(1e-4, bi.slopeVarianceSquared + _SpecularMinRoughness * 0.2));
-	return specular * _SpecularStrength;
+    return radiance * _SpecularStrength * li.mainLight.color;
 }
 
 float3 Reflection(LightingInput li, BrunetonInputs bi)
@@ -108,7 +108,7 @@ float3 ReflectionBackface(LightingInput li)
 	normal.xz *= 0.2;
 	normal = normalize(normal);
 	float3 dir = reflect(li.viewDir, normal);
-	float3 volume = UnderwaterFogColor(dir, li.lightDir, 0);
+    float3 volume = UnderwaterFogColor(dir, li.mainLight.direction, 0);
 	return volume;
 	
 	//#ifdef PLANAR_REFLECTIONS_ENABLED
@@ -124,7 +124,7 @@ float2 SubsurfaceScatteringFactor(LightingInput li)
 {
 	float normalFactor = saturate(dot(li.normal, li.viewDir) + 1 - _SssNormalStrength);
 	float heightFactor = saturate(li.positionWS.y * _SssHeightMult + _SssHeight);
-	float sun = _SssSunStrength * normalFactor * pow(saturate(dot(li.lightDir, -li.viewDir)), min(50, 1 / _SssSpread));
+    float sun = _SssSunStrength * normalFactor * pow(saturate(dot(li.mainLight.direction, -li.viewDir)), min(50, 1 / _SssSpread));
     float environment = _SssEnvironmentStrength * normalFactor * heightFactor * saturate(1 - li.viewDir.y);
 	float2 factor = float2(sun, environment);
 	factor *= _SssFadeDistance / (_SssFadeDistance + li.viewDist);
@@ -152,8 +152,8 @@ float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
 	float3 color = FogColor(0 * (1 - abs(li.viewDir.y)) * (1 - abs(li.viewDir.y)) * depthScale);
 	float3 sssColor = SssColor(depthScale);
 	color += sssColor * (sss.x + sss.y);
-    float ndotl = saturate(dot(li.normal, li.lightDir));
-    color += li.lightColor * (ndotl * 0.8 + 0.2f) * Ocean_DiffuseColor;
+    float ndotl = saturate(dot(li.normal, li.mainLight.direction));
+    color += (ndotl * 0.8 + 0.2f) * li.mainLight.color  * Ocean_DiffuseColor;
 	
 	#ifdef OCEAN_TRANSPARENCY_ENABLED
 	float3 refractionCoords = RefractionCoords(_RefractionStrength, li.positionNDC, li.viewDepth, li.normal);
@@ -167,7 +167,7 @@ float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
 	#if defined(WAVES_FOAM_ENABLED) || defined(CONTACT_FOAM_ENABLED)
 	float underwaterFoamVisibility = 20 / (20 + li.viewDist);
 	float3 tint = TintColor(0.8);
-	float3 light =  _WhitecapsColor.rgb * 0.3 * li.lightColor;
+	float3 light =  _WhitecapsColor.rgb * 0.3 * li.mainLight.color;
 	float3 underwaterFoamColor = foamData.tex * _WhitecapsColor.rgb 
 		* (OceanEnvironmentDiffuse(float3(0, 1, 0)) * tint + light * tint) * tint;
 	color = lerp(color, underwaterFoamColor, foamData.coverage.y * underwaterFoamVisibility);
@@ -187,10 +187,11 @@ float3 RefractionBackface(LightingInput li, float3 refractionDir)
 
 float4 WhiteCaps(LightingInput li, FoamData foamData, float sss)
 {
-	float3 color = foamData.tex * _WhitecapsColor.rgb 
-		* li.lightColor * saturate(dot(foamData.normal, li.lightDir));
+    float3 color = saturate(dot(foamData.normal, li.mainLight.direction))
+	* foamData.tex  * li.mainLight.shadowAttenuation 
+	* li.mainLight.color * _WhitecapsColor.rgb;
 	color += OceanEnvironmentDiffuse(foamData.normal);
-	color += sss.x * li.lightColor;
+    color += sss.x * li.mainLight.color;
 	return float4(color, foamData.coverage.x);
 }
 
@@ -211,7 +212,7 @@ float3 GetOceanColor(LightingInput li, FoamData foamData)
 	float3 tangentX = cross(tangentY, li.normal);
     
 	BrunetonInputs bi;
-	bi.lightDir_windSpace = mul(Ocean_WorldToWindSpace, float4(li.lightDir, 0)).xyz;
+	bi.lightDir_windSpace = mul(Ocean_WorldToWindSpace, float4(li.mainLight.direction, 0)).xyz;
     bi.viewDir_windSpace = mul(Ocean_WorldToWindSpace, float4(li.viewDir, 0)).xyz;
     bi.normal_windSpace = mul(Ocean_WorldToWindSpace, float4(li.normal, 0)).xyz;
     bi.tangentX_windSpace = mul(Ocean_WorldToWindSpace, float4(tangentX, 0)).xyz;
@@ -245,7 +246,7 @@ float3 GetOceanColorUnderwater(LightingInput li)
 	float3 refracted = RefractionBackface(li, refractionDir);
 	float3 reflected = ReflectionBackface(li);
 	float3 color = lerp(refracted, reflected, fresnel);
-	float3 volume = UnderwaterFogColor(li.viewDir, li.lightDir, li.cameraPos.y);
+	float3 volume = UnderwaterFogColor(li.viewDir, li.mainLight.direction, li.cameraPos.y);
 	color = ColorThroughWater(color, volume, li.viewDist - Ocean_CameraNearPlaneParams.z, 0);
 	return color;
 }

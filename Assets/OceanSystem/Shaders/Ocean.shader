@@ -87,8 +87,8 @@ Shader "Ocean/Ocean"
             ZWrite On
 
             HLSLPROGRAM
-            #pragma vertex Vert
-            #pragma fragment Frag
+            #pragma vertex OceanMainVert
+            #pragma fragment OceanMainFrag
 
             #pragma multi_compile _ OCEAN_THREE_CASCADES OCEAN_FOUR_CASCADES
             #pragma multi_compile _ OCEAN_UNDERWATER_ENABLED
@@ -112,22 +112,22 @@ Shader "Ocean/Ocean"
             struct Attributes
             {
                 float4 positionOS   : POSITION;
-                float2 uv : TEXCOORD0;
+                float2 uv           : TEXCOORD0;
             };
 
             struct Varyings
             {
                 float4 positionHCS  : SV_POSITION;
-                float3 positionWS : TEXCOORD0;
-                float viewDepth : TEXCOORD1;
-                float4 positionNDC: TEXCOORD2;
-                float2 worldXZ : TEXCOORD3;
+                float3 positionWS   : TEXCOORD0;
+                float viewDepth     : TEXCOORD1;
+                float4 positionNDC  : TEXCOORD2;
+                float2 worldXZ      : TEXCOORD3;
                 #ifdef REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR
-                float4 shadowCoord : TEXCOORD4;
+                float4 shadowCoord  : TEXCOORD4;
                 #endif
             };
 
-            Varyings Vert(Attributes IN)
+            Varyings OceanMainVert(Attributes IN)
             {
                 Varyings OUT;
 
@@ -150,7 +150,7 @@ Shader "Ocean/Ocean"
                 return OUT;
             }
 
-            half4 Frag(Varyings IN, float FACING : VFACE) : SV_Target
+            half4 OceanMainFrag(Varyings IN, float FACING : VFACE) : SV_Target
             {
                 float3 viewDir = _WorldSpaceCameraPos - IN.positionWS;
                 float viewDist = length(viewDir);
@@ -173,7 +173,7 @@ Shader "Ocean/Ocean"
                 fi.normal = normal;
                 FoamData foamData = GetFoamData(fi);
 
-                float4 shadowCoord;
+                float4 shadowCoord = 0;
                 #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
                     shadowCoord = IN.shadowCoord;
                 #elif defined(MAIN_LIGHT_CALCULATE_SHADOWS)
@@ -192,9 +192,8 @@ Shader "Ocean/Ocean"
                 li.shore = 0;
                 li.positionNDC = IN.positionNDC;
                 li.viewDepth = IN.viewDepth;
-                li.lightDir = mainLight.direction;
-                li.lightColor = mainLight.color * mainLight.shadowAttenuation;
                 li.cameraPos = _WorldSpaceCameraPos;
+                li.mainLight = mainLight;
 
                 bool backface = dot(normal, viewDir) < 0;
                 float3 oceanColor;
@@ -223,7 +222,21 @@ Shader "Ocean/Ocean"
 
                 return float4(oceanColor, 1);
             }
-    ENDHLSL
-}
+            ENDHLSL
+        }
+
+        Pass
+        {
+            Tags { "LightMode" = "OceanDepthOnly" }
+            Cull[_Cull]
+            ZWrite On
+        
+            HLSLPROGRAM
+            #pragma vertex OceanDepthOnlyVert
+            #pragma fragment OceanDepthOnlyFrag
+            #pragma multi_compile _ OCEAN_THREE_CASCADES OCEAN_FOUR_CASCADES
+            #include "OceanDepthOnlyPass.hlsl"
+            ENDHLSL
+        }
     }
 }
