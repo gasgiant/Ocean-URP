@@ -40,7 +40,7 @@ Shader "Ocean/UnderwaterEffect"
             float viewDist = length(positionVS);
             viewDir /= viewDist;
             float4 positionWS = mul(Ocean_CameraToWorld, positionVS);
-
+            //UNITY_NEAR_CLIP_VALUE
             float submergence = -SAMPLE_TEXTURE2D(Ocean_CameraSubmergenceTexture,
                 samplerOcean_CameraSubmergenceTexture, IN.uv).r;
             float safetyMargin = 0.05 * saturate((viewDir.y * 1.3 + 1) * 0.5);

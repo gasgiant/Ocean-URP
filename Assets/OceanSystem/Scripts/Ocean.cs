@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -90,7 +89,7 @@ namespace OceanSystem
                 if (meshObject)
                     DestroyImmediate(meshObject);
             }
-        }
+        } 
 #endif
 
         private void ReleaseSimulation()

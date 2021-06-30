@@ -149,7 +149,7 @@ namespace OceanSystem
 			EditorGUI.indentLevel += 1;
 			editor.ShaderProperty(downwardReflectionsRadius, MakeLabel(downwardReflectionsRadius));
 			editor.ShaderProperty(downwardReflectionsSharpness, MakeLabel(downwardReflectionsSharpness));
-			DrawSkyMapPreview();
+			//DrawSkyMapPreview();
 			Shader.SetGlobalVector(OceanShaderPropIds.DownwardReflectionsColorID, targetMaterial.GetVector(OceanShaderPropIds.DownwardReflectionsColorID));
 			Shader.SetGlobalFloat(OceanShaderPropIds.DownwardReflectionsRadiusID, targetMaterial.GetFloat(OceanShaderPropIds.DownwardReflectionsRadiusID));
 			Shader.SetGlobalFloat(OceanShaderPropIds.DownwardReflectionsSharpnessID, targetMaterial.GetFloat(OceanShaderPropIds.DownwardReflectionsSharpnessID));

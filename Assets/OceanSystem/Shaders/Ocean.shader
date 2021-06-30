@@ -141,7 +141,7 @@ Shader "Ocean/Ocean"
 
                 float3 positionOS = TransformWorldToObject(output.positionWS);
                 VertexPositionInputs positionInputs = GetVertexPositionInputs(positionOS);
-                output.viewDepth = -positionInputs.positionVS.z - _ProjectionParams.y;
+                output.viewDepth = -positionInputs.positionVS.z;
                 output.positionNDC = positionInputs.positionNDC;
                 output.positionHCS = positionInputs.positionCS;
                 #ifdef REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR

@@ -55,7 +55,8 @@ float2 Coverage(float4x4 t, float4 mixWeights, float2 worldXZ, float bubblesTex)
 
 float ContactFoam(float4 positionNDC, float viewDepth, float2 worldXZ, float time)
 {
-    float depthDiff = SampleSceneDepth(positionNDC.xy / positionNDC.w) - viewDepth;
+    float depthDiff = LinearEyeDepth(SampleSceneDepth(positionNDC.xy / positionNDC.w), _ZBufferParams) 
+		- viewDepth;
     float contactTexture = SAMPLE_TEXTURE2D(_ContactFoamTexture, sampler_ContactFoamTexture,
 		worldXZ * 0.5 + 0.1 * Ocean_WindDirection * time).r;
 	contactTexture = saturate(1 - contactTexture);
