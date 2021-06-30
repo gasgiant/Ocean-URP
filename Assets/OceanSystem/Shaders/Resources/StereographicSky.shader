@@ -15,11 +15,11 @@ Shader "Ocean/StereographicSky"
             Name "Stereographic Sky"
 
             HLSLPROGRAM
-            #pragma vertex FullscreenVert
+            #pragma vertex BasicFullscreenVert
             #pragma fragment StereographicSkyFrag
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "FullscreenProceduralVert.hlsl"
+            #include "FullscreenVert.hlsl"
             #include "../OceanGlobals.hlsl"
 
             half4 StereographicSkyFrag(Varyings IN, float FACING : VFACE) : SV_Target
@@ -32,7 +32,7 @@ Shader "Ocean/StereographicSky"
                 col = lerp(col, Ocean_DownwardReflectionsColor.rgb, t * Ocean_DownwardReflectionsColor.w);
                 return float4(col, 1);
             }
-    ENDHLSL
-}
+            ENDHLSL
+        }
     }
 }

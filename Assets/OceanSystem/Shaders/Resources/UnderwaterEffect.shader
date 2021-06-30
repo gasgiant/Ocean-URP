@@ -15,7 +15,7 @@ Shader "Ocean/UnderwaterEffect"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareOpaqueTexture.hlsl"
-        #include "FullscreenProceduralVert.hlsl"
+        #include "FullscreenVert.hlsl"
         #include "../OceanSimulationSampling.hlsl"
         #include "../OceanGlobals.hlsl"
         //#include "../OceanShoreMap.hlsl"
@@ -63,7 +63,7 @@ Shader "Ocean/UnderwaterEffect"
             Cull Off ZWrite Off ZTest Always
 
             HLSLPROGRAM
-            #pragma vertex FullscreenVert
+            #pragma vertex ProceduralFullscreenVert
             #pragma fragment SubmergenceFrag
             #pragma target 3.5
             #pragma multi_compile _ OCEAN_THREE_CASCADES OCEAN_FOUR_CASCADES
@@ -76,7 +76,7 @@ Shader "Ocean/UnderwaterEffect"
             Cull Off ZWrite Off ZTest Always
 
             HLSLPROGRAM
-            #pragma vertex FullscreenVert
+            #pragma vertex ProceduralFullscreenVert
             #pragma fragment UnderwaterPostEffectFrag
             #pragma target 3.5
             ENDHLSL

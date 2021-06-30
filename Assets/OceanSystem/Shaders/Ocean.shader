@@ -127,47 +127,47 @@ Shader "Ocean/Ocean"
                 #endif
             };
 
-            Varyings OceanMainVert(Attributes IN)
+            Varyings OceanMainVert(Attributes input)
             {
-                Varyings OUT;
+                Varyings output;
 
-                OUT.positionWS = ClipMapVertex(IN.positionOS.xyz, IN.uv);
-                OUT.worldXZ = OUT.positionWS.xz;
+                output.positionWS = ClipMapVertex(input.positionOS.xyz, input.uv);
+                output.worldXZ = output.positionWS.xz;
 
-                float viewDist = length(OUT.positionWS - _WorldSpaceCameraPos);
+                float viewDist = length(output.positionWS - _WorldSpaceCameraPos);
 
                 float4 weights = LodWeights(viewDist, _CascadesFadeDist);
-                OUT.positionWS += SampleDisplacement(OUT.worldXZ, weights, 1);
+                output.positionWS += SampleDisplacement(output.worldXZ, weights, 1);
 
-                float3 positionOS = TransformWorldToObject(OUT.positionWS);
-                VertexPositionInputs inputs = GetVertexPositionInputs(positionOS);
-                OUT.viewDepth = -inputs.positionVS.z - _ProjectionParams.y;
-                OUT.positionNDC = inputs.positionNDC;
-                OUT.positionHCS = inputs.positionCS;
+                float3 positionOS = TransformWorldToObject(output.positionWS);
+                VertexPositionInputs positionInputs = GetVertexPositionInputs(positionOS);
+                output.viewDepth = -positionInputs.positionVS.z - _ProjectionParams.y;
+                output.positionNDC = positionInputs.positionNDC;
+                output.positionHCS = positionInputs.positionCS;
                 #ifdef REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR
-                OUT.shadowCoord = GetShadowCoord(inputs);
+                output.shadowCoord = GetShadowCoord(inputs);
                 #endif
-                return OUT;
+                return output;
             }
 
-            half4 OceanMainFrag(Varyings IN, float FACING : VFACE) : SV_Target
+            half4 OceanMainFrag(Varyings input, float facing : VFACE) : SV_Target
             {
-                float3 viewDir = _WorldSpaceCameraPos - IN.positionWS;
+                float3 viewDir = _WorldSpaceCameraPos - input.positionWS;
                 float viewDist = length(viewDir);
                 viewDir = viewDir / viewDist;
 
                 float4 lodWeights = LodWeights(viewDist, _CascadesFadeDist);
                 float4 shoreWeights = 1;// ShoreModulation(i.shore.x);
-                float4x4 derivatives = SampleDerivatives(IN.worldXZ, lodWeights * shoreWeights);
+                float4x4 derivatives = SampleDerivatives(input.worldXZ, lodWeights * shoreWeights);
                 float3 normal = NormalFromDerivatives(derivatives, 1);
 
                 FoamInput fi;
                 fi.derivatives = derivatives;
-                fi.worldXZ = IN.worldXZ;
+                fi.worldXZ = input.worldXZ;
                 fi.lodWeights = lodWeights;
                 fi.shoreWeights = shoreWeights;
-                fi.positionNDC = IN.positionNDC;
-                fi.viewDepth = IN.viewDepth;
+                fi.positionNDC = input.positionNDC;
+                fi.viewDepth = input.viewDepth;
                 fi.time = _Time.y;
                 fi.viewDir = viewDir;
                 fi.normal = normal;
@@ -175,9 +175,9 @@ Shader "Ocean/Ocean"
 
                 float4 shadowCoord = 0;
                 #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
-                    shadowCoord = IN.shadowCoord;
+                    shadowCoord = input.shadowCoord;
                 #elif defined(MAIN_LIGHT_CALCULATE_SHADOWS)
-                    shadowCoord = TransformWorldToShadowCoord(IN.positionWS);
+                    shadowCoord = TransformWorldToShadowCoord(input.positionWS);
                 #else
                     shadowCoord = float4(0, 0, 0, 0);
                 #endif
@@ -188,10 +188,10 @@ Shader "Ocean/Ocean"
                 li.normal = normal;
                 li.viewDir = viewDir;
                 li.viewDist = viewDist;
-                li.positionWS = IN.positionWS;
+                li.positionWS = input.positionWS;
                 li.shore = 0;
-                li.positionNDC = IN.positionNDC;
-                li.viewDepth = IN.viewDepth;
+                li.positionNDC = input.positionNDC;
+                li.viewDepth = input.viewDepth;
                 li.cameraPos = _WorldSpaceCameraPos;
                 li.mainLight = mainLight;
 
@@ -201,10 +201,10 @@ Shader "Ocean/Ocean"
                 #ifdef OCEAN_UNDERWATER_ENABLED
                 float submergence = SAMPLE_TEXTURE2D(Ocean_CameraSubmergenceTexture, 
                     samplerOcean_CameraSubmergenceTexture,
-                    IN.positionNDC.xy / IN.positionNDC.w).r;
-                clip(-(FACING < 0 && submergence > 0.6));
+                    input.positionNDC.xy / input.positionNDC.w).r;
+                clip(-(facing < 0 && submergence > 0.6));
 
-                bool underwater = FACING < 0 || submergence < 0.3;
+                bool underwater = facing < 0 || submergence < 0.3;
                 if (!underwater && backface)
                 {
                     li.normal = reflect(li.normal, li.viewDir);

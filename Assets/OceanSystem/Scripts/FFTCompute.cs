@@ -12,17 +12,16 @@ namespace OceanSystem
 
         private static readonly Dictionary<int, RenderTexture> precomputedDatas = new Dictionary<int, RenderTexture>();
         private static ComputeShader FftShader;
-        private static CommandBuffer Cbuff;
 
-        public static void FFT2D(RenderTexture input, RenderTexture buffer, bool outputToInput = false)
+        public static void FFT2D(CommandBuffer cmd, RenderTexture input, RenderTexture buffer, bool outputToInput = false)
         {
-            DoFFT(false, input, buffer, outputToInput, false, false);
+            DoFFT(cmd, false, input, buffer, outputToInput, false, false);
         }
 
-        public static void IFFT2D(RenderTexture input, RenderTexture buffer, bool outputToInput = false,
+        public static void IFFT2D(CommandBuffer cmd, RenderTexture input, RenderTexture buffer, bool outputToInput = false,
             bool scale = true, bool permute = false)
         {
-            DoFFT(true, input, buffer, outputToInput, scale, permute);
+            DoFFT(cmd, true, input, buffer, outputToInput, scale, permute);
         }
 
         public static void ReleasePrecomputedTextures()
@@ -35,7 +34,7 @@ namespace OceanSystem
             precomputedDatas.Clear();
         }
 
-        private static void DoFFT(bool inverse, RenderTexture input, RenderTexture buffer, bool outputToInput = false,
+        private static void DoFFT(CommandBuffer cmd, bool inverse, RenderTexture input, RenderTexture buffer, bool outputToInput = false,
             bool scale = true, bool permute = false)
         {
             bool dimensionsEqual = input.width == buffer.width
@@ -60,70 +59,68 @@ namespace OceanSystem
                 return;
 
             ComputeShader fftShader = GetFftShader();
-            CommandBuffer cbuff = GetCommandBuffer();
-            cbuff.Clear();
 
-            cbuff.SetComputeIntParam(fftShader, TargetsCountID, input.volumeDepth);
+            cmd.SetComputeIntParam(fftShader, TargetsCountID, input.volumeDepth);
 
             if (inverse)
-                cbuff.EnableShaderKeyword("FFT_INVERSE");
+                cmd.EnableShaderKeyword("FFT_INVERSE");
             else
-                cbuff.DisableShaderKeyword("FFT_INVERSE");
+                cmd.DisableShaderKeyword("FFT_INVERSE");
 
             bool pingPong = false;
-            cbuff.SetComputeTextureParam(fftShader, FftStepKernel, PrecomputedDataID, GetPrecomputedData(size));
-            cbuff.SetComputeTextureParam(fftShader, FftStepKernel, Buffer0ID, input);
-            cbuff.SetComputeTextureParam(fftShader, FftStepKernel, Buffer1ID, buffer);
+            cmd.SetComputeTextureParam(fftShader, FftStepKernel, PrecomputedDataID, GetPrecomputedData(size));
+            cmd.SetComputeTextureParam(fftShader, FftStepKernel, Buffer0ID, input);
+            cmd.SetComputeTextureParam(fftShader, FftStepKernel, Buffer1ID, buffer);
 
-            cbuff.DisableShaderKeyword("FFT_DIRECTION");
+            cmd.DisableShaderKeyword("FFT_DIRECTION");
             for (int i = 0; i < logSize; i++)
             {
                 pingPong = !pingPong;
-                cbuff.SetComputeIntParam(fftShader, StepID, i);
+                cmd.SetComputeIntParam(fftShader, StepID, i);
                 if (pingPong)
-                    cbuff.EnableShaderKeyword("FFT_PING_PONG");
+                    cmd.EnableShaderKeyword("FFT_PING_PONG");
                 else
-                    cbuff.DisableShaderKeyword("FFT_PING_PONG");
-                cbuff.DispatchCompute(fftShader, FftStepKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+                    cmd.DisableShaderKeyword("FFT_PING_PONG");
+                cmd.DispatchCompute(fftShader, FftStepKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
             }
 
-            cbuff.EnableShaderKeyword("FFT_DIRECTION");
+            cmd.EnableShaderKeyword("FFT_DIRECTION");
             for (int i = 0; i < logSize; i++)
             {
                 pingPong = !pingPong;
-                cbuff.SetComputeIntParam(fftShader, StepID, i);
+                cmd.SetComputeIntParam(fftShader, StepID, i);
                 if (pingPong)
-                    cbuff.EnableShaderKeyword("FFT_PING_PONG");
+                    cmd.EnableShaderKeyword("FFT_PING_PONG");
                 else
-                    cbuff.DisableShaderKeyword("FFT_PING_PONG");
-                cbuff.DispatchCompute(fftShader, FftStepKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+                    cmd.DisableShaderKeyword("FFT_PING_PONG");
+                cmd.DispatchCompute(fftShader, FftStepKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
             }
 
             if (pingPong && outputToInput)
             {
-                cbuff.CopyTexture(buffer, input);
+                cmd.CopyTexture(buffer, input);
             }
 
             if (!pingPong && !outputToInput)
             {
-                cbuff.CopyTexture(input, buffer);
+                cmd.CopyTexture(input, buffer);
             }
 
             if (permute)
             {
-                cbuff.SetComputeIntParam(fftShader, SizeID, size);
-                cbuff.SetComputeTextureParam(fftShader, PermuteKernel, Buffer0ID, outputToInput ? input : buffer);
-                cbuff.DispatchCompute(fftShader, PermuteKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+                cmd.SetComputeIntParam(fftShader, SizeID, size);
+                cmd.SetComputeTextureParam(fftShader, PermuteKernel, Buffer0ID, outputToInput ? input : buffer);
+                cmd.DispatchCompute(fftShader, PermuteKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
             }
 
             if (scale)
             {
-                cbuff.SetComputeIntParam(fftShader, SizeID, size);
-                cbuff.SetComputeTextureParam(fftShader, ScaleKernel, Buffer0ID, outputToInput ? input : buffer);
-                cbuff.DispatchCompute(fftShader, ScaleKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+                cmd.SetComputeIntParam(fftShader, SizeID, size);
+                cmd.SetComputeTextureParam(fftShader, ScaleKernel, Buffer0ID, outputToInput ? input : buffer);
+                cmd.DispatchCompute(fftShader, ScaleKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
             }
 
-            Graphics.ExecuteCommandBuffer(cbuff);
+            Graphics.ExecuteCommandBuffer(cmd);
         }
 
         private static ComputeShader GetFftShader()
@@ -138,17 +135,6 @@ namespace OceanSystem
             }
 
             return FftShader;
-        }
-
-        private static CommandBuffer GetCommandBuffer()
-        {
-            if (Cbuff == null)
-            {
-                Cbuff = new CommandBuffer();
-                Cbuff.name = "FFT";
-            }
-
-            return Cbuff;
         }
 
         private static RenderTexture GetPrecomputedData(int size)

@@ -147,18 +147,12 @@ namespace OceanSystem
 
 			EditorGUILayout.LabelField("Downward Reflections Mask", EditorStyles.boldLabel);
 			EditorGUI.indentLevel += 1;
+			editor.ShaderProperty(downwardReflectionsRadius, MakeLabel(downwardReflectionsRadius));
+			editor.ShaderProperty(downwardReflectionsSharpness, MakeLabel(downwardReflectionsSharpness));
+			DrawSkyMapPreview();
 			Shader.SetGlobalVector(OceanShaderPropIds.DownwardReflectionsColorID, targetMaterial.GetVector(OceanShaderPropIds.DownwardReflectionsColorID));
 			Shader.SetGlobalFloat(OceanShaderPropIds.DownwardReflectionsRadiusID, targetMaterial.GetFloat(OceanShaderPropIds.DownwardReflectionsRadiusID));
 			Shader.SetGlobalFloat(OceanShaderPropIds.DownwardReflectionsSharpnessID, targetMaterial.GetFloat(OceanShaderPropIds.DownwardReflectionsSharpnessID));
-			editor.ShaderProperty(downwardReflectionsRadius, MakeLabel(downwardReflectionsRadius));
-			editor.ShaderProperty(downwardReflectionsSharpness, MakeLabel(downwardReflectionsSharpness));
-			Rect skyPreviewRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(50));
-			Rect skyPreviewLabelRect = skyPreviewRect;
-			skyPreviewLabelRect.height = EditorGUIUtility.singleLineHeight;
-			EditorGUI.LabelField(skyPreviewLabelRect, "Preview");
-			skyPreviewRect.x += EditorGUIUtility.labelWidth;
-			skyPreviewRect.width = skyPreviewRect.height;
-			EditorGUI.DrawPreviewTexture(skyPreviewRect, EditorGUIUtility.whiteTexture, skyMapMaterial);
 			EditorGUI.indentLevel -= 1;
 			EditorGUILayout.Space();
 
@@ -233,7 +227,18 @@ namespace OceanSystem
 			EditorGUILayout.EndFoldoutHeaderGroup();
 		}
 
-		Gradient GetGradient(int[] propIDs)
+		private void DrawSkyMapPreview()
+        {
+			Rect skyPreviewRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(50));
+			Rect skyPreviewLabelRect = skyPreviewRect;
+			skyPreviewLabelRect.height = EditorGUIUtility.singleLineHeight;
+			EditorGUI.LabelField(skyPreviewLabelRect, "Preview");
+			skyPreviewRect.x += EditorGUIUtility.labelWidth;
+			skyPreviewRect.width = skyPreviewRect.height;
+			EditorGUI.DrawPreviewTexture(skyPreviewRect, EditorGUIUtility.whiteTexture, skyMapMaterial);
+		}
+
+		private Gradient GetGradient(int[] propIDs)
         {
 			Gradient grad = new Gradient();
 			Vector2 pars = targetMaterial.GetVector(propIDs[0]);
@@ -252,7 +257,7 @@ namespace OceanSystem
 			return grad;
 		}
 
-		void SetGradient(int[] propIDs, Gradient grad)
+		private void SetGradient(int[] propIDs, Gradient grad)
 		{
 			for (int i = 0; i < grad.colorKeys.Length; i++)
 			{

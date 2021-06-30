@@ -101,11 +101,11 @@ namespace OceanSystem
             if (settings.underwaterEffect)
             {
                 CommandBuffer cmd = CommandBufferPool.Get("Underwater Effect");
-                OceanRenderingUtils.DrawPreceduralFullscreenQuad(cmd, submergenceTarget,
+                RenderingUtils.DrawPreceduralFullscreenQuad(cmd, submergenceTarget,
                     RenderBufferLoadAction.DontCare, underwaterEffectMaterial, 0);
                 cmd.SetGlobalTexture(CameraSubmergenceTextureID, SubmergenceTargetID);
 
-                OceanRenderingUtils.DrawPreceduralFullscreenQuad(cmd, renderingData.cameraData.renderer.cameraColorTarget,
+                RenderingUtils.DrawPreceduralFullscreenQuad(cmd, renderingData.cameraData.renderer.cameraColorTarget,
                     RenderBufferLoadAction.Load, underwaterEffectMaterial, 1);
                 context.ExecuteCommandBuffer(cmd);
                 CommandBufferPool.Release(cmd);
@@ -156,8 +156,7 @@ namespace OceanSystem
 
         private void RenderSkyMap(CommandBuffer cmd)
         {
-            OceanRenderingUtils.DrawPreceduralFullscreenQuad(cmd, skyMap, 
-                RenderBufferLoadAction.DontCare, skyMapMaterial, 0);
+            Blit(cmd, (RenderTexture)null, skyMap, skyMapMaterial, 0);
             cmd.SetGlobalTexture(SkyMapID, skyMap);
             skyMapRendered = true;
         }
@@ -179,16 +178,6 @@ namespace OceanSystem
                 skyMap.anisoLevel = 9;
                 skyMap.Create();
             }
-        }
-    }
-
-    public static class OceanRenderingUtils
-    {
-        public static void DrawPreceduralFullscreenQuad(CommandBuffer cmd, RenderTargetIdentifier target,
-            RenderBufferLoadAction loadAction, Material material, int pass)
-        {
-            cmd.SetRenderTarget(target, loadAction, RenderBufferStoreAction.Store);
-            cmd.DrawProcedural(Matrix4x4.identity, material, pass, MeshTopology.Quads, 4, 1, null);
         }
     }
 }
