@@ -8,7 +8,6 @@ namespace OceanSystem
         public const float XMin = -1.5f;
         public const float XMax = 3.5f;
         private const int resolution = 128;
-        public Texture2D Ramp => ramp;
 
         [SerializeField]
         private Filter[] scaleFilters;
@@ -19,7 +18,7 @@ namespace OceanSystem
         private Color[] colors = new Color[resolution];
 
 #if UNITY_EDITOR
-        public WavesSettings DisplayWavesSettings;
+        public OceanWavesSettings DisplayWavesSettings;
         public bool showScale;
         public bool showChop;
 
@@ -36,11 +35,20 @@ namespace OceanSystem
                 if (chopFilters[i].width < Filter.MinWidth)
                     chopFilters[i].width = 0.5f;
             }
+
+            BakeRamp();
         }
 
 #endif
 
-        public void BakeRamp()
+        public Texture2D GetRamp()
+        {
+            if (ramp == null)
+                BakeRamp();
+            return ramp;
+        }
+
+        private void BakeRamp()
         {
             if (ramp == null || ramp.width != resolution)
             {

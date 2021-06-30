@@ -76,7 +76,7 @@ namespace OceanSystem
     }
 
     [CreateAssetMenu(fileName = "New Waves Settings", menuName = "Ocean/Waves Settings")]
-    public class WavesSettings : ScriptableObject
+    public class OceanWavesSettings : ScriptableObject
     {
         [Range(0, 1)]
         public float timeScale = 1;

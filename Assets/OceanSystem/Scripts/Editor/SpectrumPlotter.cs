@@ -41,7 +41,7 @@ namespace OceanSystem
             }
         }
 
-        public static void DrawSpectrumOnly(WavesSettings wavesSettings)
+        public static void DrawSpectrumOnly(OceanWavesSettings wavesSettings)
         {
             DrawSpectrum(wavesSettings);
         }
@@ -51,7 +51,7 @@ namespace OceanSystem
             DrawSpectrum(simulationSettings.DisplayWavesSettings, simulationSettings);
         }
 
-        public static void DrawSpectrumWithEqualizer(WavesSettings wavesSettings, Texture2D ramp, int channel, Color fill, Color line)
+        public static void DrawSpectrumWithEqualizer(OceanWavesSettings wavesSettings, Texture2D ramp, int channel, Color fill, Color line)
         {
             material.SetInt("equalizerChannel", channel);
             material.SetVector("rampFill", fill);
@@ -59,7 +59,7 @@ namespace OceanSystem
             DrawSpectrum(wavesSettings, null, ramp);
         }
 
-        static void DrawSpectrum(WavesSettings wavesSettings, OceanSimulationSettings simulationSettings = null, Texture2D ramp = null)
+        static void DrawSpectrum(OceanWavesSettings wavesSettings, OceanSimulationSettings simulationSettings = null, Texture2D ramp = null)
         {
             Rect space = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(150));
             Rect graphSpace = space;
@@ -108,7 +108,7 @@ namespace OceanSystem
             return rect.position.x + rect.width * graphX;
         }
 
-        static void SetSpectrumSettingsToMaterial(Material material, WavesSettings settings)
+        static void SetSpectrumSettingsToMaterial(Material material, OceanWavesSettings settings)
         {
             material.SetFloat("local_scale", settings.local.scale);
             material.SetInt("local_energySpectrum", (int)settings.local.energySpectrum);

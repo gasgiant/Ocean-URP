@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace OceanSystem
 {
-    [CustomEditor(typeof(WavesSettings))]
+    [CustomEditor(typeof(OceanWavesSettings))]
     [CanEditMultipleObjects]
     public class WavesSettingsEditor : Editor
     {
@@ -19,11 +19,11 @@ namespace OceanSystem
         SpectrumProperties localSpectrumProperties;
         SpectrumProperties swellSpectrumProperties;
 
-        WavesSettings wavesSettings;
+        OceanWavesSettings wavesSettings;
 
         private void OnEnable()
         {
-            wavesSettings = (WavesSettings)target;
+            wavesSettings = (OceanWavesSettings)target;
             ValidateSpectrums();
             FindProperties();
         }
@@ -40,7 +40,7 @@ namespace OceanSystem
         {
             serializedObject.Update();
             GUI.enabled = false;
-            EditorGUILayout.ObjectField("Script:", MonoScript.FromScriptableObject((WavesSettings)target), typeof(WavesSettings), false);
+            EditorGUILayout.ObjectField("Script:", MonoScript.FromScriptableObject((OceanWavesSettings)target), typeof(OceanWavesSettings), false);
             GUI.enabled = true;
 
             EditorGUILayout.PropertyField(spectrumPlot);

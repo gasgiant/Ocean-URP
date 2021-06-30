@@ -2,38 +2,36 @@
 
 public class GeoClipmap : MonoBehaviour
 {
-    [SerializeField] Transform viewer;
-    [SerializeField] float minMeshScale = 15;
+    [SerializeField] private Transform viewer;
+    [SerializeField] private float minMeshScale = 15;
     [Range(1, 10)]
-    [SerializeField] int clipMapLevels = 7;
+    [SerializeField] private int clipMapLevels = 7;
     [Range(16, 50)]
-    [SerializeField] int verticesDensity = 25;
+    [SerializeField] private int verticesDensity = 25;
 
-    const int overlap = 2;
-    readonly int viewerPositionID = Shader.PropertyToID("ClipMap_ViewerPosition");
-    readonly int scaleID = Shader.PropertyToID("ClipMap_Scale");
-    readonly int levelHalfSizeID = Shader.PropertyToID("ClipMap_LevelHalfSize");
+    private const int Overlap = 2;
 
+    public static class GlobalShaderVariables
+    {
+        public static readonly int ViewerPosition = Shader.PropertyToID("ClipMap_ViewerPosition");
+        public static readonly int Scale = Shader.PropertyToID("ClipMap_Scale");
+        public static readonly int LevelHalfSize = Shader.PropertyToID("ClipMap_LevelHalfSize");
+    }
 
     // ClipLevelHalfSize + 1 must be divisible by 4 for correct geomorphing
-    int ClipLevelHalfSize() => (verticesDensity + 1) * 4 - 1;
+    private int ClipLevelHalfSize() => (verticesDensity + 1) * 4 - 1;
 
-    int prevClipMapLevels;
-    int prevVerticesCount;
+    private int prevClipMapLevels;
+    private int prevVerticesCount;
 
-    MeshFilter clipmapMeshFilter;
-    MeshRenderer clipmapMeshRenderer;
-    bool instatntiated;
+    private MeshFilter clipmapMeshFilter;
+    private MeshRenderer clipmapMeshRenderer;
+    private bool instatntiated;
 
     public MeshRenderer InstantiateMesh(Material material)
     {
-        if (instatntiated)
-        {
-            Debug.LogError("Ocean mesh renderer already instantiated.");
-            return null;
-        }
         InstantiateMeshObject(material);
-        clipmapMeshFilter.mesh = CreateClipMapMesh(ClipLevelHalfSize());
+        clipmapMeshFilter.mesh = CreateClipMapMesh(ClipLevelHalfSize(), clipMapLevels);
         prevClipMapLevels = clipMapLevels;
         prevVerticesCount = verticesDensity;
         instatntiated = true;
@@ -47,21 +45,24 @@ public class GeoClipmap : MonoBehaviour
         if (prevClipMapLevels != clipMapLevels 
             || prevVerticesCount != verticesDensity)
         {
-            clipmapMeshFilter.mesh = CreateClipMapMesh(ClipLevelHalfSize());
+            clipmapMeshFilter.mesh = CreateClipMapMesh(ClipLevelHalfSize(), clipMapLevels);
             prevClipMapLevels = clipMapLevels;
             prevVerticesCount = verticesDensity;
         }
+
+        if (viewer == null)
+            viewer = Camera.main.transform;
 
         int pow = Mathf.FloorToInt(Mathf.Max(0,
             Mathf.Log(Mathf.Abs(viewer.position.y) / (2 * minMeshScale), 2) + 1));
         float meshScale = minMeshScale / ClipLevelHalfSize() * Mathf.Pow(2, pow);
 
-        Shader.SetGlobalFloat(scaleID, meshScale);
-        Shader.SetGlobalVector(viewerPositionID, viewer.position);
-        Shader.SetGlobalFloat(levelHalfSizeID, ClipLevelHalfSize());
+        Shader.SetGlobalVector(GlobalShaderVariables.ViewerPosition, viewer.position);
+        Shader.SetGlobalFloat(GlobalShaderVariables.Scale, meshScale);
+        Shader.SetGlobalFloat(GlobalShaderVariables.LevelHalfSize, ClipLevelHalfSize());
     }
 
-    void InstantiateMeshObject(Material mat)
+    private void InstantiateMeshObject(Material mat)
     {
         GameObject go = new GameObject();
         go.name = "GeoClipmap";
@@ -70,7 +71,6 @@ public class GeoClipmap : MonoBehaviour
         go.transform.localPosition = Vector3.zero;
         MeshFilter meshFilter = go.AddComponent<MeshFilter>();
         MeshRenderer meshRenderer = go.AddComponent<MeshRenderer>();
-        //meshRenderer.enabled = false;
         meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         meshRenderer.motionVectorGenerationMode = MotionVectorGenerationMode.Camera;
         meshRenderer.allowOcclusionWhenDynamic = false;
@@ -79,7 +79,7 @@ public class GeoClipmap : MonoBehaviour
         clipmapMeshRenderer = meshRenderer;
     }
 
-    Mesh CreateClipMapMesh(int clipLevelHalfSize)
+    private Mesh CreateClipMapMesh(int clipLevelHalfSize, int clipMapLevels)
     {
         Mesh mesh = new Mesh();
         mesh.name = "GeoClipmap";
@@ -87,7 +87,7 @@ public class GeoClipmap : MonoBehaviour
 
         CombineInstance[] combine = new CombineInstance[clipMapLevels + 2];
 
-        combine[0].mesh = CreatePlaneMesh(2 * clipLevelHalfSize + overlap, 2 * clipLevelHalfSize + overlap,
+        combine[0].mesh = CreatePlaneMesh(2 * clipLevelHalfSize + Overlap, 2 * clipLevelHalfSize + Overlap,
             (Vector3.right + Vector3.forward) * (clipLevelHalfSize + 1), true);
         combine[0].transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
 
@@ -107,7 +107,7 @@ public class GeoClipmap : MonoBehaviour
         return mesh;
     }
 
-    Mesh CreateRingMesh(int clipLevelHalfSize)
+    private Mesh CreateRingMesh(int clipLevelHalfSize)
     {
         Mesh mesh = new Mesh();
         mesh.name = "Clipmap ring";
@@ -115,7 +115,7 @@ public class GeoClipmap : MonoBehaviour
 
         int k = clipLevelHalfSize;
 
-        int shortSide = (k + 1) / 2 + overlap;
+        int shortSide = (k + 1) / 2 + Overlap;
         int longSide = k - 1;
         int sum = longSide + shortSide;
 
@@ -171,13 +171,13 @@ public class GeoClipmap : MonoBehaviour
 
 
     // Correct, but cursed. Must redo
-    Mesh CreateSkirtMesh(int clipLevelHalfSize, float outerBorderScale)
+    private Mesh CreateSkirtMesh(int clipLevelHalfSize, float outerBorderScale)
     {
         Mesh mesh = new Mesh();
         mesh.name = "Clipmap skirt";
         CombineInstance[] combine = new CombineInstance[8];
 
-        int borderVertCount = clipLevelHalfSize + overlap;
+        int borderVertCount = clipLevelHalfSize + Overlap;
         int scale = 2;
 
         Vector3 pivot = new Vector3(-1f, 0, -1f) * borderVertCount * (1 + 2 * outerBorderScale) + new Vector3(1, 0, 1);
@@ -222,7 +222,7 @@ public class GeoClipmap : MonoBehaviour
         return mesh;
     }
 
-    Mesh CreatePlaneMesh(int width, int height, Vector3 pivot, bool geomorphOffsetInUv,
+    private Mesh CreatePlaneMesh(int width, int height, Vector3 pivot, bool geomorphOffsetInUv,
         bool morphShiftX = false, bool morphShiftZ = false, int trianglesShift = 0)
     {
         Mesh mesh = new Mesh();

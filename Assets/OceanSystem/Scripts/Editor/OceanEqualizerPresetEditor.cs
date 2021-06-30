@@ -38,8 +38,6 @@ namespace OceanSystem
             EditorGUILayout.ObjectField("Script:", MonoScript.FromScriptableObject(oceanEqualizerPreset), typeof(OceanEqualizerPreset), false);
             GUI.enabled = true;
 
-            oceanEqualizerPreset.BakeRamp();
-
             EditorGUILayout.PropertyField(DisplayWavesSettings);
             oceanEqualizerPreset.showScale = EditorGUILayout.BeginFoldoutHeaderGroup(oceanEqualizerPreset.showScale, "Scale");
             EditorGUILayout.EndFoldoutHeaderGroup();
@@ -48,7 +46,7 @@ namespace OceanSystem
                 EditorGUILayout.Space();
                 SpectrumPlotter.DrawSpectrumWithEqualizer(
                     oceanEqualizerPreset.DisplayWavesSettings,
-                    oceanEqualizerPreset.Ramp, 0, scaleFill, scaleLine);
+                    oceanEqualizerPreset.GetRamp(), 0, scaleFill, scaleLine);
                 ShowFiltersArray(scaleFilters);
                 EditorGUILayout.Space();
                 EditorGUILayout.Space();
@@ -60,7 +58,7 @@ namespace OceanSystem
                 EditorGUILayout.Space();
                 SpectrumPlotter.DrawSpectrumWithEqualizer(
                    oceanEqualizerPreset.DisplayWavesSettings,
-                   oceanEqualizerPreset.Ramp, 1, chopFill, chopLine);
+                   oceanEqualizerPreset.GetRamp(), 1, chopFill, chopLine);
                 ShowFiltersArray(chopFilters);
             }
             EditorGUILayout.EndFoldoutHeaderGroup();

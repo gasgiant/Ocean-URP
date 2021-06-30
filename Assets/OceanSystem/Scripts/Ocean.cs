@@ -14,13 +14,30 @@ namespace OceanSystem
         [SerializeField] private GeoClipmap geoClipmap;
         [SerializeField] private Material material;
 
-        void Start()
+        [Header("Simulation")]
+        [SerializeField] public OceanSimulationSettings SimulationSettings;
+        [SerializeField] public OceanWavesSettings WavesSettings;
+        [SerializeField] public OceanEqualizerPreset EqualizerPreset;
+
+        OceanSimulation oceanSimulation;
+
+        private void Start()
         {
+            if (oceanSimulation != null)
+                oceanSimulation.ReleaseResources();
+            oceanSimulation = new OceanSimulation(SimulationSettings, WavesSettings, EqualizerPreset);
             geoClipmap.InstantiateMesh(material);
         }
 
-        void Update()
+        private void OnDisable()
         {
+            oceanSimulation.ReleaseResources();
+        }
+
+        private void Update()
+        {
+            oceanSimulation.Update();
+
             SetEnvironmentSpecCube();
 
             material.SetFloat("_Cull", (float)

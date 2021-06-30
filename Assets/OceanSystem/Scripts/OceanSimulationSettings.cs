@@ -34,7 +34,7 @@ namespace OceanSystem
         const int minWavesInCascadeAuto = 6;
 
 #if UNITY_EDITOR
-        public WavesSettings DisplayWavesSettings;
+        public OceanWavesSettings DisplayWavesSettings;
         public bool spectrumPlot;
 #endif
 
