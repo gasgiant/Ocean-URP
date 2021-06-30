@@ -38,7 +38,6 @@ namespace OceanSystem
 
         private static float OceanTime => (float)(Time.timeSinceLevelLoadAsDouble % 18000);
 
-
         public OceanSimulation(OceanSimulationSettings SimulationSettings, 
             OceanWavesSettings WavesSettings, OceanEqualizerPreset EqualizerPreset)
         {

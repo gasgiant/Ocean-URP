@@ -4,45 +4,137 @@ using UnityEngine.Rendering;
 
 namespace OceanSystem
 {
+    [ExecuteAlways]
     public class Ocean : MonoBehaviour
     {
+#if UNITY_EDITOR
+        public static bool RenderInEditMode;
+        public static bool IsRendering => Application.isPlaying || RenderInEditMode;
+#endif
+
         public enum OceanReflectionsMode { Default, RealtimeProbe, Custom }
 
+        [Header("Rendering")]
+        [SerializeField] private Material material;
         [SerializeField] private OceanReflectionsMode reflectionsMode;
         [SerializeField] private ReflectionProbe probe;
         [SerializeField] private Cubemap cubemap;
-        [SerializeField] private GeoClipmap geoClipmap;
-        [SerializeField] private Material material;
 
         [Header("Simulation")]
-        [SerializeField] public OceanSimulationSettings SimulationSettings;
-        [SerializeField] public OceanWavesSettings WavesSettings;
-        [SerializeField] public OceanEqualizerPreset EqualizerPreset;
+        [SerializeField] private OceanSimulationSettings simulationSettings;
+        [SerializeField] private OceanWavesSettings wavesSettings;
+        [SerializeField] private OceanEqualizerPreset equalizerPreset;
 
-        OceanSimulation oceanSimulation;
+        [Header("Mesh")]
+        [SerializeField] private Transform viewer;
+        [SerializeField] private float minMeshScale = 15;
+        [Range(1, 10)]
+        [SerializeField] private int clipMapLevels = 7;
+        [Range(16, 50)]
+        [SerializeField] private int vertexDensity = 25;
 
-        private void Start()
-        {
-            if (oceanSimulation != null)
-                oceanSimulation.ReleaseResources();
-            oceanSimulation = new OceanSimulation(SimulationSettings, WavesSettings, EqualizerPreset);
-            geoClipmap.InstantiateMesh(material);
-        }
+        private OceanSimulation oceanSimulation;
+        private GameObject meshObject;
+        private MeshFilter meshFilter;
+        private Vector2Int currentMeshParams = -Vector2Int.one;
+
 
         private void OnDisable()
         {
-            oceanSimulation.ReleaseResources();
+            if (!Application.isPlaying)
+                ReleaseSimulation();
+        }
+
+        private void OnDestroy()
+        {
+            ReleaseSimulation();
         }
 
         private void Update()
         {
+#if UNITY_EDITOR
+            EditorSetup();
+            if (!IsRendering) return;
+#else
+            Setup();
+#endif
+            oceanSimulation.SimulationSettings = simulationSettings;
+            oceanSimulation.WavesSettings = wavesSettings;
+            oceanSimulation.EqualizerPreset = equalizerPreset;
             oceanSimulation.Update();
-
+            UpdateMesh();
+            ConfigureMaterial();
             SetEnvironmentSpecCube();
+            SetGlobalColorVariables();
+        }
 
+        private void Setup()
+        {
+            if (oceanSimulation == null)
+                oceanSimulation = new OceanSimulation(simulationSettings, wavesSettings, equalizerPreset);
+            if (!meshObject)
+                InstantiateMeshObject();
+        }
+
+#if UNITY_EDITOR
+        private void EditorSetup()
+        {
+            if (IsRendering)
+            {
+                Setup();
+            }
+            else
+            {
+                if (oceanSimulation != null)
+                    ReleaseSimulation();
+                if (meshObject)
+                    DestroyImmediate(meshObject);
+            }
+        }
+#endif
+
+        private void ReleaseSimulation()
+        {
+            oceanSimulation?.ReleaseResources();
+            oceanSimulation = null;
+        }
+
+        private void InstantiateMeshObject()
+        {
+            GameObject go = new GameObject();
+            go.name = "Ocean Mesh";
+            go.hideFlags = HideFlags.DontSave | HideFlags.NotEditable;
+            go.layer = LayerMask.NameToLayer("Water");
+            go.transform.SetParent(transform);
+            go.transform.localPosition = Vector3.zero;
+            MeshFilter meshFilter = go.AddComponent<MeshFilter>();
+            MeshRenderer meshRenderer = go.AddComponent<MeshRenderer>();
+            meshRenderer.shadowCastingMode = ShadowCastingMode.Off;
+            meshRenderer.motionVectorGenerationMode = MotionVectorGenerationMode.Camera;
+            meshRenderer.allowOcclusionWhenDynamic = false;
+            meshRenderer.material = material;
+            this.meshObject = go;
+            this.meshFilter = meshFilter;
+        }
+
+        private void UpdateMesh()
+        {
+            if (!meshObject) return;
+
+            if (!viewer)
+                viewer = Camera.main.transform;
+            ClipmapMeshBuilder.SetGlobalShaderVariables(viewer.position, vertexDensity, minMeshScale);
+            Vector2Int newMeshParams = new Vector2Int(vertexDensity, clipMapLevels);
+            if (newMeshParams == currentMeshParams && meshFilter.sharedMesh != null) return;
+
+            currentMeshParams = newMeshParams;
+            meshFilter.sharedMesh = ClipmapMeshBuilder.BuildClipMap(vertexDensity, clipMapLevels);
+        }
+
+        private void ConfigureMaterial()
+        {
             material.SetFloat("_Cull", (float)
                 (Shader.IsKeywordEnabled("OCEAN_UNDERWATER_ENABLED") ? CullMode.Off : CullMode.Back));
-            SetGlobalColorVariables();
         }
 
         private void SetEnvironmentSpecCube()

@@ -357,7 +357,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 1
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -432,7 +432,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1777309716}
-  - component: {fileID: 1777309717}
   - component: {fileID: 1777309718}
   m_Layer: 0
   m_Name: Ocean
@@ -455,22 +454,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1777309717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1777309714}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29062523ab315f4ba42117d640605c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  viewer: {fileID: 0}
-  minMeshScale: 15
-  clipMapLevels: 7
-  verticesDensity: 25
 --- !u!114 &1777309718
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -483,14 +466,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69112c270b4b834429cb51724e4a421f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 10252c97548dc8b47995a41628c2d275, type: 2}
   reflectionsMode: 0
   probe: {fileID: 0}
   cubemap: {fileID: 0}
-  geoClipmap: {fileID: 1777309717}
-  material: {fileID: 2100000, guid: 10252c97548dc8b47995a41628c2d275, type: 2}
-  SimulationSettings: {fileID: 11400000, guid: 59c5d1e11cdd336428ee3e1f68810c3f, type: 2}
-  WavesSettings: {fileID: 11400000, guid: 07b4d7e62a3e90d4cb735581891aeb1c, type: 2}
-  EqualizerPreset: {fileID: 11400000, guid: 1fd9d91ff7b9c9a4c91fe8d00b1d9ef0, type: 2}
+  simulationSettings: {fileID: 11400000, guid: 59c5d1e11cdd336428ee3e1f68810c3f, type: 2}
+  wavesSettings: {fileID: 11400000, guid: 07b4d7e62a3e90d4cb735581891aeb1c, type: 2}
+  equalizerPreset: {fileID: 11400000, guid: 1fd9d91ff7b9c9a4c91fe8d00b1d9ef0, type: 2}
+  viewer: {fileID: 1687258585}
+  minMeshScale: 15
+  clipMapLevels: 7
+  vertexDensity: 25
 --- !u!1 &2138677391
 GameObject:
   m_ObjectHideFlags: 0

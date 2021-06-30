@@ -159,9 +159,9 @@ Material:
     - Ocean_DownwardReflectionsColor: {r: 0, g: 0.13004069, b: 0.1792453, a: 1}
     - Ocean_FogColor: {r: 0.010893557, g: 0.029177655, b: 0.05660379, a: 1}
     - Ocean_SssColor: {r: 0.13333334, g: 0.9411765, b: 0.6039216, a: 1}
-    - Ocean_TintColor0: {r: 0, g: 0.039746113, b: 0.092326626, a: 0}
+    - Ocean_TintColor0: {r: 0, g: 0.03974341, b: 0.09232221, a: 0}
     - Ocean_TintColor1: {r: 0, g: 0.17351386, b: 0.43203577, a: 0.2}
-    - Ocean_TintColor2: {r: 0.15912339, g: 0.68352747, b: 0.79865986, a: 0.66608685}
+    - Ocean_TintColor2: {r: 0.15911731, g: 0.68352747, b: 0.79865986, a: 0.66608685}
     - Ocean_TintColor3: {r: 1, g: 1, b: 1, a: 1}
     - Ocean_TintColor4: {r: 1, g: 1, b: 1, a: 1}
     - Ocean_TintColor5: {r: 1, g: 1, b: 1, a: 1}

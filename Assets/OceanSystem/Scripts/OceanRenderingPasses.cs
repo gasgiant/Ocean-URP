@@ -19,8 +19,14 @@ namespace OceanSystem
             renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
         }
 
+
+
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
+#if UNITY_EDITOR
+            if (!Ocean.IsRendering) return;
+#endif
+
             CameraData cameraData = renderingData.cameraData;
             Camera camera = cameraData.camera;
             
@@ -98,6 +104,10 @@ namespace OceanSystem
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
+#if UNITY_EDITOR
+            if (!Ocean.IsRendering) return;
+#endif
+
             if (settings.underwaterEffect)
             {
                 CommandBuffer cmd = CommandBufferPool.Get("Underwater Effect");
@@ -145,6 +155,10 @@ namespace OceanSystem
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
+#if UNITY_EDITOR
+            if (!Ocean.IsRendering) return;
+#endif
+
             if (NeedToRenderSkyMap)
             {
                 CommandBuffer cmd = CommandBufferPool.Get("Ocean Sky Map");
