@@ -5,6 +5,7 @@ using UnityEngine.Rendering;
 
 namespace OceanSystem
 {
+    //[ExecuteAlways]
     public class OceanSimulation : MonoBehaviour
     {
         private const string InitialSpectrumShaderPath = "ComputeShaders/InitialSpectrum";
@@ -39,10 +40,11 @@ namespace OceanSystem
         private OceanCollision collision;
         private bool spectrumCalculated;
         private bool NeedToCalculateSpectrum => !spectrumCalculated || simulationSettings.updateSpectrum;
+        Vector3Int currrentTextureParams = -Vector3Int.one;
 
         private static float OceanTime => (float)(Time.timeSinceLevelLoadAsDouble % 18000);
 
-        private void Awake()
+        private void OnEnable()
         {
             initialSpectrumShader = (ComputeShader)Resources.Load(InitialSpectrumShaderPath);
             timeDependentSpectrumShader = (ComputeShader)Resources.Load(TimeDependentSpectrumShaderPath);
@@ -54,13 +56,17 @@ namespace OceanSystem
             CalculateAmplitudesKernel = timeDependentSpectrumShader.FindKernel("CalculateAmplitudes");
             SimulateFoamKernel = foamSimulationShader.FindKernel("Simulate");
             InitializeFoamKernel = foamSimulationShader.FindKernel("Initialize");
+
+            if (spectrumsBuffer != null) spectrumsBuffer.Release();
             spectrumsBuffer = new ComputeBuffer(2, 8 * sizeof(float) + 1 * sizeof(uint));
 
-            InitializeSimulation();
+            currrentTextureParams = -Vector3Int.one;
         }
 
         private void Update()
         {
+            InitializeSimulation();
+
             CommandBuffer cmd = CommandBufferPool.Get("Ocean Simulation");
             if (NeedToCalculateSpectrum)
             {
@@ -73,59 +79,67 @@ namespace OceanSystem
             SetGlobalShaderVariables();
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             spectrumsBuffer?.Release();
         }
 
         private void InitializeSimulation()
         {
+            Vector3Int newTextureParams = new Vector3Int(simulationSettings.Resolution, 
+                simulationSettings.CascadesNumber, simulationSettings.anisoLevel);
+            if (newTextureParams == currrentTextureParams)
+                return;
+
+            currrentTextureParams = newTextureParams;
             size = simulationSettings.Resolution;
             InitializeRenderTextures(size, simulationSettings.CascadesNumber, simulationSettings.anisoLevel);
             SetCascadesKeywords(simulationSettings.CascadesNumber);
             collision = new OceanCollision(size, fftInOut, simulationSettings);
-            //CalculateSpectrum();
         }
 
         private void InitializeRenderTextures(int size, int cascadesNumber, int anisoLevel)
         {
-            gaussianNoise?.Release();
-            initialSpectrum?.Release();
-            wavesData?.Release();
-            initializationBuffer?.Release();
-            fftBuffer?.Release();
-            fftInOut?.Release();
-            turbulence?.Release();
+            if (gaussianNoise != null) gaussianNoise.Release();
+            if (initialSpectrum != null) initialSpectrum.Release();
+            if (wavesData != null) wavesData.Release();
+            if (initializationBuffer != null) initializationBuffer.Release();
+            if (fftBuffer != null) fftBuffer.Release();
+            if (fftInOut != null) fftInOut.Release();
+            if (turbulence != null) turbulence.Release();
 
-            var initialsTextureParams = new RenderTextureParams()
+            RenderTextureDescriptor initialsDescriptor = new RenderTextureDescriptor()
             {
-                size = size,
+                height = size,
+                width = size,
                 volumeDepth = cascadesNumber,
                 enableRandomWrite = true,
-                format = RenderTextureFormat.ARGBHalf,
-                wrapMode = TextureWrapMode.Repeat,
-                filterMode = FilterMode.Trilinear,
-                useMips = false,
-                anisoLevel = anisoLevel
+                colorFormat = RenderTextureFormat.ARGBHalf,
+                sRGB = false,
+                msaaSamples = 1,
+                depthBufferBits = 0,
+                useMipMap = false,
+                dimension = TextureDimension.Tex2DArray
             };
 
-            var noiseTextureParams = initialsTextureParams;
-            noiseTextureParams.format = RenderTextureFormat.RGHalf;
 
-            var displacementAndDerivativesTextureParams = initialsTextureParams;
-            displacementAndDerivativesTextureParams.useMips = true;
-            displacementAndDerivativesTextureParams.volumeDepth = 2 * cascadesNumber;
+            var noiseTextureDescriptor = initialsDescriptor;
+            noiseTextureDescriptor.colorFormat = RenderTextureFormat.RGHalf;
 
-            var turbulenceTextureParams = initialsTextureParams;
-            turbulenceTextureParams.useMips = true;
+            var displacementAndDerivativesTextureDescriptor = initialsDescriptor;
+            displacementAndDerivativesTextureDescriptor.useMipMap = true;
+            displacementAndDerivativesTextureDescriptor.volumeDepth = 2 * cascadesNumber;
 
-            initialSpectrum = CreateRenderTexture(initialsTextureParams);
-            wavesData = CreateRenderTexture(initialsTextureParams);
-            initializationBuffer = CreateRenderTexture(initialsTextureParams);
-            gaussianNoise = CreateRenderTexture(noiseTextureParams);
-            turbulence = CreateRenderTexture(turbulenceTextureParams);
-            fftBuffer = CreateRenderTexture(displacementAndDerivativesTextureParams);
-            fftInOut = CreateRenderTexture(displacementAndDerivativesTextureParams);
+            var turbulenceTextureDescriptor = initialsDescriptor;
+            turbulenceTextureDescriptor.useMipMap = true;
+
+            initialSpectrum = RenderingUtils.CreateRenderTexture(initialsDescriptor, TextureWrapMode.Repeat, FilterMode.Point, 0);
+            wavesData = RenderingUtils.CreateRenderTexture(initialsDescriptor, TextureWrapMode.Repeat, FilterMode.Point, 0);
+            initializationBuffer = RenderingUtils.CreateRenderTexture(initialsDescriptor, TextureWrapMode.Repeat, FilterMode.Point, 0);
+            gaussianNoise = RenderingUtils.CreateRenderTexture(noiseTextureDescriptor, TextureWrapMode.Repeat, FilterMode.Point, 0);
+            turbulence = RenderingUtils.CreateRenderTexture(turbulenceTextureDescriptor, TextureWrapMode.Repeat, FilterMode.Trilinear, anisoLevel);
+            fftBuffer = RenderingUtils.CreateRenderTexture(displacementAndDerivativesTextureDescriptor, TextureWrapMode.Repeat, FilterMode.Trilinear, anisoLevel);
+            fftInOut = RenderingUtils.CreateRenderTexture(displacementAndDerivativesTextureDescriptor, TextureWrapMode.Repeat, FilterMode.Trilinear, anisoLevel);
 
             Shader.SetGlobalTexture(GlobalShaderVariables.DisplacementAndDerivatives, fftInOut);
             Shader.SetGlobalTexture(GlobalShaderVariables.Turbulence, turbulence);
@@ -229,9 +243,7 @@ namespace OceanSystem
 
                 cmd.DispatchCompute(foamSimulationShader,
                     SimulateFoamKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
-                cmd.GenerateMips(turbulence);
-
-                
+                cmd.GenerateMips(turbulence); 
             }
         }
 
@@ -253,60 +265,6 @@ namespace OceanSystem
             Shader.SetGlobalFloat(GlobalShaderVariables.FoamDensity, wavesSettings.foam.density);
             Shader.SetGlobalFloat(GlobalShaderVariables.FoamPersistence, wavesSettings.foam.persistence);
             Shader.SetGlobalVector(GlobalShaderVariables.FoamCascadesWeights, wavesSettings.foam.cascadesWeights);
-        }
-
-        public struct RenderTextureParams
-        {
-            public int size;
-            public int volumeDepth;
-            public bool enableRandomWrite;
-            public RenderTextureFormat format;
-            public TextureWrapMode wrapMode;
-            public FilterMode filterMode;
-            public bool useMips;
-            public int anisoLevel;
-        }
-
-        public static RenderTexture CreateRenderTexture(RenderTextureParams pars)
-        {
-            return CreateRenderTexture(
-                pars.size,
-                pars.volumeDepth,
-                pars.enableRandomWrite,
-                pars.format,
-                pars.wrapMode,
-                pars.filterMode,
-                pars.useMips,
-                pars.anisoLevel);
-        }
-
-        public static RenderTexture CreateRenderTexture(
-            int size,
-            int volumeDepth,
-            bool enableRandomWrite,
-            RenderTextureFormat format,
-            TextureWrapMode wrapMode,
-            FilterMode filterMode,
-            bool useMips,
-            int anisoLevel)
-        {
-            RenderTexture rt = new RenderTexture(size, size, 0,
-                format, RenderTextureReadWrite.Linear);
-
-            if (volumeDepth > 1)
-            {
-                rt.dimension = TextureDimension.Tex2DArray;
-                rt.volumeDepth = volumeDepth;
-            }
-
-            rt.useMipMap = useMips;
-            rt.autoGenerateMips = false;
-            rt.anisoLevel = anisoLevel;
-            rt.wrapMode = wrapMode;
-            rt.filterMode = filterMode;
-            rt.enableRandomWrite = enableRandomWrite;
-            rt.Create();
-            return rt;
         }
 
         private static class SimualtionVariables

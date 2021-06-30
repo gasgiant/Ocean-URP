@@ -57,12 +57,9 @@ namespace OceanSystem
             EditorGUILayout.ObjectField("Script:", MonoScript.FromScriptableObject(simulationSettings), typeof(OceanSimulationSettings), false);
             GUI.enabled = true;
 
-            if (Application.isPlaying)
-                GUI.enabled = false;
             EditorGUILayout.PropertyField(resolution);
             EditorGUILayout.PropertyField(cascadesNumber);
             EditorGUILayout.PropertyField(anisoLevel);
-            GUI.enabled = true;
             EditorGUILayout.PropertyField(updateSpectrum);
             EditorGUILayout.PropertyField(simulateFoam);
             EditorGUILayout.Space();

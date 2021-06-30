@@ -8,12 +8,11 @@ namespace OceanSystem
     {
         public enum OceanReflectionsMode { Default, RealtimeProbe, Custom }
 
-        [SerializeField] OceanReflectionsMode reflectionsMode;
+        [SerializeField] private OceanReflectionsMode reflectionsMode;
         [SerializeField] private ReflectionProbe probe;
         [SerializeField] private Cubemap cubemap;
         [SerializeField] private GeoClipmap geoClipmap;
         [SerializeField] private Material material;
-        [SerializeField] private OceanEnvironment environment;
 
         void Start()
         {
@@ -72,16 +71,16 @@ namespace OceanSystem
         public static readonly int FogDensityID = Shader.PropertyToID("Ocean_FogDensity");
         public static readonly int[] TintGradientIDs =
         {
-        Shader.PropertyToID("Ocean_TintGradientParams"),
-        Shader.PropertyToID("Ocean_TintColor0"),
-        Shader.PropertyToID("Ocean_TintColor1"),
-        Shader.PropertyToID("Ocean_TintColor2"),
-        Shader.PropertyToID("Ocean_TintColor3"),
-        Shader.PropertyToID("Ocean_TintColor4"),
-        Shader.PropertyToID("Ocean_TintColor5"),
-        Shader.PropertyToID("Ocean_TintColor6"),
-        Shader.PropertyToID("Ocean_TintColor7")
-    };
+            Shader.PropertyToID("Ocean_TintGradientParams"),
+            Shader.PropertyToID("Ocean_TintColor0"),
+            Shader.PropertyToID("Ocean_TintColor1"),
+            Shader.PropertyToID("Ocean_TintColor2"),
+            Shader.PropertyToID("Ocean_TintColor3"),
+            Shader.PropertyToID("Ocean_TintColor4"),
+            Shader.PropertyToID("Ocean_TintColor5"),
+            Shader.PropertyToID("Ocean_TintColor6"),
+            Shader.PropertyToID("Ocean_TintColor7")
+        };
 
         public static readonly int SpecCubeID = Shader.PropertyToID("Ocean_SpecCube");
         public static readonly int DownwardReflectionsColorID = Shader.PropertyToID("Ocean_DownwardReflectionsColor");

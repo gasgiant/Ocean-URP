@@ -45,7 +45,6 @@ namespace OceanSystem
             bool isSquare = input.width == input.height;
             Debug.Assert(isSquare, "FFT supports only square textures.");
 
-
             int size = input.height;
             float floatLogSize = Mathf.Log(input.height, 2);
             int logSize = (int) floatLogSize;
@@ -119,27 +118,28 @@ namespace OceanSystem
                 cmd.SetComputeTextureParam(fftShader, ScaleKernel, Buffer0ID, outputToInput ? input : buffer);
                 cmd.DispatchCompute(fftShader, ScaleKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
             }
-
-            Graphics.ExecuteCommandBuffer(cmd);
         }
 
         private static ComputeShader GetFftShader()
         {
-            if (FftShader == null)
+            if (FftShader != null && Application.isPlaying)
             {
-                FftShader = (ComputeShader) Resources.Load(ShaderPath);
+                return FftShader;
+            }
+            else
+            {
+                FftShader = (ComputeShader)Resources.Load(ShaderPath);
                 PrecomputeKernel = FftShader.FindKernel("PrecomputeTwiddleFactorsAndInputIndices");
                 FftStepKernel = FftShader.FindKernel("FftStep");
                 ScaleKernel = FftShader.FindKernel("Scale");
                 PermuteKernel = FftShader.FindKernel("Permute");
+                return FftShader;
             }
-
-            return FftShader;
         }
 
         private static RenderTexture GetPrecomputedData(int size)
         {
-            if (precomputedDatas.ContainsKey(size))
+            if (precomputedDatas.ContainsKey(size) && Application.isPlaying)
                 return precomputedDatas[size];
             else
             {
@@ -152,7 +152,8 @@ namespace OceanSystem
                 FftShader.SetInt(SizeID, size);
                 FftShader.SetTexture(PrecomputeKernel, PrecomputedDataID, rt);
                 FftShader.Dispatch(PrecomputeKernel, logSize, size / 2 / LocalWorkGroupsY, 1);
-                precomputedDatas.Add(size, rt);
+                if (Application.isPlaying)
+                    precomputedDatas.Add(size, rt);
                 return rt;
             }
         }

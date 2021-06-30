@@ -504,7 +504,6 @@ MonoBehaviour:
   cubemap: {fileID: 0}
   geoClipmap: {fileID: 1777309717}
   material: {fileID: 2100000, guid: 10252c97548dc8b47995a41628c2d275, type: 2}
-  environment: {fileID: 11400000, guid: 6f764a47425ae89449cf1b595e2d7bcf, type: 2}
 --- !u!1 &2138677391
 GameObject:
   m_ObjectHideFlags: 0
