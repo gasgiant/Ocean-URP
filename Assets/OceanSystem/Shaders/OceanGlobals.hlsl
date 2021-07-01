@@ -25,11 +25,8 @@ float Ocean_FoamPersistence;
 float4 Ocean_FoamCascadesWeights;
 
 // camera
-float4x4 Ocean_CameraToWorld;
-float4x4 Ocean_CameraInverseProjection;
-// x, y - near clip plane width, height
-// z - near clip plane
-float4 Ocean_CameraNearPlaneParams;
+float4x4 Ocean_InverseViewMatrix;
+float4x4 Ocean_InverseProjectionMatrix;
 
 // environment maps
 TEXTURECUBE(Ocean_SpecCube);

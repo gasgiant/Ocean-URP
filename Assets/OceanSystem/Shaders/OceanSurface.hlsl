@@ -159,7 +159,7 @@ float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
 	float3 refractionCoords = RefractionCoords(_RefractionStrength, li.positionNDC, li.viewDepth, li.normal);
 	float3 backgroundColor = SampleSceneColor(refractionCoords.xy);
 	
-	float3 backgroundPositionWS = PositionWsFromDepth(refractionCoords.z, refractionCoords.xy, Ocean_CameraInverseProjection, Ocean_CameraToWorld);
+	float3 backgroundPositionWS = PositionWsFromDepth(refractionCoords.z, refractionCoords.xy, Ocean_InverseProjectionMatrix, Ocean_InverseViewMatrix);
 	float backgroundDistance = length(backgroundPositionWS - li.cameraPos) - li.viewDist;
 	color = ColorThroughWater(backgroundColor, color, backgroundDistance, -backgroundPositionWS.y);
 	#endif
@@ -247,7 +247,7 @@ float3 GetOceanColorUnderwater(LightingInput li)
 	float3 reflected = ReflectionBackface(li);
 	float3 color = lerp(refracted, reflected, fresnel);
 	float3 volume = UnderwaterFogColor(li.viewDir, li.mainLight.direction, li.cameraPos.y);
-	color = ColorThroughWater(color, volume, li.viewDist - Ocean_CameraNearPlaneParams.z, 0);
+    color = ColorThroughWater(color, volume, li.viewDist - _ProjectionParams.y, 0);
 	return color;
 }
 

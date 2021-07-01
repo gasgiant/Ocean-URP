@@ -21,28 +21,29 @@ Shader "Ocean/UnderwaterEffect"
         //#include "../OceanShoreMap.hlsl"
         #include "../OceanVolume.hlsl"
 
-        float SubmergenceFrag(Varyings IN) : SV_Target
+        float SubmergenceFrag(Varyings input) : SV_Target
         {
-            float4 pos = mul(Ocean_CameraToWorld,
-                float4((IN.uv - 0.5) * Ocean_CameraNearPlaneParams.xy, -Ocean_CameraNearPlaneParams.z, 1));
-            float waterHeight = SampleHeight(pos.xz, 1, 1);//ShoreModulation(SampleShore(pos.xz).r));
-            return pos.y - waterHeight + 0.5;
+            float4 positionCS = float4(input.uv * 2 - 1, UNITY_NEAR_CLIP_VALUE, 1);
+            float4 positionWS = mul(Ocean_InverseViewMatrix, mul(Ocean_InverseProjectionMatrix, positionCS));
+            positionWS = positionWS / positionWS.w;
+            float waterHeight = SampleHeight(positionWS.xz, 1, 1);//ShoreModulation(SampleShore(pos.xz).r));
+            return positionWS.y - waterHeight + 0.5;
         }
 
-        half4 UnderwaterPostEffectFrag(Varyings IN, float FACING : VFACE) : SV_Target
+        half4 UnderwaterPostEffectFrag(Varyings input, float FACING : VFACE) : SV_Target
         {
-            float3 backgroundColor = SampleSceneColor(IN.uv);
-            float rawDepth = SampleSceneDepth(IN.uv);
-            float4 positionCS = float4(IN.uv * 2 - 1, rawDepth, 1);
-            float4 positionVS = mul(Ocean_CameraInverseProjection, positionCS);
+            float3 backgroundColor = SampleSceneColor(input.uv);
+            float rawDepth = SampleSceneDepth(input.uv);
+            float4 positionCS = float4(input.uv * 2 - 1, rawDepth, 1);
+            float4 positionVS = mul(Ocean_InverseProjectionMatrix, positionCS);
             positionVS /= positionVS.w;
-            float3 viewDir = -mul(Ocean_CameraToWorld, float4(positionVS.xyz, 0)).xyz;
+            float3 viewDir = -mul(Ocean_InverseViewMatrix, float4(positionVS.xyz, 0)).xyz;
             float viewDist = length(positionVS);
             viewDir /= viewDist;
-            float4 positionWS = mul(Ocean_CameraToWorld, positionVS);
-            //UNITY_NEAR_CLIP_VALUE
+            float4 positionWS = mul(Ocean_InverseViewMatrix, positionVS);
+            
             float submergence = -SAMPLE_TEXTURE2D(Ocean_CameraSubmergenceTexture,
-                samplerOcean_CameraSubmergenceTexture, IN.uv).r;
+                samplerOcean_CameraSubmergenceTexture, input.uv).r;
             float safetyMargin = 0.05 * saturate((viewDir.y * 1.3 + 1) * 0.5);
             submergence = saturate((submergence + 0.5 + safetyMargin) * 200);
 

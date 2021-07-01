@@ -145,7 +145,7 @@ Shader "Ocean/Ocean"
                 output.positionNDC = positionInputs.positionNDC;
                 output.positionHCS = positionInputs.positionCS;
                 #ifdef REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR
-                output.shadowCoord = GetShadowCoord(inputs);
+                output.shadowCoord = GetShadowCoord(positionInputs);
                 #endif
                 return output;
             }

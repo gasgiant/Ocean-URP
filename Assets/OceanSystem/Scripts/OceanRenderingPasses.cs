@@ -19,12 +19,10 @@ namespace OceanSystem
             renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
         }
 
-
-
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
 #if UNITY_EDITOR
-            if (!Ocean.IsRendering) return;
+            if (!OceanRenderer.IsRendering) return;
 #endif
 
             CameraData cameraData = renderingData.cameraData;
@@ -54,12 +52,9 @@ namespace OceanSystem
 
         private void SetupCameraGlobals(CommandBuffer cmd, Camera cam)
         {
-            cmd.SetGlobalMatrix(CameraToWorld, cam.cameraToWorldMatrix);
-            cmd.SetGlobalMatrix(CameraInverseProjection,
+            cmd.SetGlobalMatrix(InverseViewMatrix, cam.cameraToWorldMatrix);
+            cmd.SetGlobalMatrix(InverseProjectionViewMatrix,
                 GL.GetGPUProjectionMatrix(cam.projectionMatrix, false).inverse);
-            float height = 2 * Mathf.Tan(0.5f * Mathf.Deg2Rad * cam.fieldOfView) * cam.nearClipPlane;
-            Vector4 v = new Vector4(height * Screen.width / Screen.height, height, cam.nearClipPlane);
-            cmd.SetGlobalVector(CameraNearPlaneParamsID, v);
         }
 
         private void SetupGlobalKeywords(CommandBuffer cmd)
@@ -76,9 +71,8 @@ namespace OceanSystem
                 cmd.DisableShaderKeyword(keyword);
         }
 
-        private static readonly int CameraToWorld = Shader.PropertyToID("Ocean_CameraToWorld");
-        private static readonly int CameraInverseProjection = Shader.PropertyToID("Ocean_CameraInverseProjection");
-        private static readonly int CameraNearPlaneParamsID = Shader.PropertyToID("Ocean_CameraNearPlaneParams");
+        private static readonly int InverseViewMatrix = Shader.PropertyToID("Ocean_InverseViewMatrix");
+        private static readonly int InverseProjectionViewMatrix = Shader.PropertyToID("Ocean_InverseProjectionMatrix");
     }
 
     public class OceanUnderwaterEffectPass : ScriptableRenderPass
@@ -105,9 +99,8 @@ namespace OceanSystem
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
 #if UNITY_EDITOR
-            if (!Ocean.IsRendering) return;
+            if (!OceanRenderer.IsRendering) return;
 #endif
-
             if (settings.underwaterEffect)
             {
                 CommandBuffer cmd = CommandBufferPool.Get("Underwater Effect");
@@ -156,7 +149,7 @@ namespace OceanSystem
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
 #if UNITY_EDITOR
-            if (!Ocean.IsRendering) return;
+            if (!OceanRenderer.IsRendering) return;
 #endif
 
             if (NeedToRenderSkyMap)

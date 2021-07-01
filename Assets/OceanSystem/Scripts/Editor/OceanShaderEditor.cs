@@ -73,7 +73,19 @@ namespace OceanSystem
 			ShaderProperties();
 		}
 
-		void FindProperties(MaterialProperty[] properties)
+        public override void OnMaterialPreviewGUI(MaterialEditor materialEditor, Rect r, GUIStyle background)
+        {
+			return;
+        }
+
+        public override void OnMaterialInteractivePreviewGUI(MaterialEditor materialEditor, Rect r, GUIStyle background)
+        {
+			return;
+		}
+
+		
+
+        void FindProperties(MaterialProperty[] properties)
 		{
 			// keywords
 			wavesFoamEnabled = FindProperty("_WAVES_FOAM_ENABLED", properties);
@@ -139,8 +151,10 @@ namespace OceanSystem
 			editor.ShaderProperty(sssColor, MakeLabel(sssColor));
 			editor.ShaderProperty(diffuseColor, MakeLabel(diffuseColor));
 			editor.ShaderProperty(downwardReflectionsColor, MakeLabel(downwardReflectionsColor));
+			EditorGUI.BeginChangeCheck();
 			Gradient tint = EditorGUILayout.GradientField(new GUIContent("Tint Gradient"), GetGradient(OceanShaderPropIds.TintGradientIDs), false);
-			SetGradient(OceanShaderPropIds.TintGradientIDs, tint);
+			if (EditorGUI.EndChangeCheck())
+				SetGradient(OceanShaderPropIds.TintGradientIDs, tint);
 			editor.ShaderProperty(tintDepthScale, MakeLabel(tintDepthScale));
 			EditorGUI.indentLevel -= 1;
 			EditorGUILayout.Space();
@@ -149,7 +163,7 @@ namespace OceanSystem
 			EditorGUI.indentLevel += 1;
 			editor.ShaderProperty(downwardReflectionsRadius, MakeLabel(downwardReflectionsRadius));
 			editor.ShaderProperty(downwardReflectionsSharpness, MakeLabel(downwardReflectionsSharpness));
-			//DrawSkyMapPreview();
+			DrawSkyMapPreview();
 			Shader.SetGlobalVector(OceanShaderPropIds.DownwardReflectionsColorID, targetMaterial.GetVector(OceanShaderPropIds.DownwardReflectionsColorID));
 			Shader.SetGlobalFloat(OceanShaderPropIds.DownwardReflectionsRadiusID, targetMaterial.GetFloat(OceanShaderPropIds.DownwardReflectionsRadiusID));
 			Shader.SetGlobalFloat(OceanShaderPropIds.DownwardReflectionsSharpnessID, targetMaterial.GetFloat(OceanShaderPropIds.DownwardReflectionsSharpnessID));

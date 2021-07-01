@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace OceanSystem
 {
     public class OceanRenderer : ScriptableRendererFeature
@@ -42,5 +46,25 @@ namespace OceanSystem
             public bool transparency;
             public bool underwaterEffect;
         }
+
+#if UNITY_EDITOR
+        public const string RenderInEditModePrefName = "RenderOceanInEditMode";
+        public static bool RenderInEditMode
+        {
+            get
+            {
+                if (renderInEditMode == null)
+                    renderInEditMode = EditorPrefs.GetBool(RenderInEditModePrefName);
+                return renderInEditMode.Value;
+            }
+
+            set
+            {
+                renderInEditMode = value;
+            }
+        }
+        private static bool? renderInEditMode = null;
+        public static bool IsRendering => Application.isPlaying || RenderInEditMode;
+#endif
     }
 }

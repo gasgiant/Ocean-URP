@@ -100,7 +100,7 @@ Material:
     - _CascadesFadeDist: 20
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _ContactFoam: 0.128
+    - _ContactFoam: 0.078
     - _Cull: 0
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
@@ -150,7 +150,7 @@ Material:
     - _WAVES_FOAM_ENABLED: 1
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - foamEditorExpanded: 1
+    - foamEditorExpanded: 0
     - horizonEditorExpanded: 0
     - sssEditorExpanded: 0
     m_Colors:
@@ -159,9 +159,9 @@ Material:
     - Ocean_DownwardReflectionsColor: {r: 0, g: 0.13004069, b: 0.1792453, a: 1}
     - Ocean_FogColor: {r: 0.010893557, g: 0.029177655, b: 0.05660379, a: 1}
     - Ocean_SssColor: {r: 0.13333334, g: 0.9411765, b: 0.6039216, a: 1}
-    - Ocean_TintColor0: {r: 0, g: 0.039666403, b: 0.09219628, a: 0}
+    - Ocean_TintColor0: {r: 0, g: 0.03965041, b: 0.09217013, a: 0}
     - Ocean_TintColor1: {r: 0, g: 0.17351386, b: 0.43203577, a: 0.2}
-    - Ocean_TintColor2: {r: 0.1589443, g: 0.68352747, b: 0.79865986, a: 0.66608685}
+    - Ocean_TintColor2: {r: 0.15890837, g: 0.68352747, b: 0.79865986, a: 0.66608685}
     - Ocean_TintColor3: {r: 1, g: 1, b: 1, a: 1}
     - Ocean_TintColor4: {r: 1, g: 1, b: 1, a: 1}
     - Ocean_TintColor5: {r: 1, g: 1, b: 1, a: 1}

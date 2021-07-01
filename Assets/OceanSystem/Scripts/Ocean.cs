@@ -6,11 +6,6 @@ namespace OceanSystem
     [ExecuteAlways]
     public class Ocean : MonoBehaviour
     {
-#if UNITY_EDITOR
-        public static bool RenderInEditMode;
-        public static bool IsRendering => Application.isPlaying || RenderInEditMode;
-#endif
-
         public enum OceanReflectionsMode { Default, RealtimeProbe, Custom }
 
         [Header("Rendering")]
@@ -53,7 +48,7 @@ namespace OceanSystem
         {
 #if UNITY_EDITOR
             EditorSetup();
-            if (!IsRendering) return;
+            if (!OceanRenderer.IsRendering) return;
 #else
             Setup();
 #endif
@@ -78,7 +73,7 @@ namespace OceanSystem
 #if UNITY_EDITOR
         private void EditorSetup()
         {
-            if (IsRendering)
+            if (OceanRenderer.IsRendering)
             {
                 Setup();
             }

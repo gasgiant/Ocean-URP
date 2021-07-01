@@ -32,15 +32,6 @@ namespace OceanSystem
             EditorGUILayout.ObjectField("Script:", MonoScript.FromMonoBehaviour((Ocean)target), typeof(Ocean), false);
             GUI.enabled = true;
 
-            bool prefValue = EditorPrefs.GetBool("RenderOceanInEditMode");
-            prefValue = EditorGUILayout.Toggle("Render In Edit Mode", prefValue);
-            if (prefValue != Ocean.RenderInEditMode)
-            {
-                EditorApplication.QueuePlayerLoopUpdate();
-            }
-            Ocean.RenderInEditMode = prefValue;
-            EditorPrefs.SetBool("RenderOceanInEditMode", prefValue);
-
             EditorGUILayout.PropertyField(material);
             EditorGUILayout.PropertyField(reflectionsMode);
             switch ((Ocean.OceanReflectionsMode)reflectionsMode.enumValueIndex)
