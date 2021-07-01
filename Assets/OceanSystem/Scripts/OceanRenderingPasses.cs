@@ -26,8 +26,9 @@ namespace OceanSystem
 #endif
 
             CameraData cameraData = renderingData.cameraData;
+            if (!OceanRenderer.IsCorrectCameraType(cameraData.cameraType)) return;
             Camera camera = cameraData.camera;
-            
+
             DrawingSettings drawingSettings = new DrawingSettings(OceanShaderTagId,
                 new SortingSettings(camera));
 
@@ -101,6 +102,10 @@ namespace OceanSystem
 #if UNITY_EDITOR
             if (!OceanRenderer.IsRendering) return;
 #endif
+
+            CameraData cameraData = renderingData.cameraData;
+            if (!OceanRenderer.IsCorrectCameraType(cameraData.cameraType)) return;
+
             if (settings.underwaterEffect)
             {
                 CommandBuffer cmd = CommandBufferPool.Get("Underwater Effect");
@@ -108,7 +113,7 @@ namespace OceanSystem
                     RenderBufferLoadAction.DontCare, underwaterEffectMaterial, 0);
                 cmd.SetGlobalTexture(CameraSubmergenceTextureID, SubmergenceTargetID);
 
-                RenderingUtils.DrawPreceduralFullscreenQuad(cmd, renderingData.cameraData.renderer.cameraColorTarget,
+                RenderingUtils.DrawPreceduralFullscreenQuad(cmd, cameraData.renderer.cameraColorTarget,
                     RenderBufferLoadAction.Load, underwaterEffectMaterial, 1);
                 context.ExecuteCommandBuffer(cmd);
                 CommandBufferPool.Release(cmd);
@@ -154,6 +159,9 @@ namespace OceanSystem
 
             if (NeedToRenderSkyMap)
             {
+                CameraData cameraData = renderingData.cameraData;
+                if (!OceanRenderer.IsCorrectCameraType(cameraData.cameraType)) return;
+
                 CommandBuffer cmd = CommandBufferPool.Get("Ocean Sky Map");
                 RenderSkyMap(cmd);
                 context.ExecuteCommandBuffer(cmd);

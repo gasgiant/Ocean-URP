@@ -73,18 +73,6 @@ namespace OceanSystem
 			ShaderProperties();
 		}
 
-        public override void OnMaterialPreviewGUI(MaterialEditor materialEditor, Rect r, GUIStyle background)
-        {
-			return;
-        }
-
-        public override void OnMaterialInteractivePreviewGUI(MaterialEditor materialEditor, Rect r, GUIStyle background)
-        {
-			return;
-		}
-
-		
-
         void FindProperties(MaterialProperty[] properties)
 		{
 			// keywords

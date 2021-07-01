@@ -9,6 +9,9 @@ namespace OceanSystem
 {
     public class OceanRenderer : ScriptableRendererFeature
     {
+        public static bool IsCorrectCameraType(CameraType t) => t == CameraType.Game 
+            || t == CameraType.SceneView || t == CameraType.VR;
+
         [SerializeField] private OceanRenderingSettings settings;
 
         OceanGeometryPass geometryPass;
