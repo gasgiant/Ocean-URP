@@ -12,33 +12,33 @@ namespace OceanSystem
         public static bool IsCorrectCameraType(CameraType t) => t == CameraType.Game 
             || t == CameraType.SceneView || t == CameraType.VR;
 
-        [SerializeField] private OceanRenderingSettings settings;
+        [SerializeField] private OceanRenderingSettings _settings;
 
-        OceanGeometryPass geometryPass;
-        OceanUnderwaterEffectPass underwaterPass;
-        OceanSkyMapPass skyMapPass;
+        private OceanGeometryPass _geometryPass;
+        private OceanUnderwaterEffectPass _underwaterPass;
+        private OceanSkyMapPass _skyMapPass;
 
         public override void Create()
         {
-            underwaterPass = new OceanUnderwaterEffectPass(settings);
-            skyMapPass = new OceanSkyMapPass(settings);
-            geometryPass = new OceanGeometryPass(settings);
+            _underwaterPass = new OceanUnderwaterEffectPass(_settings);
+            _skyMapPass = new OceanSkyMapPass(_settings);
+            _geometryPass = new OceanGeometryPass(_settings);
             name = "Ocean";
         }
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            skyMapPass.renderPassEvent = RenderPassEvent.BeforeRenderingTransparents;
-            renderer.EnqueuePass(skyMapPass);
-            underwaterPass.renderPassEvent = RenderPassEvent.BeforeRenderingTransparents;
-            renderer.EnqueuePass(underwaterPass);
-            geometryPass.renderPassEvent = RenderPassEvent.BeforeRenderingTransparents;
-            renderer.EnqueuePass(geometryPass);
+            _skyMapPass.renderPassEvent = RenderPassEvent.BeforeRenderingTransparents;
+            renderer.EnqueuePass(_skyMapPass);
+            _underwaterPass.renderPassEvent = RenderPassEvent.BeforeRenderingTransparents;
+            renderer.EnqueuePass(_underwaterPass);
+            _geometryPass.renderPassEvent = RenderPassEvent.BeforeRenderingTransparents;
+            renderer.EnqueuePass(_geometryPass);
         }
 
         private void OnValidate()
         {
-            settings.skyMapResolution = Mathf.Clamp(settings.skyMapResolution, 16, 2048);
+            _settings.skyMapResolution = Mathf.Clamp(_settings.skyMapResolution, 16, 2048);
         }
 
         [System.Serializable]
@@ -56,17 +56,17 @@ namespace OceanSystem
         {
             get
             {
-                if (renderInEditMode == null)
-                    renderInEditMode = EditorPrefs.GetBool(RenderInEditModePrefName);
-                return renderInEditMode.Value;
+                if (_renderInEditMode == null)
+                    _renderInEditMode = EditorPrefs.GetBool(RenderInEditModePrefName);
+                return _renderInEditMode.Value;
             }
 
             set
             {
-                renderInEditMode = value;
+                _renderInEditMode = value;
             }
         }
-        private static bool? renderInEditMode = null;
+        private static bool? _renderInEditMode = null;
         public static bool IsRendering => Application.isPlaying || RenderInEditMode;
 #endif
     }

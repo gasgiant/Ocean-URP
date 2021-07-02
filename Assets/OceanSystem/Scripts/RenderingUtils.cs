@@ -17,11 +17,12 @@ namespace OceanSystem
             TextureWrapMode wrapMode, FilterMode filterMode, 
             int anisoLevel)
         {
-            RenderTexture rt = new RenderTexture(descriptor);
-
-            rt.anisoLevel = filterMode == FilterMode.Trilinear ? anisoLevel : 0;
-            rt.wrapMode = wrapMode;
-            rt.filterMode = filterMode;
+            RenderTexture rt = new RenderTexture(descriptor)
+            {
+                anisoLevel = filterMode == FilterMode.Trilinear ? anisoLevel : 0,
+                wrapMode = wrapMode,
+                filterMode = filterMode
+            };
             rt.Create();
             return rt;
         }

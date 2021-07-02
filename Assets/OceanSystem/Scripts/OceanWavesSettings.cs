@@ -32,31 +32,35 @@ namespace OceanSystem
 
         public static SpectrumSettings GetDefaultLocal()
         {
-            SpectrumSettings s = new SpectrumSettings();
-            s.energySpectrum = EnergySpectrum.PM;
-            s.windSpeed = 5;
-            s.fetch = 100;
-            s.peaking = 3.3f;
-            s.scale = 1;
-            s.cutoffWavelength = 0.01f;
-            s.windDirection = 0;
-            s.alignment = 1;
-            s.extraAlignment = 0;
+            SpectrumSettings s = new SpectrumSettings
+            {
+                energySpectrum = EnergySpectrum.PM,
+                windSpeed = 5,
+                fetch = 100,
+                peaking = 3.3f,
+                scale = 1,
+                cutoffWavelength = 0.01f,
+                windDirection = 0,
+                alignment = 1,
+                extraAlignment = 0
+            };
             return s;
         }
 
         public static SpectrumSettings GetDefaultSwell()
         {
-            SpectrumSettings s = new SpectrumSettings();
-            s.energySpectrum = EnergySpectrum.JONSWAP;
-            s.windSpeed = 10;
-            s.fetch = 100;
-            s.peaking = 10;
-            s.scale = 0;
-            s.cutoffWavelength = 1;
-            s.windDirection = 0;
-            s.alignment = 1;
-            s.extraAlignment = 0.8f;
+            SpectrumSettings s = new SpectrumSettings
+            {
+                energySpectrum = EnergySpectrum.JONSWAP,
+                windSpeed = 10,
+                fetch = 100,
+                peaking = 10,
+                scale = 0,
+                cutoffWavelength = 1,
+                windDirection = 0,
+                alignment = 1,
+                extraAlignment = 0.8f
+            };
             return s;
         }
     }
@@ -84,8 +88,8 @@ namespace OceanSystem
         [Range(0, 4)]
         public float chop = 1;
         public FoamSettings foam;
-        public SpectrumSettings local;
-        public SpectrumSettings swell;
+        public SpectrumSettings local = SpectrumSettings.GetDefaultLocal();
+        public SpectrumSettings swell = SpectrumSettings.GetDefaultSwell();
 
 #if UNITY_EDITOR
         public bool spectrumPlot;

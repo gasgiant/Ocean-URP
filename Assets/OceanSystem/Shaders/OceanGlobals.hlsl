@@ -1,8 +1,8 @@
 ﻿#if !defined(OCEAN_GLOBALS_INCLUDED)
+#define OCEAN_GLOBALS_INCLUDED
+
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/EntityLighting.hlsl"
 #include "OceanGradient.hlsl"
-
-#define OCEAN_GLOBALS_INCLUDED
 #define OCEAN_PI 3.1415926
 
 // submergence

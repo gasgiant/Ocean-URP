@@ -9,10 +9,6 @@
 
 #define PI 3.1415926
 
-RWTexture2D<float4> PrecomputedData;
-RWTexture2DArray<float4> Buffer0;
-RWTexture2DArray<float4> Buffer1;
-
 #if defined(FFT_PING_PONG)
 #define PingPong true
 #else
@@ -31,9 +27,17 @@ RWTexture2DArray<float4> Buffer1;
 #define Inverse false
 #endif
 
-uint Step;
-uint Size;
-uint TargetsCount;
+RWTexture2D<float4> PrecomputedData;
+RWTexture2DArray<float4> Buffer0;
+RWTexture2DArray<float4> Buffer1;
+
+cbuffer Params
+{
+    uint Step;
+    uint Size;
+    uint TargetsCount;
+};
+
 
 float2 ComplexMult(float2 a, float2 b)
 {

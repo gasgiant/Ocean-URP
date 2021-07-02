@@ -12,20 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05d6389fa46ca6641a6adda15de50824, type: 3}
   m_Name: Simulation Settings
   m_EditorClassIdentifier: 
-  resolution: 128
-  cascadesNumber: 4
-  anisoLevel: 6
-  simulateFoam: 1
-  updateSpectrum: 1
-  domainsMode: 0
-  simulationScale: 762
-  allowOverlap: 0
-  minWavesInCascade: 6
-  c0Scale: 0
-  c1Scale: 0
-  c2Scale: 0
-  c3Scale: 0
-  readbackCascades: 0
-  samplingIterations: 3
-  DisplayWavesSettings: {fileID: 11400000, guid: 07b4d7e62a3e90d4cb735581891aeb1c, type: 2}
-  spectrumPlot: 1
+  _resolution: 128
+  _cascadesNumber: 4
+  _anisoLevel: 6
+  _simulateFoam: 1
+  _updateSpectrum: 1
+  _domainsMode: 0
+  _simulationScale: 400
+  _allowOverlap: 0
+  _minWavesInCascade: 6
+  _c0Scale: 0
+  _c1Scale: 0
+  _c2Scale: 0
+  _c3Scale: 0
+  _readbackCascades: 0
+  _samplingIterations: 3
+  _displayWavesSettings: {fileID: 11400000, guid: 07b4d7e62a3e90d4cb735581891aeb1c, type: 2}

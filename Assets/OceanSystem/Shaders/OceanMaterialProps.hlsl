@@ -1,6 +1,13 @@
 ﻿#if !defined(OCEAN_MATERIAL_PROPS_INCLUDED)
 #define OCEAN_MATERIAL_PROPS_INCLUDED
 
+TEXTURE2D(_FoamTexture);
+SAMPLER(sampler_FoamTexture);
+TEXTURE2D(_ContactFoamTexture);
+SAMPLER(sampler_ContactFoamTexture);
+
+
+CBUFFER_START(UnityPerMaterial)
 // specular
 float _SpecularStrength;
 float _SpecularMinRoughness;
@@ -28,14 +35,11 @@ float _SssHeightMult;
 float _SssFadeDistance;
 
 // foam
-TEXTURE2D(_FoamTexture);
-SAMPLER(sampler_FoamTexture);
-TEXTURE2D(_ContactFoamTexture);
-SAMPLER(sampler_ContactFoamTexture);
 float _FoamNormalsDetail;
 float4 _WhitecapsColor;
 float4 _UnderwaterFoamColor;
 float _UnderwaterFoamParallax;
 float _ContactFoam;
+CBUFFER_END
 
 #endif

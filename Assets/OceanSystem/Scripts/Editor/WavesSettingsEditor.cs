@@ -24,16 +24,7 @@ namespace OceanSystem
         private void OnEnable()
         {
             wavesSettings = (OceanWavesSettings)target;
-            ValidateSpectrums();
             FindProperties();
-        }
-
-        public void ValidateSpectrums()
-        {
-            if (wavesSettings.local.windSpeed < 0.1f)
-                wavesSettings.local = SpectrumSettings.GetDefaultLocal();
-            if (wavesSettings.swell.windSpeed < 0.1f)
-                wavesSettings.swell = SpectrumSettings.GetDefaultSwell();
         }
 
         public override void OnInspectorGUI()

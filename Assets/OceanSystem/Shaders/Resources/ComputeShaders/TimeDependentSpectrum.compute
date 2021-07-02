@@ -9,8 +9,12 @@ Texture2DArray<float4> H0;
 // wave vector x, chop, wave vector z, frequency
 Texture2DArray<float4> WavesData;
 
-uint CascadesCount;
-float Time;
+cbuffer Params
+{
+    uint CascadesCount;
+    float Time;
+};
+
 
 
 float2 ComplexMult(float2 a, float2 b)

@@ -31,9 +31,9 @@ MonoBehaviour:
   m_Name: Ocean
   m_EditorClassIdentifier: 
   m_Active: 1
-  settings:
+  _settings:
     skyMapResolution: 256
-    updateSkyMap: 1
+    updateSkyMap: 0
     transparency: 1
     underwaterEffect: 1
 --- !u!114 &11400000

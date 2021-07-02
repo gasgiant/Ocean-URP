@@ -80,16 +80,16 @@ namespace OceanSystem
 			contactFoamEnabled = FindProperty("_CONTACT_FOAM_ENABLED", properties);
 
 			// colors
-			fogColor = FindProperty("Ocean_FogColor", properties);
-			fogDensity = FindProperty("Ocean_FogDensity", properties);
-			sssColor = FindProperty("Ocean_SssColor", properties);
-			diffuseColor = FindProperty("Ocean_DiffuseColor", properties);
-			tintDepthScale = FindProperty("Ocean_TintDepthScale", properties);
+			fogColor = FindProperty("_FogColor", properties);
+			fogDensity = FindProperty("_FogDensity", properties);
+			sssColor = FindProperty("_SssColor", properties);
+			diffuseColor = FindProperty("_DiffuseColor", properties);
+			tintDepthScale = FindProperty("_TintDepthScale", properties);
 
 			// downward reflections mask
-			downwardReflectionsColor = FindProperty("Ocean_DownwardReflectionsColor", properties);
-			downwardReflectionsRadius = FindProperty("Ocean_DownwardReflectionsRadius", properties); ;
-			downwardReflectionsSharpness = FindProperty("Ocean_DownwardReflectionsSharpness", properties); ;
+			downwardReflectionsColor = FindProperty("_DownwardReflectionsColor", properties);
+			downwardReflectionsRadius = FindProperty("_DownwardReflectionsRadius", properties); ;
+			downwardReflectionsSharpness = FindProperty("_DownwardReflectionsSharpness", properties); ;
 
 			// specular
 			specularStrength = FindProperty("_SpecularStrength", properties);
@@ -140,9 +140,9 @@ namespace OceanSystem
 			editor.ShaderProperty(diffuseColor, MakeLabel(diffuseColor));
 			editor.ShaderProperty(downwardReflectionsColor, MakeLabel(downwardReflectionsColor));
 			EditorGUI.BeginChangeCheck();
-			Gradient tint = EditorGUILayout.GradientField(new GUIContent("Tint Gradient"), GetGradient(OceanShaderPropIds.TintGradientIDs), false);
+			Gradient tint = EditorGUILayout.GradientField(new GUIContent("Tint Gradient"), GetGradient(OceanMaterialProps.TintGradient), false);
 			if (EditorGUI.EndChangeCheck())
-				SetGradient(OceanShaderPropIds.TintGradientIDs, tint);
+				SetGradient(OceanMaterialProps.TintGradient, tint);
 			editor.ShaderProperty(tintDepthScale, MakeLabel(tintDepthScale));
 			EditorGUI.indentLevel -= 1;
 			EditorGUILayout.Space();
@@ -152,9 +152,9 @@ namespace OceanSystem
 			editor.ShaderProperty(downwardReflectionsRadius, MakeLabel(downwardReflectionsRadius));
 			editor.ShaderProperty(downwardReflectionsSharpness, MakeLabel(downwardReflectionsSharpness));
 			DrawSkyMapPreview();
-			Shader.SetGlobalVector(OceanShaderPropIds.DownwardReflectionsColorID, targetMaterial.GetVector(OceanShaderPropIds.DownwardReflectionsColorID));
-			Shader.SetGlobalFloat(OceanShaderPropIds.DownwardReflectionsRadiusID, targetMaterial.GetFloat(OceanShaderPropIds.DownwardReflectionsRadiusID));
-			Shader.SetGlobalFloat(OceanShaderPropIds.DownwardReflectionsSharpnessID, targetMaterial.GetFloat(OceanShaderPropIds.DownwardReflectionsSharpnessID));
+			Shader.SetGlobalVector(OceanGlobalProps.DownwardReflectionsColorID, targetMaterial.GetVector(OceanMaterialProps.DownwardReflectionsColor));
+			Shader.SetGlobalFloat(OceanGlobalProps.DownwardReflectionsRadiusID, targetMaterial.GetFloat(OceanMaterialProps.DownwardReflectionsRadius));
+			Shader.SetGlobalFloat(OceanGlobalProps.DownwardReflectionsSharpnessID, targetMaterial.GetFloat(OceanMaterialProps.DownwardReflectionsSharpness));
 			EditorGUI.indentLevel -= 1;
 			EditorGUILayout.Space();
 

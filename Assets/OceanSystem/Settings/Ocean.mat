@@ -105,12 +105,15 @@ Material:
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
+    - _DownwardReflectionsRadius: 0.1
+    - _DownwardReflectionsSharpness: 4
     - _DstBlend: 0
     - _EnvironmentReflections: 1
     - _FoamCoverage: 0.709
     - _FoamDensity: 8.4
     - _FoamNormalsDetail: 0.489
     - _FoamPersistence: 0.866
+    - _FogDensity: 0.1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -144,6 +147,7 @@ Material:
     - _SssSunStrength: 0.35
     - _Surface: 0
     - _TRANSPARENCY_ENABLED: 1
+    - _TintDepthScale: 10
     - _UNDERWATER_ENABLED: 1
     - _UnderwaterFoam: 0.36
     - _UnderwaterFoamParallax: 1.2
@@ -159,9 +163,9 @@ Material:
     - Ocean_DownwardReflectionsColor: {r: 0, g: 0.13004069, b: 0.1792453, a: 1}
     - Ocean_FogColor: {r: 0.010893557, g: 0.029177655, b: 0.05660379, a: 1}
     - Ocean_SssColor: {r: 0.13333334, g: 0.9411765, b: 0.6039216, a: 1}
-    - Ocean_TintColor0: {r: 0, g: 0.03965041, b: 0.09217013, a: 0}
+    - Ocean_TintColor0: {r: 0, g: 0.041025557, b: 0.094412796, a: 0}
     - Ocean_TintColor1: {r: 0, g: 0.17351386, b: 0.43203577, a: 0.2}
-    - Ocean_TintColor2: {r: 0.15890837, g: 0.68352747, b: 0.79865986, a: 0.66608685}
+    - Ocean_TintColor2: {r: 0.16198544, g: 0.68352747, b: 0.79865986, a: 0.66608685}
     - Ocean_TintColor3: {r: 1, g: 1, b: 1, a: 1}
     - Ocean_TintColor4: {r: 1, g: 1, b: 1, a: 1}
     - Ocean_TintColor5: {r: 1, g: 1, b: 1, a: 1}
@@ -170,10 +174,23 @@ Material:
     - Ocean_TintGradientParams: {r: 4, g: 0, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _DiffuseColor: {r: 0, g: 0.025490196, b: 0.033333335, a: 1}
+    - _DownwardReflectionsColor: {r: 0, g: 0.08992542, b: 0.13207549, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FoamCascadesWeights: {r: 3, g: 1, b: 0.5, a: 0.3}
+    - _FogColor: {r: 0.0028835847, g: 0.023913046, b: 0.05660379, a: 1}
     - _MurkColor: {r: 0.18867922, g: 0.16357076, b: 0.0950516, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _SssColor: {r: 0, g: 1, b: 0.8926091, a: 1}
+    - _TintColor0: {r: 0, g: 0.041025557, b: 0.094412796, a: 0}
+    - _TintColor1: {r: 0, g: 0.17351386, b: 0.43203577, a: 0.2}
+    - _TintColor2: {r: 0.16198544, g: 0.68352747, b: 0.79865986, a: 0.66608685}
+    - _TintColor3: {r: 1, g: 1, b: 1, a: 1}
+    - _TintColor4: {r: 1, g: 1, b: 1, a: 1}
+    - _TintColor5: {r: 1, g: 1, b: 1, a: 1}
+    - _TintColor6: {r: 1, g: 1, b: 1, a: 1}
+    - _TintColor7: {r: 1, g: 1, b: 1, a: 1}
+    - _TintGradientParams: {r: 4, g: 0, b: 0, a: 0}
     - _WhitecapsColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &7172881441959664

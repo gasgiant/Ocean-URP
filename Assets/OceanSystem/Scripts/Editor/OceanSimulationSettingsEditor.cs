@@ -6,100 +6,102 @@ namespace OceanSystem
     [CustomEditor(typeof(OceanSimulationSettings))]
     public class OceanSimulationSettingsEditor : Editor
     {
-        SerializedProperty resolution;
-        SerializedProperty cascadesNumber;
-        SerializedProperty simulateFoam;
-        SerializedProperty updateSpectrum;
-        SerializedProperty domainsMode;
-        SerializedProperty simulationScale;
-        SerializedProperty allowOverlap;
-        SerializedProperty c0Scale;
-        SerializedProperty c1Scale;
-        SerializedProperty c2Scale;
-        SerializedProperty c3Scale;
-        SerializedProperty minWavesInCascade;
-        SerializedProperty anisoLevel;
-        SerializedProperty readbackCascades;
-        SerializedProperty samplingIterations;
+        private const string ShowPlot = "OceanSimulationSettingsShowPlot";
 
-        SerializedProperty spectrumPlot;
+        private SerializedProperty _resolution;
+        private SerializedProperty _cascadesNumber;
+        private SerializedProperty _simulateFoam;
+        private SerializedProperty _updateSpectrum;
+        private SerializedProperty _domainsMode;
+        private SerializedProperty _simulationScale;
+        private SerializedProperty _allowOverlap;
+        private SerializedProperty _c0Scale;
+        private SerializedProperty _c1Scale;
+        private SerializedProperty _c2Scale;
+        private SerializedProperty _c3Scale;
+        private SerializedProperty _minWavesInCascade;
+        private SerializedProperty _anisoLevel;
+        private SerializedProperty _readbackCascades;
+        private SerializedProperty _samplingIterations;
+        private SerializedProperty _displayWavesSettings;
 
-        OceanSimulationSettings simulationSettings;
+        private OceanSimulationSettings _simulationSettings;
 
         private void OnEnable()
         {
-            simulationSettings = (OceanSimulationSettings)target;
+            _simulationSettings = (OceanSimulationSettings)target;
 
-            resolution = serializedObject.FindProperty("resolution");
-            cascadesNumber = serializedObject.FindProperty("cascadesNumber");
-            simulateFoam = serializedObject.FindProperty("simulateFoam");
-            updateSpectrum = serializedObject.FindProperty("updateSpectrum");
-            domainsMode = serializedObject.FindProperty("domainsMode");
-            simulationScale = serializedObject.FindProperty("simulationScale");
-            allowOverlap = serializedObject.FindProperty("allowOverlap");
-            c0Scale = serializedObject.FindProperty("c0Scale");
-            c1Scale = serializedObject.FindProperty("c1Scale");
-            c2Scale = serializedObject.FindProperty("c2Scale");
-            c3Scale = serializedObject.FindProperty("c3Scale");
-            minWavesInCascade = serializedObject.FindProperty("minWavesInCascade");
-            anisoLevel = serializedObject.FindProperty("anisoLevel");
+            _resolution = serializedObject.FindProperty("_resolution");
+            _cascadesNumber = serializedObject.FindProperty("_cascadesNumber");
+            _simulateFoam = serializedObject.FindProperty("_simulateFoam");
+            _updateSpectrum = serializedObject.FindProperty("_updateSpectrum");
+            _domainsMode = serializedObject.FindProperty("_domainsMode");
+            _simulationScale = serializedObject.FindProperty("_simulationScale");
+            _allowOverlap = serializedObject.FindProperty("_allowOverlap");
+            _c0Scale = serializedObject.FindProperty("_c0Scale");
+            _c1Scale = serializedObject.FindProperty("_c1Scale");
+            _c2Scale = serializedObject.FindProperty("_c2Scale");
+            _c3Scale = serializedObject.FindProperty("_c3Scale");
+            _minWavesInCascade = serializedObject.FindProperty("_minWavesInCascade");
+            _anisoLevel = serializedObject.FindProperty("_anisoLevel");
+            _readbackCascades = serializedObject.FindProperty("_readbackCascades");
+            _samplingIterations = serializedObject.FindProperty("_samplingIterations");
 
-            readbackCascades = serializedObject.FindProperty("readbackCascades");
-            samplingIterations = serializedObject.FindProperty("samplingIterations");
-
-            spectrumPlot = serializedObject.FindProperty("spectrumPlot");
+            _displayWavesSettings = serializedObject.FindProperty("_displayWavesSettings");
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
             GUI.enabled = false;
-            EditorGUILayout.ObjectField("Script:", MonoScript.FromScriptableObject(simulationSettings), typeof(OceanSimulationSettings), false);
+            EditorGUILayout.ObjectField("Script:", MonoScript.FromScriptableObject(_simulationSettings), typeof(OceanSimulationSettings), false);
             GUI.enabled = true;
 
-            EditorGUILayout.PropertyField(resolution);
-            EditorGUILayout.PropertyField(cascadesNumber);
-            EditorGUILayout.PropertyField(anisoLevel);
-            EditorGUILayout.PropertyField(updateSpectrum);
-            EditorGUILayout.PropertyField(simulateFoam);
+            EditorGUILayout.PropertyField(_resolution);
+            EditorGUILayout.PropertyField(_cascadesNumber);
+            EditorGUILayout.PropertyField(_anisoLevel);
+            EditorGUILayout.PropertyField(_updateSpectrum);
+            EditorGUILayout.PropertyField(_simulateFoam);
             EditorGUILayout.Space();
 
             EditorGUILayout.LabelField("Physics Readback", EditorStyles.boldLabel);
             EditorGUI.indentLevel += 1;
-            EditorGUILayout.PropertyField(readbackCascades);
-            if (simulationSettings.readbackCascades != OceanSimulationSettings.ReadbackCascadesValue.None)
-                EditorGUILayout.PropertyField(samplingIterations);
+            EditorGUILayout.PropertyField(_readbackCascades);
+            if (_readbackCascades.enumValueIndex == (int)OceanSimulationSettings.ReadbackCascadesMode.None)
+                EditorGUILayout.PropertyField(_samplingIterations);
             EditorGUI.indentLevel -= 1;
             EditorGUILayout.Space();
 
             EditorGUILayout.LabelField("Cascade Domains", EditorStyles.boldLabel);
             EditorGUI.indentLevel += 1;
-            EditorGUILayout.PropertyField(domainsMode);
-            if (simulationSettings.domainsMode == OceanSimulationSettings.CascadeDomainsMode.Auto)
+            EditorGUILayout.PropertyField(_domainsMode);
+            if (_domainsMode.enumValueIndex == (int)OceanSimulationSettings.CascadeDomainsMode.Auto)
             {
-                EditorGUILayout.PropertyField(simulationScale);
+                EditorGUILayout.PropertyField(_simulationScale);
             }
             else
             {
-                EditorGUILayout.PropertyField(allowOverlap);
-                EditorGUILayout.PropertyField(minWavesInCascade);
-                EditorGUILayout.PropertyField(c0Scale);
-                EditorGUILayout.PropertyField(c1Scale);
-                if (simulationSettings.CascadesNumber > 2)
-                    EditorGUILayout.PropertyField(c2Scale);
-                if (simulationSettings.CascadesNumber > 3)
-                    EditorGUILayout.PropertyField(c3Scale);
+                EditorGUILayout.PropertyField(_allowOverlap);
+                EditorGUILayout.PropertyField(_minWavesInCascade);
+                EditorGUILayout.PropertyField(_c0Scale);
+                EditorGUILayout.PropertyField(_c1Scale);
+                if (_simulationSettings.CascadesNumber > 2)
+                    EditorGUILayout.PropertyField(_c2Scale);
+                if (_simulationSettings.CascadesNumber > 3)
+                    EditorGUILayout.PropertyField(_c3Scale);
             }
             EditorGUI.indentLevel -= 1;
 
             EditorGUILayout.Space();
             EditorGUILayout.EndFoldoutHeaderGroup();
-            EditorGUILayout.PropertyField(spectrumPlot);
-            if (simulationSettings.spectrumPlot)
+            bool showPlot = EditorGUILayout.Toggle("Show Plot", EditorPrefs.GetBool(ShowPlot));
+            EditorPrefs.SetBool(ShowPlot, showPlot);
+            if (showPlot)
             {
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("DisplayWavesSettings"));
-                if (simulationSettings.DisplayWavesSettings != null)
-                    SpectrumPlotter.DrawGraphWithCascades(simulationSettings);
+                EditorGUILayout.PropertyField(_displayWavesSettings);
+                OceanWavesSettings wavesSettings = _displayWavesSettings.objectReferenceValue as OceanWavesSettings;
+                if (wavesSettings != null)
+                    SpectrumPlotter.DrawGraphWithCascades(_simulationSettings, wavesSettings);
             }
 
             serializedObject.ApplyModifiedProperties();

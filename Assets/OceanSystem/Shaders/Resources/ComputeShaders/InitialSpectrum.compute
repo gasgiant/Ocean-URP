@@ -11,20 +11,20 @@ RWTexture2DArray<float4> H0;
 RWTexture2DArray<float4> WavesData;
 RWTexture2DArray<float2> H0K;
 
-
-float2 RampsXLimits;
+StructuredBuffer<SpectrumParameters> Spectrums;
 Texture2D<float2> EqualizerRamp;
 SamplerState samplerEqualizerRamp;
 
-uint Size;
-uint CascadesCount;
-
-float Chop;
-float4 LengthScales;
-float4 CutoffsHigh;
-float4 CutoffsLow;
-StructuredBuffer<SpectrumParameters> Spectrums;
-
+cbuffer Params
+{
+    float4 LengthScales;
+    float4 CutoffsHigh;
+    float4 CutoffsLow;
+    float2 RampsXLimits;
+    uint Size;
+    uint CascadesCount;
+    float Chop;
+};
 
 float NormalRandom(uint3 id)
 {

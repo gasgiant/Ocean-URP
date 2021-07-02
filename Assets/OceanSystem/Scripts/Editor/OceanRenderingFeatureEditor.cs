@@ -7,15 +7,15 @@ namespace OceanSystem
     [CustomEditor(typeof(OceanRenderer))]
     public class OceanRenderingSettingsPropertyDrawer : Editor
     {
-        private const string requirementTextures = "Depth Texture and Opaque Texture must " +
+        private const string RequirementTextures = "Depth Texture and Opaque Texture must " +
             "be enabled in the pipeline asset.";
-        private const string requirementDownsampling = "Opaque downsampling must be None.";
+        private const string RequirementDownsampling = "Opaque downsampling must be None.";
 
-        private SerializedProperty settings;
-        private SerializedProperty skyMapResolution;
-        private SerializedProperty updateSkyMap;
-        private SerializedProperty transparency;
-        private SerializedProperty underwater;
+        private SerializedProperty _settings;
+        private SerializedProperty _skyMapResolution;
+        private SerializedProperty _updateSkyMap;
+        private SerializedProperty _transparency;
+        private SerializedProperty _underwater;
 
 
         private void OnEnable()
@@ -28,16 +28,16 @@ namespace OceanSystem
             serializedObject.Update();
 
             EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(skyMapResolution);
-            EditorGUILayout.PropertyField(updateSkyMap);
-            EditorGUILayout.PropertyField(transparency);
-            EditorGUILayout.PropertyField(underwater);
+            EditorGUILayout.PropertyField(_skyMapResolution);
+            EditorGUILayout.PropertyField(_updateSkyMap);
+            EditorGUILayout.PropertyField(_transparency);
+            EditorGUILayout.PropertyField(_underwater);
 
-            if (transparency.boolValue || underwater.boolValue)
+            if (_transparency.boolValue || _underwater.boolValue)
             {
-                string message = requirementTextures;
-                if (underwater.boolValue)
-                    message += " " + requirementDownsampling;
+                string message = RequirementTextures;
+                if (_underwater.boolValue)
+                    message += " " + RequirementDownsampling;
                 EditorGUILayout.HelpBox(message, MessageType.Info, true);
             }
 
@@ -64,11 +64,11 @@ namespace OceanSystem
 
         private void FindProperties()
         {
-            settings = serializedObject.FindProperty("settings");
-            skyMapResolution = settings.FindPropertyRelative("skyMapResolution");
-            updateSkyMap = settings.FindPropertyRelative("updateSkyMap"); ;
-            transparency = settings.FindPropertyRelative("transparency"); ;
-            underwater = settings.FindPropertyRelative("underwaterEffect"); ;
+            _settings = serializedObject.FindProperty("_settings");
+            _skyMapResolution = _settings.FindPropertyRelative("skyMapResolution");
+            _updateSkyMap = _settings.FindPropertyRelative("updateSkyMap"); ;
+            _transparency = _settings.FindPropertyRelative("transparency"); ;
+            _underwater = _settings.FindPropertyRelative("underwaterEffect"); ;
         }
     }
 }

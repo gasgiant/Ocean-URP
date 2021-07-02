@@ -6,19 +6,19 @@ namespace OceanSystem
     [CustomEditor(typeof(Ocean))]
     public class OceanEditor : Editor
     {
-        private SerializedProperty reflectionsMode;
-        private SerializedProperty probe;
-        private SerializedProperty cubemap;
-        private SerializedProperty material;
+        private SerializedProperty _reflectionsMode;
+        private SerializedProperty _probe;
+        private SerializedProperty _cubemap;
+        private SerializedProperty _material;
 
-        private SerializedProperty viewer;
-        private SerializedProperty minMeshScale;
-        private SerializedProperty clipMapLevels;
-        private SerializedProperty vertexDensity;
+        private SerializedProperty _viewer;
+        private SerializedProperty _minMeshScale;
+        private SerializedProperty _clipMapLevels;
+        private SerializedProperty _vertexDensity;
 
-        private SerializedProperty simulationSettings;
-        private SerializedProperty wavesSettings;
-        private SerializedProperty equalizerPreset;
+        private SerializedProperty _simulationSettings;
+        private SerializedProperty _wavesSettings;
+        private SerializedProperty _equalizerPreset;
 
         private void OnEnable()
         {
@@ -32,47 +32,47 @@ namespace OceanSystem
             EditorGUILayout.ObjectField("Script:", MonoScript.FromMonoBehaviour((Ocean)target), typeof(Ocean), false);
             GUI.enabled = true;
 
-            EditorGUILayout.PropertyField(material);
-            EditorGUILayout.PropertyField(reflectionsMode);
-            switch ((Ocean.OceanReflectionsMode)reflectionsMode.enumValueIndex)
+            EditorGUILayout.PropertyField(_material);
+            EditorGUILayout.PropertyField(_reflectionsMode);
+            switch ((Ocean.OceanReflectionsMode)_reflectionsMode.enumValueIndex)
             {
                 case Ocean.OceanReflectionsMode.RealtimeProbe:
-                    EditorGUILayout.PropertyField(probe);
+                    EditorGUILayout.PropertyField(_probe);
                     break;
                 case Ocean.OceanReflectionsMode.Custom:
-                    EditorGUILayout.PropertyField(cubemap);
+                    EditorGUILayout.PropertyField(_cubemap);
                     break;
                 default:
                     break;
             }
 
-            EditorGUILayout.PropertyField(simulationSettings);
-            EditorGUILayout.PropertyField(wavesSettings);
-            EditorGUILayout.PropertyField(equalizerPreset);
+            EditorGUILayout.PropertyField(_simulationSettings);
+            EditorGUILayout.PropertyField(_wavesSettings);
+            EditorGUILayout.PropertyField(_equalizerPreset);
 
-            EditorGUILayout.PropertyField(viewer);
-            EditorGUILayout.PropertyField(minMeshScale);
-            EditorGUILayout.PropertyField(clipMapLevels);
-            EditorGUILayout.PropertyField(vertexDensity);
+            EditorGUILayout.PropertyField(_viewer);
+            EditorGUILayout.PropertyField(_minMeshScale);
+            EditorGUILayout.PropertyField(_clipMapLevels);
+            EditorGUILayout.PropertyField(_vertexDensity);
 
             serializedObject.ApplyModifiedProperties();
         }
 
         private void FindProperties()
         {
-            reflectionsMode = serializedObject.FindProperty("reflectionsMode");
-            probe = serializedObject.FindProperty("probe");
-            cubemap = serializedObject.FindProperty("cubemap");
-            material = serializedObject.FindProperty("material");
+            _reflectionsMode = serializedObject.FindProperty("_reflectionsMode");
+            _probe = serializedObject.FindProperty("_probe");
+            _cubemap = serializedObject.FindProperty("cubemap");
+            _material = serializedObject.FindProperty("_material");
 
-            viewer = serializedObject.FindProperty("viewer");
-            minMeshScale = serializedObject.FindProperty("minMeshScale");
-            clipMapLevels = serializedObject.FindProperty("clipMapLevels");
-            vertexDensity = serializedObject.FindProperty("vertexDensity");
+            _viewer = serializedObject.FindProperty("_viewer");
+            _minMeshScale = serializedObject.FindProperty("_minMeshScale");
+            _clipMapLevels = serializedObject.FindProperty("_clipMapLevels");
+            _vertexDensity = serializedObject.FindProperty("_vertexDensity");
 
-            simulationSettings = serializedObject.FindProperty("simulationSettings");
-            wavesSettings = serializedObject.FindProperty("wavesSettings");
-            equalizerPreset = serializedObject.FindProperty("equalizerPreset");
+            _simulationSettings = serializedObject.FindProperty("_simulationSettings");
+            _wavesSettings = serializedObject.FindProperty("_wavesSettings");
+            _equalizerPreset = serializedObject.FindProperty("_equalizerPreset");
         }
     }
 }

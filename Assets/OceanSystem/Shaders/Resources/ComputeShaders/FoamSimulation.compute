@@ -5,9 +5,13 @@ RWTexture2DArray<float4> Turbulence;
 // DxDyDzDxz, DyxDyzDxxDzz for each cascade
 RWTexture2DArray<float4> Input;
 
-uint CascadesCount;
-float DeltaTime;
-float FoamDecayRate;
+cbuffer Params
+{
+    uint CascadesCount;
+    float DeltaTime;
+    float FoamDecayRate;
+};
+
 
 void SimulateForCascade(uint3 id)
 {

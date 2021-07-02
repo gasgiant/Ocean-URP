@@ -6,67 +6,72 @@ namespace OceanSystem
     [CustomEditor(typeof(OceanEqualizerPreset))]
     public class OceanEqualizerPresetEditor : Editor
     {
-        OceanEqualizerPreset oceanEqualizerPreset;
+        private const string ShowScale = "OceanEqualizerShowScale";
+        private const string ShowChop = "OceanEqualizerShowChop";
 
-        SerializedProperty scaleFilters;
-        SerializedProperty chopFilters;
-        SerializedProperty DisplayWavesSettings;
+        private OceanEqualizerPreset _oceanEqualizerPreset;
 
-        static Color scaleFill = new Color32(54, 98, 160, 255);
-        static Color scaleLine = new Color32(129, 180, 254, 255);
+        private SerializedProperty _scaleFilters;
+        private SerializedProperty _chopFilters;
+        private SerializedProperty _displayWavesSettings;
 
-        static Color chopFill = (Color)(new Color32(252, 109, 64, 255)) * 0.8f;
-        static Color chopLine = new Color32(252, 109, 64, 255);
+        private static readonly Color _scaleFill = new Color32(54, 98, 160, 255);
+        private static readonly Color _scaleLine = new Color32(129, 180, 254, 255);
 
-        private static GUIContent
-            duplicateButtonContent = new GUIContent("+", "duplicate"),
-            deleteButtonContent = new GUIContent("-", "delete");
-        private static GUILayoutOption miniButtonWidth = GUILayout.Width(20f);
+        private static readonly Color _chopFill = (Color)(new Color32(252, 109, 64, 255)) * 0.8f;
+        private static readonly Color _chopLine = new Color32(252, 109, 64, 255);
+
+        private static readonly GUIContent _duplicateButtonContent = new GUIContent("+", "duplicate");
+        private static readonly GUIContent _deleteButtonContent = new GUIContent("-", "delete");
+        private static readonly GUILayoutOption _miniButtonWidth = GUILayout.Width(20f);
+
 
         private void OnEnable()
         {
-            oceanEqualizerPreset = (OceanEqualizerPreset)target;
-            scaleFilters = serializedObject.FindProperty("scaleFilters");
-            chopFilters = serializedObject.FindProperty("chopFilters");
-            DisplayWavesSettings = serializedObject.FindProperty("DisplayWavesSettings");
+            _oceanEqualizerPreset = (OceanEqualizerPreset)target;
+            _scaleFilters = serializedObject.FindProperty("_scaleFilters");
+            _chopFilters = serializedObject.FindProperty("_chopFilters");
+            _displayWavesSettings = serializedObject.FindProperty("_displayWavesSettings");
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
             GUI.enabled = false;
-            EditorGUILayout.ObjectField("Script:", MonoScript.FromScriptableObject(oceanEqualizerPreset), typeof(OceanEqualizerPreset), false);
+            EditorGUILayout.ObjectField("Script:", MonoScript.FromScriptableObject(_oceanEqualizerPreset), typeof(OceanEqualizerPreset), false);
             GUI.enabled = true;
 
-            EditorGUILayout.PropertyField(DisplayWavesSettings);
-            oceanEqualizerPreset.showScale = EditorGUILayout.BeginFoldoutHeaderGroup(oceanEqualizerPreset.showScale, "Scale");
+            EditorGUILayout.PropertyField(_displayWavesSettings);
+            bool showScale = EditorGUILayout.BeginFoldoutHeaderGroup(EditorPrefs.GetBool(ShowScale), "Scale");
+            EditorPrefs.SetBool(ShowScale, showScale);
             EditorGUILayout.EndFoldoutHeaderGroup();
-            if (oceanEqualizerPreset.showScale)
+            if (showScale)
             {
                 EditorGUILayout.Space();
                 SpectrumPlotter.DrawSpectrumWithEqualizer(
-                    oceanEqualizerPreset.DisplayWavesSettings,
-                    oceanEqualizerPreset.GetRamp(), 0, scaleFill, scaleLine);
-                ShowFiltersArray(scaleFilters);
+                    _displayWavesSettings.objectReferenceValue as OceanWavesSettings,
+                    _oceanEqualizerPreset.GetRamp(), 0, _scaleFill, _scaleLine);
+                ShowFiltersArray(_scaleFilters);
                 EditorGUILayout.Space();
                 EditorGUILayout.Space();
             }
 
-            oceanEqualizerPreset.showChop = EditorGUILayout.BeginFoldoutHeaderGroup(oceanEqualizerPreset.showChop, "Chop");
-            if (oceanEqualizerPreset.showChop)
+            bool showChop = EditorGUILayout.BeginFoldoutHeaderGroup(EditorPrefs.GetBool(ShowChop), "Chop");
+            EditorPrefs.SetBool(ShowChop, showChop);
+            if (showChop)
             {
                 EditorGUILayout.Space();
                 SpectrumPlotter.DrawSpectrumWithEqualizer(
-                   oceanEqualizerPreset.DisplayWavesSettings,
-                   oceanEqualizerPreset.GetRamp(), 1, chopFill, chopLine);
-                ShowFiltersArray(chopFilters);
+                   _displayWavesSettings.objectReferenceValue as OceanWavesSettings,
+                   _oceanEqualizerPreset.GetRamp(), 1, _chopFill, _chopLine);
+                ShowFiltersArray(_chopFilters);
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
 
             serializedObject.ApplyModifiedProperties();
         }
 
-        void ShowFiltersArray(SerializedProperty filters)
+        private void ShowFiltersArray(SerializedProperty filters)
         {
             for (int i = 0; i < filters.arraySize; i++)
             {
@@ -95,13 +100,13 @@ namespace OceanSystem
             }
         }
 
-        void ShowMiniButtons(SerializedProperty list, int index)
+        private void ShowMiniButtons(SerializedProperty list, int index)
         {
-            if (GUILayout.Button(duplicateButtonContent, EditorStyles.miniButtonLeft, miniButtonWidth))
+            if (GUILayout.Button(_duplicateButtonContent, EditorStyles.miniButtonLeft, _miniButtonWidth))
             {
                 list.InsertArrayElementAtIndex(index);
             }
-            if (GUILayout.Button(deleteButtonContent, EditorStyles.miniButtonRight, miniButtonWidth))
+            if (GUILayout.Button(_deleteButtonContent, EditorStyles.miniButtonRight, _miniButtonWidth))
             {
                 int oldSize = list.arraySize;
                 list.DeleteArrayElementAtIndex(index);

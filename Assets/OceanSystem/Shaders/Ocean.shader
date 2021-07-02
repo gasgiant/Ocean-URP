@@ -16,28 +16,28 @@ Shader "Ocean/Ocean"
 
         // colors
         [HDR]
-        Ocean_FogColor("Main", Color) = (0, 0, 0, 1)
-        Ocean_FogDensity("Fog Density", Float) = 0.1
+        _FogColor("Main", Color) = (0, 0, 0, 1)
+        _FogDensity("Fog Density", Float) = 0.1
         [HDR]
-        Ocean_SssColor("Subsurface scattering", Color) = (0, 0, 0, 1)
+        _SssColor("Subsurface scattering", Color) = (0, 0, 0, 1)
         [HDR]
-        Ocean_DiffuseColor("Diffuse", Color) = (0, 0, 0, 1)
-        Ocean_TintColor0("", Vector) = (1, 1, 1, 1)
-        Ocean_TintColor1("", Vector) = (1, 1, 1, 1)
-        Ocean_TintColor2("", Vector) = (1, 1, 1, 1)
-        Ocean_TintColor3("", Vector) = (1, 1, 1, 1)
-        Ocean_TintColor4("", Vector) = (1, 1, 1, 1)
-        Ocean_TintColor5("", Vector) = (1, 1, 1, 1)
-        Ocean_TintColor6("", Vector) = (1, 1, 1, 1)
-        Ocean_TintColor7("", Vector) = (1, 1, 1, 1)
-        Ocean_TintGradientParams("", Vector) = (1, 1, 1, 1)
-        Ocean_TintDepthScale("Tint Depth Scale", Float) = 10
+        _DiffuseColor("Diffuse", Color) = (0, 0, 0, 1)
+        _TintColor0("", Vector) = (1, 1, 1, 1)
+        _TintColor1("", Vector) = (1, 1, 1, 1)
+        _TintColor2("", Vector) = (1, 1, 1, 1)
+        _TintColor3("", Vector) = (1, 1, 1, 1)
+        _TintColor4("", Vector) = (1, 1, 1, 1)
+        _TintColor5("", Vector) = (1, 1, 1, 1)
+        _TintColor6("", Vector) = (1, 1, 1, 1)
+        _TintColor7("", Vector) = (1, 1, 1, 1)
+        _TintGradientParams("", Vector) = (1, 1, 1, 1)
+        _TintDepthScale("Tint Depth Scale", Float) = 10
 
         // downward reflections mask
         [HDR]
-        Ocean_DownwardReflectionsColor("Downward Reflections", Color) = (0, 0, 0, 0)
-        Ocean_DownwardReflectionsRadius("Radius", Range(-0.5, 1.1)) = 0.1
-        Ocean_DownwardReflectionsSharpness("Sharpness", Range(0, 30)) = 4
+        _DownwardReflectionsColor("Downward Reflections", Color) = (0, 0, 0, 0)
+        _DownwardReflectionsRadius("Radius", Range(-0.5, 1.1)) = 0.1
+        _DownwardReflectionsSharpness("Sharpness", Range(0, 30)) = 4
 
         // specular
         _SpecularStrength("Strength", Range(0.0, 10.0)) = 1

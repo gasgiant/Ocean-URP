@@ -6,17 +6,15 @@ namespace OceanSystem
 {
     public class OceanGeometryPass : ScriptableRenderPass
     {
-        private OceanRenderer.OceanRenderingSettings settings;
-
         private readonly static ShaderTagId OceanShaderTagId = new ShaderTagId("OceanMain");
-        private FilteringSettings filteringSettings;
-        private RenderStateBlock renderStateBlock;
+
+        private readonly OceanRenderer.OceanRenderingSettings _settings;
+        private FilteringSettings _filteringSettings;
 
         public OceanGeometryPass(OceanRenderer.OceanRenderingSettings settings)
         {
-            this.settings = settings;
-            filteringSettings = new FilteringSettings(RenderQueueRange.all);
-            renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
+            _settings = settings;
+            _filteringSettings = new FilteringSettings(RenderQueueRange.all);
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -43,7 +41,7 @@ namespace OceanSystem
                 cmd.Clear();
 
                 drawingSettings.perObjectData = PerObjectData.LightProbe;
-                context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref filteringSettings, ref renderStateBlock);
+                context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref _filteringSettings);
             }
             context.ExecuteCommandBuffer(cmd);
 
@@ -53,15 +51,15 @@ namespace OceanSystem
 
         private void SetupCameraGlobals(CommandBuffer cmd, Camera cam)
         {
-            cmd.SetGlobalMatrix(InverseViewMatrix, cam.cameraToWorldMatrix);
-            cmd.SetGlobalMatrix(InverseProjectionViewMatrix,
+            cmd.SetGlobalMatrix(GlobalShaderVariables.InverseViewMatrix, cam.cameraToWorldMatrix);
+            cmd.SetGlobalMatrix(GlobalShaderVariables.InverseProjectionViewMatrix,
                 GL.GetGPUProjectionMatrix(cam.projectionMatrix, false).inverse);
         }
 
         private void SetupGlobalKeywords(CommandBuffer cmd)
         {
-            SetGlobalKeyword(cmd, "OCEAN_TRANSPARENCY_ENABLED", settings.transparency);
-            SetGlobalKeyword(cmd, "OCEAN_UNDERWATER_ENABLED", settings.underwaterEffect);
+            SetGlobalKeyword(cmd, "OCEAN_TRANSPARENCY_ENABLED", _settings.transparency);
+            SetGlobalKeyword(cmd, "OCEAN_UNDERWATER_ENABLED", _settings.underwaterEffect);
         }
 
         private void SetGlobalKeyword(CommandBuffer cmd, string keyword, bool b)
@@ -72,29 +70,32 @@ namespace OceanSystem
                 cmd.DisableShaderKeyword(keyword);
         }
 
-        private static readonly int InverseViewMatrix = Shader.PropertyToID("Ocean_InverseViewMatrix");
-        private static readonly int InverseProjectionViewMatrix = Shader.PropertyToID("Ocean_InverseProjectionMatrix");
+        private static class GlobalShaderVariables
+        {
+            public static readonly int InverseViewMatrix = Shader.PropertyToID("Ocean_InverseViewMatrix");
+            public static readonly int InverseProjectionViewMatrix = Shader.PropertyToID("Ocean_InverseProjectionMatrix");
+        }
     }
 
     public class OceanUnderwaterEffectPass : ScriptableRenderPass
     {
-        private OceanRenderer.OceanRenderingSettings settings;
-        private readonly Material underwaterEffectMaterial;
-        private RenderTargetIdentifier submergenceTarget;
-        private static readonly int SubmergenceTargetID = Shader.PropertyToID("SubmergenceTarget");
-        private static readonly int CameraSubmergenceTextureID = Shader.PropertyToID("Ocean_CameraSubmergenceTexture");
+        private readonly OceanRenderer.OceanRenderingSettings _settings;
+        private readonly Material _underwaterEffectMaterial;
+        private RenderTargetIdentifier _submergenceTarget;
+        private static readonly int _submergenceTargetID = Shader.PropertyToID("SubmergenceTarget");
+        private static readonly int _cameraSubmergenceTextureID = Shader.PropertyToID("Ocean_CameraSubmergenceTexture");
 
         public OceanUnderwaterEffectPass(OceanRenderer.OceanRenderingSettings settings)
         {
-            this.settings = settings;
-            underwaterEffectMaterial = new Material(Shader.Find("Ocean/UnderwaterEffect"));
+            _settings = settings;
+            _underwaterEffectMaterial = new Material(Shader.Find("Ocean/UnderwaterEffect"));
         }
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
-            cmd.GetTemporaryRT(SubmergenceTargetID, 32, 32, 0, FilterMode.Bilinear, RenderTextureFormat.R8, RenderTextureReadWrite.Linear, 1);
-            submergenceTarget = new RenderTargetIdentifier(SubmergenceTargetID);
-            ConfigureTarget(submergenceTarget);
+            cmd.GetTemporaryRT(_submergenceTargetID, 32, 32, 0, FilterMode.Bilinear, RenderTextureFormat.R8, RenderTextureReadWrite.Linear, 1);
+            _submergenceTarget = new RenderTargetIdentifier(_submergenceTargetID);
+            ConfigureTarget(_submergenceTarget);
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -106,15 +107,15 @@ namespace OceanSystem
             CameraData cameraData = renderingData.cameraData;
             if (!OceanRenderer.IsCorrectCameraType(cameraData.cameraType)) return;
 
-            if (settings.underwaterEffect)
+            if (_settings.underwaterEffect)
             {
                 CommandBuffer cmd = CommandBufferPool.Get("Underwater Effect");
-                RenderingUtils.DrawPreceduralFullscreenQuad(cmd, submergenceTarget,
-                    RenderBufferLoadAction.DontCare, underwaterEffectMaterial, 0);
-                cmd.SetGlobalTexture(CameraSubmergenceTextureID, SubmergenceTargetID);
+                RenderingUtils.DrawPreceduralFullscreenQuad(cmd, _submergenceTarget,
+                    RenderBufferLoadAction.DontCare, _underwaterEffectMaterial, 0);
+                cmd.SetGlobalTexture(_cameraSubmergenceTextureID, _submergenceTargetID);
 
                 RenderingUtils.DrawPreceduralFullscreenQuad(cmd, cameraData.renderer.cameraColorTarget,
-                    RenderBufferLoadAction.Load, underwaterEffectMaterial, 1);
+                    RenderBufferLoadAction.Load, _underwaterEffectMaterial, 1);
                 context.ExecuteCommandBuffer(cmd);
                 CommandBufferPool.Release(cmd);
             }
@@ -122,24 +123,24 @@ namespace OceanSystem
 
         public override void FrameCleanup(CommandBuffer cmd)
         {
-            cmd.ReleaseTemporaryRT(SubmergenceTargetID);
+            cmd.ReleaseTemporaryRT(_submergenceTargetID);
         }
     }
 
     public class OceanSkyMapPass : ScriptableRenderPass
     {
-        private OceanRenderer.OceanRenderingSettings settings;
+        private OceanRenderer.OceanRenderingSettings _settings;
 
-        private static readonly int SkyMapID = Shader.PropertyToID("Ocean_SkyMap");
-        private readonly Material skyMapMaterial;
-        private RenderTexture skyMap;
-        private bool skyMapRendered;
-        private bool NeedToRenderSkyMap => settings.updateSkyMap || !skyMapRendered;
+        private static readonly int _skyMapID = Shader.PropertyToID("Ocean_SkyMap");
+        private readonly Material _skyMapMaterial;
+        private RenderTexture _skyMap;
+        private bool _skyMapRendered;
+        private bool NeedToRenderSkyMap => _settings.updateSkyMap || !_skyMapRendered;
 
         public OceanSkyMapPass(OceanRenderer.OceanRenderingSettings settings)
         {
-            this.settings = settings;
-            skyMapMaterial = new Material(Shader.Find("Ocean/StereographicSky"));
+            this._settings = settings;
+            _skyMapMaterial = new Material(Shader.Find("Ocean/StereographicSky"));
         }
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
@@ -147,7 +148,7 @@ namespace OceanSystem
             if (NeedToRenderSkyMap)
             {
                 CreateSkyMapTexture();
-                ConfigureTarget(skyMap);
+                ConfigureTarget(_skyMap);
             } 
         }
 
@@ -171,27 +172,29 @@ namespace OceanSystem
 
         private void RenderSkyMap(CommandBuffer cmd)
         {
-            Blit(cmd, (RenderTexture)null, skyMap, skyMapMaterial, 0);
-            cmd.SetGlobalTexture(SkyMapID, skyMap);
-            skyMapRendered = true;
+            Blit(cmd, (RenderTexture)null, _skyMap, _skyMapMaterial, 0);
+            cmd.SetGlobalTexture(_skyMapID, _skyMap);
+            _skyMapRendered = true;
         }
 
         private void CreateSkyMapTexture()
         {
-            if (skyMap == null || skyMap.height != settings.skyMapResolution)
+            if (_skyMap == null || _skyMap.height != _settings.skyMapResolution)
             {
-                if (skyMap != null)
-                    skyMap.Release();
-                skyMap = new RenderTexture(settings.skyMapResolution, settings.skyMapResolution, 0,
-                    RenderTextureFormat.DefaultHDR, RenderTextureReadWrite.Linear);
-                skyMap.name = "SkyMap";
-                skyMap.antiAliasing = 1;
-                skyMap.wrapMode = TextureWrapMode.Clamp;
-                skyMap.useMipMap = true;
-                skyMap.autoGenerateMips = true;
-                skyMap.filterMode = FilterMode.Trilinear;
-                skyMap.anisoLevel = 9;
-                skyMap.Create();
+                if (_skyMap != null)
+                    _skyMap.Release();
+                _skyMap = new RenderTexture(_settings.skyMapResolution, _settings.skyMapResolution, 0, 
+                    RenderTextureFormat.DefaultHDR, RenderTextureReadWrite.Linear)
+                {
+                    name = "SkyMap",
+                    antiAliasing = 1,
+                    wrapMode = TextureWrapMode.Clamp,
+                    useMipMap = true,
+                    autoGenerateMips = true,
+                    filterMode = FilterMode.Trilinear,
+                    anisoLevel = 9
+                };
+                _skyMap.Create();
             }
         }
     }

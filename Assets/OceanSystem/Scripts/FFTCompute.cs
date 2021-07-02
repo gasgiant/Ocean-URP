@@ -10,8 +10,12 @@ namespace OceanSystem
         private const int LocalWorkGroupsX = 8;
         private const int LocalWorkGroupsY = 8;
 
-        private static readonly Dictionary<int, RenderTexture> precomputedDatas = new Dictionary<int, RenderTexture>();
-        private static ComputeShader FftShader;
+        private static readonly Dictionary<int, RenderTexture> _precomputedData = new Dictionary<int, RenderTexture>();
+        private static ComputeShader _fftShader;
+        private static int _precomputeKernel;
+        private static int _fftStepKernel;
+        private static int _scaleKernel;
+        private static int _permuteKernel;
 
         public static void FFT2D(CommandBuffer cmd, RenderTexture input, RenderTexture buffer, bool outputToInput = false)
         {
@@ -26,12 +30,12 @@ namespace OceanSystem
 
         public static void ReleasePrecomputedTextures()
         {
-            foreach (var item in precomputedDatas.Values)
+            foreach (var item in _precomputedData.Values)
             {
                 item.Release();
             }
 
-            precomputedDatas.Clear();
+            _precomputedData.Clear();
         }
 
         private static void DoFFT(CommandBuffer cmd, bool inverse, RenderTexture input, RenderTexture buffer, bool outputToInput = false,
@@ -59,7 +63,7 @@ namespace OceanSystem
 
             ComputeShader fftShader = GetFftShader();
 
-            cmd.SetComputeIntParam(fftShader, TargetsCountID, input.volumeDepth);
+            cmd.SetComputeIntParam(fftShader, ShaderVariables.TargetsCount, input.volumeDepth);
 
             if (inverse)
                 cmd.EnableShaderKeyword("FFT_INVERSE");
@@ -67,32 +71,32 @@ namespace OceanSystem
                 cmd.DisableShaderKeyword("FFT_INVERSE");
 
             bool pingPong = false;
-            cmd.SetComputeTextureParam(fftShader, FftStepKernel, PrecomputedDataID, GetPrecomputedData(size));
-            cmd.SetComputeTextureParam(fftShader, FftStepKernel, Buffer0ID, input);
-            cmd.SetComputeTextureParam(fftShader, FftStepKernel, Buffer1ID, buffer);
+            cmd.SetComputeTextureParam(fftShader, _fftStepKernel, ShaderVariables.PrecomputedData, GetPrecomputedData(size));
+            cmd.SetComputeTextureParam(fftShader, _fftStepKernel, ShaderVariables.Buffer0, input);
+            cmd.SetComputeTextureParam(fftShader, _fftStepKernel, ShaderVariables.Buffer1, buffer);
 
             cmd.DisableShaderKeyword("FFT_DIRECTION");
             for (int i = 0; i < logSize; i++)
             {
                 pingPong = !pingPong;
-                cmd.SetComputeIntParam(fftShader, StepID, i);
+                cmd.SetComputeIntParam(fftShader, ShaderVariables.Step, i);
                 if (pingPong)
                     cmd.EnableShaderKeyword("FFT_PING_PONG");
                 else
                     cmd.DisableShaderKeyword("FFT_PING_PONG");
-                cmd.DispatchCompute(fftShader, FftStepKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+                cmd.DispatchCompute(fftShader, _fftStepKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
             }
 
             cmd.EnableShaderKeyword("FFT_DIRECTION");
             for (int i = 0; i < logSize; i++)
             {
                 pingPong = !pingPong;
-                cmd.SetComputeIntParam(fftShader, StepID, i);
+                cmd.SetComputeIntParam(fftShader, ShaderVariables.Step, i);
                 if (pingPong)
                     cmd.EnableShaderKeyword("FFT_PING_PONG");
                 else
                     cmd.DisableShaderKeyword("FFT_PING_PONG");
-                cmd.DispatchCompute(fftShader, FftStepKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+                cmd.DispatchCompute(fftShader, _fftStepKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
             }
 
             if (pingPong && outputToInput)
@@ -107,40 +111,40 @@ namespace OceanSystem
 
             if (permute)
             {
-                cmd.SetComputeIntParam(fftShader, SizeID, size);
-                cmd.SetComputeTextureParam(fftShader, PermuteKernel, Buffer0ID, outputToInput ? input : buffer);
-                cmd.DispatchCompute(fftShader, PermuteKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+                cmd.SetComputeIntParam(fftShader, ShaderVariables.Size, size);
+                cmd.SetComputeTextureParam(fftShader, _permuteKernel, ShaderVariables.Buffer0, outputToInput ? input : buffer);
+                cmd.DispatchCompute(fftShader, _permuteKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
             }
 
             if (scale)
             {
-                cmd.SetComputeIntParam(fftShader, SizeID, size);
-                cmd.SetComputeTextureParam(fftShader, ScaleKernel, Buffer0ID, outputToInput ? input : buffer);
-                cmd.DispatchCompute(fftShader, ScaleKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+                cmd.SetComputeIntParam(fftShader, ShaderVariables.Size, size);
+                cmd.SetComputeTextureParam(fftShader, _scaleKernel, ShaderVariables.Buffer0, outputToInput ? input : buffer);
+                cmd.DispatchCompute(fftShader, _scaleKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
             }
         }
 
         private static ComputeShader GetFftShader()
         {
-            if (FftShader != null && Application.isPlaying)
+            if (_fftShader != null && Application.isPlaying)
             {
-                return FftShader;
+                return _fftShader;
             }
             else
             {
-                FftShader = (ComputeShader)Resources.Load(ShaderPath);
-                PrecomputeKernel = FftShader.FindKernel("PrecomputeTwiddleFactorsAndInputIndices");
-                FftStepKernel = FftShader.FindKernel("FftStep");
-                ScaleKernel = FftShader.FindKernel("Scale");
-                PermuteKernel = FftShader.FindKernel("Permute");
-                return FftShader;
+                _fftShader = (ComputeShader)Resources.Load(ShaderPath);
+                _precomputeKernel = _fftShader.FindKernel("PrecomputeTwiddleFactorsAndInputIndices");
+                _fftStepKernel = _fftShader.FindKernel("FftStep");
+                _scaleKernel = _fftShader.FindKernel("Scale");
+                _permuteKernel = _fftShader.FindKernel("Permute");
+                return _fftShader;
             }
         }
 
         private static RenderTexture GetPrecomputedData(int size)
         {
-            if (precomputedDatas.ContainsKey(size) && Application.isPlaying)
-                return precomputedDatas[size];
+            if (_precomputedData.ContainsKey(size) && Application.isPlaying)
+                return _precomputedData[size];
             else
             {
                 int logSize = (int) Mathf.Log(size, 2);
@@ -149,27 +153,23 @@ namespace OceanSystem
                 rt.enableRandomWrite = true;
                 rt.Create();
 
-                FftShader.SetInt(SizeID, size);
-                FftShader.SetTexture(PrecomputeKernel, PrecomputedDataID, rt);
-                FftShader.Dispatch(PrecomputeKernel, logSize, size / 2 / LocalWorkGroupsY, 1);
+                _fftShader.SetInt(ShaderVariables.Size, size);
+                _fftShader.SetTexture(_precomputeKernel, ShaderVariables.PrecomputedData, rt);
+                _fftShader.Dispatch(_precomputeKernel, logSize, size / 2 / LocalWorkGroupsY, 1);
                 if (Application.isPlaying)
-                    precomputedDatas.Add(size, rt);
+                    _precomputedData.Add(size, rt);
                 return rt;
             }
         }
 
-        // Kernel IDs:
-        private static int PrecomputeKernel;
-        private static int FftStepKernel;
-        private static int ScaleKernel;
-        private static int PermuteKernel;
-
-        // Property IDs:
-        private static readonly int PrecomputedDataID = Shader.PropertyToID("PrecomputedData");
-        private static readonly int Buffer0ID = Shader.PropertyToID("Buffer0");
-        private static readonly int Buffer1ID = Shader.PropertyToID("Buffer1");
-        private static readonly int SizeID = Shader.PropertyToID("Size");
-        private static readonly int StepID = Shader.PropertyToID("Step");
-        private static readonly int TargetsCountID = Shader.PropertyToID("TargetsCount");
+        private static class ShaderVariables
+        {
+            public static readonly int PrecomputedData = Shader.PropertyToID("PrecomputedData");
+            public static readonly int Buffer0 = Shader.PropertyToID("Buffer0");
+            public static readonly int Buffer1 = Shader.PropertyToID("Buffer1");
+            public static readonly int Size = Shader.PropertyToID("Size");
+            public static readonly int Step = Shader.PropertyToID("Step");
+            public static readonly int TargetsCount = Shader.PropertyToID("TargetsCount");
+        }
     }
 }

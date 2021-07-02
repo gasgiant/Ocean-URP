@@ -466,17 +466,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69112c270b4b834429cb51724e4a421f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 10252c97548dc8b47995a41628c2d275, type: 2}
-  reflectionsMode: 0
-  probe: {fileID: 0}
-  cubemap: {fileID: 0}
-  simulationSettings: {fileID: 11400000, guid: 59c5d1e11cdd336428ee3e1f68810c3f, type: 2}
-  wavesSettings: {fileID: 11400000, guid: 07b4d7e62a3e90d4cb735581891aeb1c, type: 2}
-  equalizerPreset: {fileID: 11400000, guid: 1fd9d91ff7b9c9a4c91fe8d00b1d9ef0, type: 2}
-  viewer: {fileID: 1687258585}
-  minMeshScale: 15
-  clipMapLevels: 7
-  vertexDensity: 25
+  _material: {fileID: 2100000, guid: 10252c97548dc8b47995a41628c2d275, type: 2}
+  _reflectionsMode: 0
+  _probe: {fileID: 0}
+  _cubemap: {fileID: 0}
+  _simulationSettings: {fileID: 11400000, guid: 59c5d1e11cdd336428ee3e1f68810c3f, type: 2}
+  _wavesSettings: {fileID: 11400000, guid: 07b4d7e62a3e90d4cb735581891aeb1c, type: 2}
+  _equalizerPreset: {fileID: 11400000, guid: 1fd9d91ff7b9c9a4c91fe8d00b1d9ef0, type: 2}
+  _viewer: {fileID: 1687258585}
+  _minMeshScale: 15
+  _clipMapLevels: 7
+  _vertexDensity: 25
 --- !u!1 &2138677391
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,59 +5,66 @@ namespace OceanSystem
 {
     public class OceanSimulation
     {
+        public OceanCollision Collision => _collision;
+
+        public OceanSimulationSettings SimulationSettings;
+        public OceanWavesSettings WavesSettings;
+        public OceanEqualizerPreset EqualizerPreset;
+
+        private static float OceanTime => (float)(Time.timeSinceLevelLoadAsDouble % 18000);
+
         private const string InitialSpectrumShaderPath = "ComputeShaders/InitialSpectrum";
         private const string TimeDependentSpectrumShaderPath = "ComputeShaders/TimeDependentSpectrum";
         private const string FoamSimulationShaderPath = "ComputeShaders/FoamSimulation";
         private const int LocalWorkGroupsX = 8;
         private const int LocalWorkGroupsY = 8;
 
-        public OceanCollision Collision => collision;
+        private readonly ComputeShader _initialSpectrumShader;
+        private readonly ComputeShader _timeDependentSpectrumShader;
+        private readonly ComputeShader _foamSimulationShader;
 
-        public OceanSimulationSettings SimulationSettings;
-        public OceanWavesSettings WavesSettings;
-        public OceanEqualizerPreset EqualizerPreset;
+        private readonly int _generateNoiseKernel;
+        private readonly int _initialSpectrumKernel;
+        private readonly int _conjugateSpectrumKernel;
+        private readonly int _calculateAmplitudesKernel;
+        private readonly int _simulateFoamKernel;
+        private readonly int _initializeFoamKernel;
 
-        private int size;
-        private ComputeShader initialSpectrumShader;
-        private ComputeShader timeDependentSpectrumShader;
-        private ComputeShader foamSimulationShader;
+        private int _size;
+        private RenderTexture _gaussianNoise;
+        private RenderTexture _initialSpectrum;
+        private RenderTexture _wavesData;
+        private RenderTexture _initializationBuffer;
+        private RenderTexture _fftBuffer;
+        private RenderTexture _fftInOut;
+        private RenderTexture _turbulence;
+        private SpectrumSettings[] _spectrums = new SpectrumSettings[2];
+        private ComputeBuffer _spectrumsBuffer;
+        private OceanCollision _collision;
+        private Vector2Int _currrentTextureParams = -Vector2Int.one;
+        private bool _isSpectrumInitialized;
+        private bool NeedToCalculateSpectrum => !_isSpectrumInitialized || SimulationSettings.UpdateSpectrum;
 
-        private RenderTexture gaussianNoise;
-        private RenderTexture initialSpectrum;
-        private RenderTexture wavesData;
-        private RenderTexture initializationBuffer;
-        private RenderTexture fftBuffer;
-        private RenderTexture fftInOut;
-        private RenderTexture turbulence;
-        private SpectrumSettings[] spectrums = new SpectrumSettings[2];
-        private ComputeBuffer spectrumsBuffer;
-        private OceanCollision collision;
-        private bool isSpectrumInitialized;
-        private bool NeedToCalculateSpectrum => !isSpectrumInitialized || SimulationSettings.updateSpectrum;
-        Vector2Int currrentTextureParams = -Vector2Int.one;
-
-        private static float OceanTime => (float)(Time.timeSinceLevelLoadAsDouble % 18000);
-
-        public OceanSimulation(OceanSimulationSettings SimulationSettings, 
-            OceanWavesSettings WavesSettings, OceanEqualizerPreset EqualizerPreset)
+        public OceanSimulation(OceanSimulationSettings simulationSettings, 
+            OceanWavesSettings wavesSettings, OceanEqualizerPreset equalizerPreset)
         {
-            this.SimulationSettings = SimulationSettings;
-            this.WavesSettings = WavesSettings;
-            this.EqualizerPreset = EqualizerPreset;
+            SimulationSettings = simulationSettings;
+            WavesSettings = wavesSettings;
+            EqualizerPreset = equalizerPreset;
 
-            initialSpectrumShader = (ComputeShader)Resources.Load(InitialSpectrumShaderPath);
-            timeDependentSpectrumShader = (ComputeShader)Resources.Load(TimeDependentSpectrumShaderPath);
-            foamSimulationShader = (ComputeShader)Resources.Load(FoamSimulationShaderPath);
+            _initialSpectrumShader = (ComputeShader)Resources.Load(InitialSpectrumShaderPath);
+            _timeDependentSpectrumShader = (ComputeShader)Resources.Load(TimeDependentSpectrumShaderPath);
+            _foamSimulationShader = (ComputeShader)Resources.Load(FoamSimulationShaderPath);
 
-            GenerateNoiseKernel = initialSpectrumShader.FindKernel("GenerateGaussianNoise");
-            InitialSpectrumKernel = initialSpectrumShader.FindKernel("CalculateInitialSpectrum");
-            ConjugateSpectrumKernel = initialSpectrumShader.FindKernel("CalculateConjugatedSpectrum");
-            CalculateAmplitudesKernel = timeDependentSpectrumShader.FindKernel("CalculateAmplitudes");
-            SimulateFoamKernel = foamSimulationShader.FindKernel("Simulate");
-            InitializeFoamKernel = foamSimulationShader.FindKernel("Initialize");
+            _generateNoiseKernel = _initialSpectrumShader.FindKernel("GenerateGaussianNoise");
+            _initialSpectrumKernel = _initialSpectrumShader.FindKernel("CalculateInitialSpectrum");
+            _conjugateSpectrumKernel = _initialSpectrumShader.FindKernel("CalculateConjugatedSpectrum");
+            _calculateAmplitudesKernel = _timeDependentSpectrumShader.FindKernel("CalculateAmplitudes");
+            _simulateFoamKernel = _foamSimulationShader.FindKernel("Simulate");
+            _initializeFoamKernel = _foamSimulationShader.FindKernel("Initialize");
 
-            spectrumsBuffer = new ComputeBuffer(2, 8 * sizeof(float) + 1 * sizeof(uint));
-            currrentTextureParams = -Vector2Int.one;
+            _spectrumsBuffer = new ComputeBuffer(2, 8 * sizeof(float) + 1 * sizeof(uint));
+            _currrentTextureParams = -Vector2Int.one;
         }
 
         public void Update()
@@ -71,13 +78,13 @@ namespace OceanSystem
             UpdateSimulation(cmd, OceanTime * WavesSettings.timeScale, Time.deltaTime * WavesSettings.timeScale);
             Graphics.ExecuteCommandBuffer(cmd);
             cmd.Release();
-            collision.DoReadbacks();
+            _collision.DoReadbacks();
             SetGlobalShaderVariables();
         }
 
         public void ReleaseResources()
         {
-            if (spectrumsBuffer != null) spectrumsBuffer.Release();
+            if (_spectrumsBuffer != null) _spectrumsBuffer.Release();
             ReleaseRenderTextures();
         }
 
@@ -85,19 +92,19 @@ namespace OceanSystem
         {
             Vector2Int newTextureParams = new Vector2Int(SimulationSettings.Resolution, 
                 SimulationSettings.CascadesNumber);
-            if (newTextureParams == currrentTextureParams)
+            if (newTextureParams == _currrentTextureParams)
             {
-                fftInOut.anisoLevel = SimulationSettings.anisoLevel;
-                turbulence.anisoLevel = SimulationSettings.anisoLevel;
+                _fftInOut.anisoLevel = SimulationSettings.AnisoLevel;
+                _turbulence.anisoLevel = SimulationSettings.AnisoLevel;
                 return;
             }
 
-            isSpectrumInitialized = false;
-            currrentTextureParams = newTextureParams;
-            size = SimulationSettings.Resolution;
-            InitializeRenderTextures(size, SimulationSettings.CascadesNumber, SimulationSettings.anisoLevel);
+            _isSpectrumInitialized = false;
+            _currrentTextureParams = newTextureParams;
+            _size = SimulationSettings.Resolution;
+            InitializeRenderTextures(_size, SimulationSettings.CascadesNumber, SimulationSettings.AnisoLevel);
             SetCascadesKeywords(SimulationSettings.CascadesNumber);
-            collision = new OceanCollision(size, fftInOut, SimulationSettings);
+            _collision = new OceanCollision(_size, _fftInOut, SimulationSettings);
         }
 
         private void InitializeRenderTextures(int size, int cascadesNumber, int anisoLevel)
@@ -129,35 +136,35 @@ namespace OceanSystem
             var turbulenceTextureDescriptor = initialsDescriptor;
             turbulenceTextureDescriptor.useMipMap = true;
 
-            initialSpectrum = RenderingUtils.CreateRenderTexture(initialsDescriptor, TextureWrapMode.Repeat, FilterMode.Point, 0);
-            wavesData = RenderingUtils.CreateRenderTexture(initialsDescriptor, TextureWrapMode.Repeat, FilterMode.Point, 0);
-            initializationBuffer = RenderingUtils.CreateRenderTexture(initialsDescriptor, TextureWrapMode.Repeat, FilterMode.Point, 0);
-            gaussianNoise = RenderingUtils.CreateRenderTexture(noiseTextureDescriptor, TextureWrapMode.Repeat, FilterMode.Point, 0);
-            turbulence = RenderingUtils.CreateRenderTexture(turbulenceTextureDescriptor, TextureWrapMode.Repeat, FilterMode.Trilinear, anisoLevel);
-            fftBuffer = RenderingUtils.CreateRenderTexture(displacementAndDerivativesTextureDescriptor, TextureWrapMode.Repeat, FilterMode.Trilinear, anisoLevel);
-            fftInOut = RenderingUtils.CreateRenderTexture(displacementAndDerivativesTextureDescriptor, TextureWrapMode.Repeat, FilterMode.Trilinear, anisoLevel);
+            _initialSpectrum = RenderingUtils.CreateRenderTexture(initialsDescriptor, TextureWrapMode.Repeat, FilterMode.Point, 0);
+            _wavesData = RenderingUtils.CreateRenderTexture(initialsDescriptor, TextureWrapMode.Repeat, FilterMode.Point, 0);
+            _initializationBuffer = RenderingUtils.CreateRenderTexture(initialsDescriptor, TextureWrapMode.Repeat, FilterMode.Point, 0);
+            _gaussianNoise = RenderingUtils.CreateRenderTexture(noiseTextureDescriptor, TextureWrapMode.Repeat, FilterMode.Point, 0);
+            _turbulence = RenderingUtils.CreateRenderTexture(turbulenceTextureDescriptor, TextureWrapMode.Repeat, FilterMode.Trilinear, anisoLevel);
+            _fftBuffer = RenderingUtils.CreateRenderTexture(displacementAndDerivativesTextureDescriptor, TextureWrapMode.Repeat, FilterMode.Trilinear, anisoLevel);
+            _fftInOut = RenderingUtils.CreateRenderTexture(displacementAndDerivativesTextureDescriptor, TextureWrapMode.Repeat, FilterMode.Trilinear, anisoLevel);
 
-            Shader.SetGlobalTexture(GlobalShaderVariables.DisplacementAndDerivatives, fftInOut);
-            Shader.SetGlobalTexture(GlobalShaderVariables.Turbulence, turbulence);
+            Shader.SetGlobalTexture(GlobalShaderVariables.DisplacementAndDerivatives, _fftInOut);
+            Shader.SetGlobalTexture(GlobalShaderVariables.Turbulence, _turbulence);
 
-            initialSpectrumShader.SetInt(SimualtionVariables.Size, size);
-            initialSpectrumShader.SetInt(SimualtionVariables.CascadesCount, cascadesNumber);
-            initialSpectrumShader.SetTexture(GenerateNoiseKernel, SimualtionVariables.Noise, gaussianNoise);
-            initialSpectrumShader.Dispatch(GenerateNoiseKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+            _initialSpectrumShader.SetInt(SimualtionVariables.Size, size);
+            _initialSpectrumShader.SetInt(SimualtionVariables.CascadesCount, cascadesNumber);
+            _initialSpectrumShader.SetTexture(_generateNoiseKernel, SimualtionVariables.Noise, _gaussianNoise);
+            _initialSpectrumShader.Dispatch(_generateNoiseKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
 
-            foamSimulationShader.SetTexture(InitializeFoamKernel, SimualtionVariables.Turbulence, turbulence);
-            foamSimulationShader.Dispatch(InitializeFoamKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+            _foamSimulationShader.SetTexture(_initializeFoamKernel, SimualtionVariables.Turbulence, _turbulence);
+            _foamSimulationShader.Dispatch(_initializeFoamKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
         }
 
         private void ReleaseRenderTextures()
         {
-            if (gaussianNoise != null) gaussianNoise.Release();
-            if (initialSpectrum != null) initialSpectrum.Release();
-            if (wavesData != null) wavesData.Release();
-            if (initializationBuffer != null) initializationBuffer.Release();
-            if (fftBuffer != null) fftBuffer.Release();
-            if (fftInOut != null) fftInOut.Release();
-            if (turbulence != null) turbulence.Release();
+            if (_gaussianNoise != null) _gaussianNoise.Release();
+            if (_initialSpectrum != null) _initialSpectrum.Release();
+            if (_wavesData != null) _wavesData.Release();
+            if (_initializationBuffer != null) _initializationBuffer.Release();
+            if (_fftBuffer != null) _fftBuffer.Release();
+            if (_fftInOut != null) _fftInOut.Release();
+            if (_turbulence != null) _turbulence.Release();
         }
 
         private void SetCascadesKeywords(int cascadesNumber)
@@ -175,81 +182,81 @@ namespace OceanSystem
             Vector4 cutoffsLow, cutoffsHigh;
             SimulationSettings.CalculateCascadeDomains(out cutoffsLow, out cutoffsHigh);
 
-            cmd.SetComputeIntParam(initialSpectrumShader, SimualtionVariables.Size, size);
-            cmd.SetComputeIntParam(initialSpectrumShader, SimualtionVariables.CascadesCount, SimulationSettings.CascadesNumber);
+            cmd.SetComputeIntParam(_initialSpectrumShader, SimualtionVariables.Size, _size);
+            cmd.SetComputeIntParam(_initialSpectrumShader, SimualtionVariables.CascadesCount, SimulationSettings.CascadesNumber);
 
-            cmd.SetComputeVectorParam(initialSpectrumShader, SimualtionVariables.LengthScales, SimulationSettings.LengthScales());
-            cmd.SetComputeVectorParam(initialSpectrumShader, SimualtionVariables.CutoffsHigh, cutoffsHigh);
-            cmd.SetComputeVectorParam(initialSpectrumShader, SimualtionVariables.CutoffsLow, cutoffsLow);
-            cmd.SetComputeFloatParam(initialSpectrumShader, SimualtionVariables.Depth, WavesSettings.depth);
-            cmd.SetComputeFloatParam(initialSpectrumShader, SimualtionVariables.Chop, WavesSettings.chop);
-            cmd.SetComputeVectorParam(initialSpectrumShader,
+            cmd.SetComputeVectorParam(_initialSpectrumShader, SimualtionVariables.LengthScales, SimulationSettings.LengthScales());
+            cmd.SetComputeVectorParam(_initialSpectrumShader, SimualtionVariables.CutoffsHigh, cutoffsHigh);
+            cmd.SetComputeVectorParam(_initialSpectrumShader, SimualtionVariables.CutoffsLow, cutoffsLow);
+            cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.Depth, WavesSettings.depth);
+            cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.Chop, WavesSettings.chop);
+            cmd.SetComputeVectorParam(_initialSpectrumShader,
                 SimualtionVariables.RampsXLimits, new Vector4(OceanEqualizerPreset.XMin, OceanEqualizerPreset.XMax));
 
-            spectrums[0] = WavesSettings.local;
-            spectrums[1] = WavesSettings.swell;
-            spectrumsBuffer.SetData(spectrums);
-            cmd.SetComputeBufferParam(initialSpectrumShader, InitialSpectrumKernel,
-                SimualtionVariables.Spectrums, spectrumsBuffer);
+            _spectrums[0] = WavesSettings.local;
+            _spectrums[1] = WavesSettings.swell;
+            _spectrumsBuffer.SetData(_spectrums);
+            cmd.SetComputeBufferParam(_initialSpectrumShader, _initialSpectrumKernel,
+                SimualtionVariables.Spectrums, _spectrumsBuffer);
 
-            cmd.SetComputeTextureParam(initialSpectrumShader,
-                InitialSpectrumKernel, SimualtionVariables.H0K, initializationBuffer);
-            cmd.SetComputeTextureParam(initialSpectrumShader,
-                InitialSpectrumKernel, SimualtionVariables.WavesData, wavesData);
-            cmd.SetComputeTextureParam(initialSpectrumShader,
-                InitialSpectrumKernel, SimualtionVariables.Noise, gaussianNoise);
-            cmd.SetComputeTextureParam(initialSpectrumShader,
-                InitialSpectrumKernel, SimualtionVariables.EqualizerRamp, EqualizerPreset.GetRamp());
+            cmd.SetComputeTextureParam(_initialSpectrumShader,
+                _initialSpectrumKernel, SimualtionVariables.H0K, _initializationBuffer);
+            cmd.SetComputeTextureParam(_initialSpectrumShader,
+                _initialSpectrumKernel, SimualtionVariables.WavesData, _wavesData);
+            cmd.SetComputeTextureParam(_initialSpectrumShader,
+                _initialSpectrumKernel, SimualtionVariables.Noise, _gaussianNoise);
+            cmd.SetComputeTextureParam(_initialSpectrumShader,
+                _initialSpectrumKernel, SimualtionVariables.EqualizerRamp, EqualizerPreset.GetRamp());
             // Calculating initial spectrum
-            cmd.DispatchCompute(initialSpectrumShader,
-                InitialSpectrumKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+            cmd.DispatchCompute(_initialSpectrumShader,
+                _initialSpectrumKernel, _size / LocalWorkGroupsX, _size / LocalWorkGroupsY, 1);
 
-            cmd.SetComputeTextureParam(initialSpectrumShader,
-                ConjugateSpectrumKernel, SimualtionVariables.H0, initialSpectrum);
-            cmd.SetComputeTextureParam(initialSpectrumShader,
-                ConjugateSpectrumKernel, SimualtionVariables.H0K, initializationBuffer);
+            cmd.SetComputeTextureParam(_initialSpectrumShader,
+                _conjugateSpectrumKernel, SimualtionVariables.H0, _initialSpectrum);
+            cmd.SetComputeTextureParam(_initialSpectrumShader,
+                _conjugateSpectrumKernel, SimualtionVariables.H0K, _initializationBuffer);
             // Calculating complex conjugate of the initial spectrum
-            cmd.DispatchCompute(initialSpectrumShader,
-                ConjugateSpectrumKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+            cmd.DispatchCompute(_initialSpectrumShader,
+                _conjugateSpectrumKernel, _size / LocalWorkGroupsX, _size / LocalWorkGroupsY, 1);
 
-            isSpectrumInitialized = true;
+            _isSpectrumInitialized = true;
         }
 
         private void UpdateSimulation(CommandBuffer cmd, float time, float deltaTime)
         {
             // Calculating complex amplitudes
-            cmd.SetComputeIntParam(timeDependentSpectrumShader,
+            cmd.SetComputeIntParam(_timeDependentSpectrumShader,
                 SimualtionVariables.CascadesCount, SimulationSettings.CascadesNumber);
-            cmd.SetComputeFloatParam(timeDependentSpectrumShader, SimualtionVariables.Time, time);
-            cmd.SetComputeTextureParam(timeDependentSpectrumShader,
-                CalculateAmplitudesKernel, SimualtionVariables.Result, fftInOut);
-            cmd.SetComputeTextureParam(timeDependentSpectrumShader,
-                CalculateAmplitudesKernel, SimualtionVariables.H0, initialSpectrum);
-            cmd.SetComputeTextureParam(timeDependentSpectrumShader,
-                CalculateAmplitudesKernel, SimualtionVariables.WavesData, wavesData);
-            cmd.DispatchCompute(timeDependentSpectrumShader,
-                CalculateAmplitudesKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+            cmd.SetComputeFloatParam(_timeDependentSpectrumShader, SimualtionVariables.Time, time);
+            cmd.SetComputeTextureParam(_timeDependentSpectrumShader,
+                _calculateAmplitudesKernel, SimualtionVariables.Result, _fftInOut);
+            cmd.SetComputeTextureParam(_timeDependentSpectrumShader,
+                _calculateAmplitudesKernel, SimualtionVariables.H0, _initialSpectrum);
+            cmd.SetComputeTextureParam(_timeDependentSpectrumShader,
+                _calculateAmplitudesKernel, SimualtionVariables.WavesData, _wavesData);
+            cmd.DispatchCompute(_timeDependentSpectrumShader,
+                _calculateAmplitudesKernel, _size / LocalWorkGroupsX, _size / LocalWorkGroupsY, 1);
 
             // Calculating IFFTs of complex amplitudes
-            FFTCompute.IFFT2D(cmd, fftInOut, fftBuffer, true, false, true);
-            cmd.GenerateMips(fftInOut);
+            FFTCompute.IFFT2D(cmd, _fftInOut, _fftBuffer, true, false, true);
+            cmd.GenerateMips(_fftInOut);
 
             // Simulating foam
-            if (SimulationSettings.simulateFoam)
+            if (SimulationSettings.SimulateFoam)
             {
-                cmd.SetComputeIntParam(foamSimulationShader,
+                cmd.SetComputeIntParam(_foamSimulationShader,
                     SimualtionVariables.CascadesCount, SimulationSettings.CascadesNumber);
-                cmd.SetComputeFloatParam(foamSimulationShader, SimualtionVariables.DeltaTime, deltaTime);
-                cmd.SetComputeFloatParam(foamSimulationShader, SimualtionVariables.FoamDecayRate, WavesSettings.foam.decayRate);
+                cmd.SetComputeFloatParam(_foamSimulationShader, SimualtionVariables.DeltaTime, deltaTime);
+                cmd.SetComputeFloatParam(_foamSimulationShader, SimualtionVariables.FoamDecayRate, WavesSettings.foam.decayRate);
 
-                cmd.SetComputeTextureParam(foamSimulationShader,
-                    SimulateFoamKernel, SimualtionVariables.Input, fftInOut);
-                cmd.SetComputeTextureParam(foamSimulationShader,
-                    SimulateFoamKernel, SimualtionVariables.Turbulence, turbulence);
+                cmd.SetComputeTextureParam(_foamSimulationShader,
+                    _simulateFoamKernel, SimualtionVariables.Input, _fftInOut);
+                cmd.SetComputeTextureParam(_foamSimulationShader,
+                    _simulateFoamKernel, SimualtionVariables.Turbulence, _turbulence);
 
-                cmd.DispatchCompute(foamSimulationShader,
-                    SimulateFoamKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
-                cmd.GenerateMips(turbulence); 
+                cmd.DispatchCompute(_foamSimulationShader,
+                    _simulateFoamKernel, _size / LocalWorkGroupsX, _size / LocalWorkGroupsY, 1);
+                cmd.GenerateMips(_turbulence); 
             }
         }
 
@@ -319,13 +326,5 @@ namespace OceanSystem
             public static readonly int FoamPersistence = Shader.PropertyToID("Ocean_FoamPersistence");
             public static readonly int FoamCascadesWeights = Shader.PropertyToID("Ocean_FoamCascadesWeights");
         }
-
-        // Kernel IDs
-        private int GenerateNoiseKernel;
-        private int InitialSpectrumKernel;
-        private int ConjugateSpectrumKernel;
-        private int CalculateAmplitudesKernel;
-        private int SimulateFoamKernel;
-        private int InitializeFoamKernel;
     }
 }

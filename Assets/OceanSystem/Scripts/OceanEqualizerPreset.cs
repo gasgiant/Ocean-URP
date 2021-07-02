@@ -7,70 +7,65 @@ namespace OceanSystem
     {
         public const float XMin = -1.5f;
         public const float XMax = 3.5f;
-        private const int resolution = 128;
+        private const int Resolution = 128;
 
-        [SerializeField]
-        private Filter[] scaleFilters;
-        [SerializeField]
-        private Filter[] chopFilters;
+        [SerializeField] private Filter[] _scaleFilters;
+        [SerializeField] private Filter[] _chopFilters;
 
-        private Texture2D ramp;
-        private Color[] colors = new Color[resolution];
+        private Texture2D _ramp;
+        private Color[] _colors = new Color[Resolution];
 
 #if UNITY_EDITOR
-        public OceanWavesSettings DisplayWavesSettings;
-        public bool showScale;
-        public bool showChop;
+        [SerializeField] private OceanWavesSettings _displayWavesSettings;
 
         private void OnValidate()
         {
-            for (int i = 0; i < scaleFilters.Length; i++)
+            for (int i = 0; i < _scaleFilters.Length; i++)
             {
-                if (scaleFilters[i].width < Filter.MinWidth)
-                    scaleFilters[i].width = 0.5f;
+                if (_scaleFilters[i].width < Filter.MinWidth)
+                    _scaleFilters[i].width = 0.5f;
             }
 
-            for (int i = 0; i < chopFilters.Length; i++)
+            for (int i = 0; i < _chopFilters.Length; i++)
             {
-                if (chopFilters[i].width < Filter.MinWidth)
-                    chopFilters[i].width = 0.5f;
+                if (_chopFilters[i].width < Filter.MinWidth)
+                    _chopFilters[i].width = 0.5f;
             }
 
             BakeRamp();
         }
-
 #endif
 
         public Texture2D GetRamp()
         {
-            if (ramp == null)
+            if (_ramp == null)
                 BakeRamp();
-            return ramp;
+            return _ramp;
         }
 
         private void BakeRamp()
         {
-            if (ramp == null || ramp.width != resolution)
+            if (_ramp == null || _ramp.width != Resolution)
             {
-                ramp = new Texture2D(resolution, 1, TextureFormat.RGHalf, false, true);
-                ramp.wrapMode = TextureWrapMode.Clamp;
-                ramp.filterMode = FilterMode.Bilinear;
+                _ramp = new Texture2D(Resolution, 1, TextureFormat.RGHalf, false, true);
+                _ramp.wrapMode = TextureWrapMode.Clamp;
+                _ramp.filterMode = FilterMode.Bilinear;
             }
 
-            if (colors.Length != resolution)
+            if (_colors.Length != Resolution)
             {
-                colors = new Color[resolution];
+                _colors = new Color[Resolution];
             }
 
-            for (int i = 0; i < resolution; i++)
+            for (int i = 0; i < Resolution; i++)
             {
-                float x = Mathf.Lerp(XMin, XMax, (float)i / resolution);
-                colors[i].r = Mathf.Max(0, EvaluateFiltersArray(scaleFilters, x));
-                colors[i].g = Mathf.Max(0, EvaluateFiltersArray(chopFilters, x));
+                float x = Mathf.Lerp(XMin, XMax, (float)i / Resolution);
+                _colors[i].r = Mathf.Max(0, EvaluateFiltersArray(_scaleFilters, x));
+                _colors[i].g = Mathf.Max(0, EvaluateFiltersArray(_chopFilters, x));
             }
 
-            ramp.SetPixels(colors);
-            ramp.Apply(false);
+            _ramp.SetPixels(_colors);
+            _ramp.Apply(false);
         }
 
         float EvaluateFiltersArray(Filter[] filters, float x)

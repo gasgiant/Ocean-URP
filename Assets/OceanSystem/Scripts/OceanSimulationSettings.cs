@@ -5,70 +5,74 @@ namespace OceanSystem
     [CreateAssetMenu(fileName = "New Simulation Settings", menuName = "Ocean/Simulation settings")]
     public class OceanSimulationSettings : ScriptableObject
     {
-        public int Resolution => (int)resolution;
-        public int CascadesNumber => (int)cascadesNumber;
-        public int ReadbackCascades => (int)readbackCascades;
+        public int Resolution => (int)_resolution;
+        public int CascadesNumber => (int)_cascadesNumber;
+        public int AnisoLevel => _anisoLevel;
+        public bool UpdateSpectrum => _updateSpectrum;
+        public bool SimulateFoam => _simulateFoam;
+        public int ReadbackCascades => (int)_readbackCascades;
+        public int SamplingIterations => _samplingIterations;
 
-        public ResolutionValue resolution = ResolutionValue.Seven;
-        public CascadesNumberValue cascadesNumber = CascadesNumberValue.Four;
+
+        [SerializeField] private ResolutionValue _resolution = ResolutionValue.Seven;
+        [SerializeField] private CascadesNumberValue _cascadesNumber = CascadesNumberValue.Four;
         [Range(0, 9)]
-        public int anisoLevel = 6;
-        public bool simulateFoam;
-        public bool updateSpectrum = false;
+        [SerializeField] private int _anisoLevel = 6;
+        [SerializeField] private bool _simulateFoam;
+        [SerializeField] private bool _updateSpectrum = false;
 
-        public CascadeDomainsMode domainsMode;
-        public float simulationScale = 400;
-        public bool allowOverlap = false;
+        [SerializeField] private CascadeDomainsMode _domainsMode;
+        [SerializeField] private float _simulationScale = 400;
+        [SerializeField] private bool _allowOverlap = false;
         [Range(1, 10)]
-        public float minWavesInCascade = 6;
-        public float c0Scale;
-        public float c1Scale;
-        public float c2Scale;
-        public float c3Scale;
+        [SerializeField] private float _minWavesInCascade = 6;
+        [SerializeField] private float _c0Scale;
+        [SerializeField] private float _c1Scale;
+        [SerializeField] private float _c2Scale;
+        [SerializeField] private float _c3Scale;
 
-        public ReadbackCascadesValue readbackCascades;
+        [SerializeField] private ReadbackCascadesMode _readbackCascades;
         [Range(1, 5)]
-        public int samplingIterations = 3;
+        [SerializeField] private int _samplingIterations = 3;
 
-        const int smallestWaveMultAuto = 4;
-        const int minWavesInCascadeAuto = 6;
+        const int SmallestWaveMultiplierAuto = 4;
+        const int MinWavesInCascadeAuto = 6;
 
 #if UNITY_EDITOR
-        public OceanWavesSettings DisplayWavesSettings;
-        public bool spectrumPlot;
+        [SerializeField] private OceanWavesSettings _displayWavesSettings;
 #endif
 
         public Vector4 LengthScales()
         {
             Vector4 lengthScales = Vector4.zero;
-            if (domainsMode == CascadeDomainsMode.Auto)
+            if (_domainsMode == CascadeDomainsMode.Auto)
             {
-                lengthScales[0] = simulationScale;
+                lengthScales[0] = _simulationScale;
                 for (int i = 1; i < 4; i++)
                 {
-                    lengthScales[i] = lengthScales[i - 1] * smallestWaveMultAuto * minWavesInCascadeAuto / Resolution;
+                    lengthScales[i] = lengthScales[i - 1] * SmallestWaveMultiplierAuto * MinWavesInCascadeAuto / Resolution;
                 }
             }
             else
             {
-                lengthScales = new Vector4(c0Scale, c1Scale, c2Scale, c3Scale);
+                lengthScales = new Vector4(_c0Scale, _c1Scale, _c2Scale, _c3Scale);
             }
             return lengthScales;
         }
 
         public void CalculateCascadeDomains(out Vector4 cutoffsLow, out Vector4 cutoffsHigh)
         {
-            if (domainsMode == CascadeDomainsMode.Auto)
+            if (_domainsMode == CascadeDomainsMode.Auto)
             {
-                CalculateCascadeDomainsManual(LengthScales(), false, minWavesInCascadeAuto, out cutoffsLow, out cutoffsHigh);
+                CalculateCascadeDomainsManual(LengthScales(), false, MinWavesInCascadeAuto, out cutoffsLow, out cutoffsHigh);
             }
             else
             {
-                CalculateCascadeDomainsManual(LengthScales(), allowOverlap, minWavesInCascade, out cutoffsLow, out cutoffsHigh);
+                CalculateCascadeDomainsManual(LengthScales(), _allowOverlap, _minWavesInCascade, out cutoffsLow, out cutoffsHigh);
             }
         }
 
-        void CalculateCascadeDomainsManual(Vector4 lengthScales, bool allowOverlap, float minWavesInCascade,
+        private void CalculateCascadeDomainsManual(Vector4 lengthScales, bool allowOverlap, float minWavesInCascade,
             out Vector4 cutoffsLow, out Vector4 cutoffsHigh)
         {
             Vector4 lows = new Vector4();
@@ -80,7 +84,7 @@ namespace OceanSystem
             Vector4 highs = new Vector4();
             for (int i = 0; i < 4; i++)
             {
-                highs[i] = 2 * Mathf.PI * Resolution / lengthScales[i] / smallestWaveMultAuto;
+                highs[i] = 2 * Mathf.PI * Resolution / lengthScales[i] / SmallestWaveMultiplierAuto;
             }
 
             cutoffsHigh = highs;
@@ -121,7 +125,7 @@ namespace OceanSystem
             Four = 4,
         }
 
-        public enum ReadbackCascadesValue
+        public enum ReadbackCascadesMode
         {
             [InspectorName("None")]
             None = 0,
