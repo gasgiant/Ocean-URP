@@ -22,4 +22,4 @@ MonoBehaviour:
     center: 0
     value: 0.4
     width: 0.77
-  _displayWavesSettings: {fileID: 11400000, guid: 07b4d7e62a3e90d4cb735581891aeb1c, type: 2}
+  _displaySpectrum: {fileID: 11400000, guid: df699443f1cde8d41930862a7ec6c83d, type: 2}

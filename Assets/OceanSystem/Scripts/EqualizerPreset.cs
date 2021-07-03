@@ -17,7 +17,7 @@ namespace OceanSystem
         private Texture2D _ramp;
 
 #if UNITY_EDITOR
-        [SerializeField] private OceanWavesSettings _displayWavesSettings;
+        [SerializeField] private OceanSimulationInputsProvider _displaySpectrum;
 
         private void OnValidate()
         {

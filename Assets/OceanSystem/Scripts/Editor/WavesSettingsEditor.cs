@@ -19,11 +19,11 @@ namespace OceanSystem
         SpectrumProperties localSpectrumProperties;
         SpectrumProperties swellSpectrumProperties;
 
-        OceanWavesSettings wavesSettings;
+        //OceanWavesSettings wavesSettings;
 
         private void OnEnable()
         {
-            wavesSettings = (OceanWavesSettings)target;
+            //wavesSettings = (OceanWavesSettings)target;
             FindProperties();
         }
 
@@ -31,13 +31,13 @@ namespace OceanSystem
         {
             serializedObject.Update();
             GUI.enabled = false;
-            EditorGUILayout.ObjectField("Script:", MonoScript.FromScriptableObject((OceanWavesSettings)target), typeof(OceanWavesSettings), false);
+            //EditorGUILayout.ObjectField("Script:", MonoScript.FromScriptableObject((OceanWavesSettings)target), typeof(OceanWavesSettings), false);
             GUI.enabled = true;
 
             EditorGUILayout.PropertyField(spectrumPlot);
-            if (wavesSettings.spectrumPlot)
+            //if (wavesSettings.spectrumPlot)
             {
-                SpectrumPlotter.DrawSpectrumOnly(wavesSettings);
+                //SpectrumPlotter.DrawSpectrumOnly(wavesSettings);
             }
 
             EditorGUILayout.LabelField("Common", EditorStyles.boldLabel);

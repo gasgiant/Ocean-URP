@@ -23,9 +23,10 @@ namespace OceanSystem
         private SerializedProperty _anisoLevel;
         private SerializedProperty _readbackCascades;
         private SerializedProperty _samplingIterations;
-        private SerializedProperty _displayWavesSettings;
+        private SerializedProperty _displaySpectrum;
 
         private OceanSimulationSettings _simulationSettings;
+        private OceanSimulationInputs _simulationInputs = new OceanSimulationInputs();
 
         private void OnEnable()
         {
@@ -47,7 +48,7 @@ namespace OceanSystem
             _readbackCascades = serializedObject.FindProperty("_readbackCascades");
             _samplingIterations = serializedObject.FindProperty("_samplingIterations");
 
-            _displayWavesSettings = serializedObject.FindProperty("_displayWavesSettings");
+            _displaySpectrum = serializedObject.FindProperty("_displaySpectrum");
         }
 
         public override void OnInspectorGUI()
@@ -98,10 +99,13 @@ namespace OceanSystem
             EditorPrefs.SetBool(ShowPlot, showPlot);
             if (showPlot)
             {
-                EditorGUILayout.PropertyField(_displayWavesSettings);
-                OceanWavesSettings wavesSettings = _displayWavesSettings.objectReferenceValue as OceanWavesSettings;
-                if (wavesSettings != null)
-                    SpectrumPlotter.DrawGraphWithCascades(_simulationSettings, wavesSettings);
+                EditorGUILayout.PropertyField(_displaySpectrum);
+                OceanSimulationInputsProvider inputsProvider = _displaySpectrum.objectReferenceValue as OceanSimulationInputsProvider;
+                if (inputsProvider != null)
+                {
+                    inputsProvider.PopulateInputs(_simulationInputs);
+                    SpectrumPlotter.DrawGraphWithCascades(_simulationSettings, _simulationInputs);
+                }
             }
 
             serializedObject.ApplyModifiedProperties();

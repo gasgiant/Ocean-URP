@@ -21,3 +21,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e5f6dc6ce7643234782d0f380f688f5a, type: 2}
   _localPreset: {fileID: 0}
   _swellPreset: {fileID: 0}
+  windForce: 1

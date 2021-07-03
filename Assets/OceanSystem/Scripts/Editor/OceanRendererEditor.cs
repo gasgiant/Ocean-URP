@@ -5,7 +5,7 @@ using UnityEngine;
 namespace OceanSystem
 {
     [CustomEditor(typeof(OceanRenderer))]
-    public class OceanRenderingSettingsPropertyDrawer : Editor
+    public class OceanRendererEditor : Editor
     {
         private const string RequirementTextures = "Depth Texture and Opaque Texture must " +
             "be enabled in the pipeline asset.";

@@ -39,7 +39,7 @@ namespace OceanSystem
         const int MinWavesInCascadeAuto = 6;
 
 #if UNITY_EDITOR
-        [SerializeField] private OceanWavesSettings _displayWavesSettings;
+        [SerializeField] private OceanSimulationInputsProvider _displaySpectrum;
 #endif
 
         public Vector4 LengthScales()

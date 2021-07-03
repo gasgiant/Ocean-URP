@@ -211,9 +211,11 @@ namespace OceanSystem
             cmd.SetComputeTextureParam(_initialSpectrumShader,
                 _initialSpectrumKernel, SimualtionVariables.Noise, _gaussianNoise);
             cmd.SetComputeTextureParam(_initialSpectrumShader,
-                _initialSpectrumKernel, SimualtionVariables.EqualizerRamp0, _inputs.equalizerRamp0);
+                _initialSpectrumKernel, SimualtionVariables.EqualizerRamp0, 
+                _inputs.equalizerRamp0 ? _inputs.equalizerRamp0 : EqualizerPreset.GetDefaultRamp());
             cmd.SetComputeTextureParam(_initialSpectrumShader,
-                _initialSpectrumKernel, SimualtionVariables.EqualizerRamp1, _inputs.equalizerRamp1);
+                _initialSpectrumKernel, SimualtionVariables.EqualizerRamp1, 
+                _inputs.equalizerRamp1 ? _inputs.equalizerRamp1 : EqualizerPreset.GetDefaultRamp());
             // Calculating initial spectrum
             cmd.DispatchCompute(_initialSpectrumShader,
                 _initialSpectrumKernel, _size / LocalWorkGroupsX, _size / LocalWorkGroupsY, 1);

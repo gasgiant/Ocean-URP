@@ -20,7 +20,7 @@ MonoBehaviour:
     peaking: 3.3
     scale: 1
     cutoffWavelength: 0.01
-    alignment: 0
+    alignment: 1
     extraAlignment: 0
   _foam:
     coverage: 0

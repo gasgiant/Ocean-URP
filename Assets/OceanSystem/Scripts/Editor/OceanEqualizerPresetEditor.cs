@@ -13,7 +13,9 @@ namespace OceanSystem
 
         private SerializedProperty _scaleFilters;
         private SerializedProperty _chopFilters;
-        private SerializedProperty _displayWavesSettings;
+        private SerializedProperty _displaySpectrum;
+
+        private OceanSimulationInputs _simulationInputs = new OceanSimulationInputs();
 
         private static readonly Color _scaleFill = new Color32(54, 98, 160, 255);
         private static readonly Color _scaleLine = new Color32(129, 180, 254, 255);
@@ -31,7 +33,7 @@ namespace OceanSystem
             _oceanEqualizerPreset = (EqualizerPreset)target;
             _scaleFilters = serializedObject.FindProperty("_scaleFilters");
             _chopFilters = serializedObject.FindProperty("_chopFilters");
-            _displayWavesSettings = serializedObject.FindProperty("_displayWavesSettings");
+            _displaySpectrum = serializedObject.FindProperty("_displaySpectrum");
         }
 
         public override void OnInspectorGUI()
@@ -41,15 +43,24 @@ namespace OceanSystem
             EditorGUILayout.ObjectField("Script:", MonoScript.FromScriptableObject(_oceanEqualizerPreset), typeof(EqualizerPreset), false);
             GUI.enabled = true;
 
-            EditorGUILayout.PropertyField(_displayWavesSettings);
+            EditorGUILayout.PropertyField(_displaySpectrum);
+
+            OceanSimulationInputsProvider inputsProvider = _displaySpectrum.objectReferenceValue as OceanSimulationInputsProvider;
+            OceanSimulationInputs inputs = null;
+            if (inputsProvider != null)
+            {
+                inputsProvider.PopulateInputs(_simulationInputs);
+                inputs = _simulationInputs;
+            }
+
             bool showScale = EditorGUILayout.BeginFoldoutHeaderGroup(EditorPrefs.GetBool(ShowScale), "Scale");
             EditorPrefs.SetBool(ShowScale, showScale);
             EditorGUILayout.EndFoldoutHeaderGroup();
             if (showScale)
             {
                 EditorGUILayout.Space();
-                SpectrumPlotter.DrawSpectrumWithEqualizer(
-                    _displayWavesSettings.objectReferenceValue as OceanWavesSettings,
+                
+                SpectrumPlotter.DrawSpectrumWithEqualizer(inputs,
                     _oceanEqualizerPreset.GetRamp(), 0, _scaleFill, _scaleLine);
                 ShowFiltersArray(_scaleFilters);
                 EditorGUILayout.Space();
@@ -61,8 +72,7 @@ namespace OceanSystem
             if (showChop)
             {
                 EditorGUILayout.Space();
-                SpectrumPlotter.DrawSpectrumWithEqualizer(
-                   _displayWavesSettings.objectReferenceValue as OceanWavesSettings,
+                SpectrumPlotter.DrawSpectrumWithEqualizer(inputs,
                    _oceanEqualizerPreset.GetRamp(), 1, _chopFill, _chopLine);
                 ShowFiltersArray(_chopFilters);
             }

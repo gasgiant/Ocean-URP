@@ -18,6 +18,15 @@ namespace OceanSystem
         [SerializeField] private WavesPreset _localPreset;
         [SerializeField] private WavesPreset _swellPreset;
 
+        [Range(0, 1)]
+        [SerializeField] private float windForce;
+
+        public void PopulateInputs(OceanSimulationInputs target)
+        {
+            PopulateInputs(target, windForce);
+        }
+
+
         public void PopulateInputs(OceanSimulationInputs target, float windForce01)
         {
             target.timeScale = _timeScale;

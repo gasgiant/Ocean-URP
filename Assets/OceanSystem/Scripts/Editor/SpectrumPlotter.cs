@@ -40,25 +40,25 @@ namespace OceanSystem
             }
         }
 
-        public static void DrawSpectrumOnly(OceanWavesSettings wavesSettings)
+        public static void DrawSpectrumOnly(OceanSimulationInputs simulationInputs)
         {
-            DrawSpectrum(wavesSettings);
+            DrawSpectrum(simulationInputs);
         }
 
-        public static void DrawGraphWithCascades(OceanSimulationSettings simulationSettings, OceanWavesSettings wavesSettings)
+        public static void DrawGraphWithCascades(OceanSimulationSettings simulationSettings, OceanSimulationInputs simulationInputs)
         {
-            DrawSpectrum(wavesSettings, simulationSettings);
+            DrawSpectrum(simulationInputs, simulationSettings);
         }
 
-        public static void DrawSpectrumWithEqualizer(OceanWavesSettings wavesSettings, Texture2D ramp, int channel, Color fill, Color line)
+        public static void DrawSpectrumWithEqualizer(OceanSimulationInputs simulationInputs, Texture2D ramp, int channel, Color fill, Color line)
         {
             PlotMaterial.SetInt("equalizerChannel", channel);
             PlotMaterial.SetVector("rampFill", fill);
             PlotMaterial.SetVector("rampLine", line);
-            DrawSpectrum(wavesSettings, null, ramp);
+            DrawSpectrum(simulationInputs, null, ramp);
         }
 
-        static void DrawSpectrum(OceanWavesSettings wavesSettings, OceanSimulationSettings simulationSettings = null, Texture2D ramp = null)
+        static void DrawSpectrum(OceanSimulationInputs simulationInputs, OceanSimulationSettings simulationSettings = null, Texture2D ramp = null)
         {
             Rect space = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(150));
             Rect graphSpace = space;
@@ -74,9 +74,9 @@ namespace OceanSystem
             PlotMaterial.SetFloat("showCascades", 0);
             PlotMaterial.SetFloat("drawRamp", 0);
 
-            if (wavesSettings != null)
+            if (simulationInputs != null)
             {
-                SetSpectrumSettingsToMaterial(PlotMaterial, wavesSettings);
+                SetSpectrumSettingsToMaterial(PlotMaterial, simulationInputs);
                 PlotMaterial.SetFloat("drawSpectrum", 1);
             }
 
@@ -107,23 +107,23 @@ namespace OceanSystem
             return rect.position.x + rect.width * graphX;
         }
 
-        private static void SetSpectrumSettingsToMaterial(Material material, OceanWavesSettings settings)
+        private static void SetSpectrumSettingsToMaterial(Material material, OceanSimulationInputs inputs)
         {
-            //material.SetFloat("local_scale", settings.local.scale);
-            //material.SetInt("local_energySpectrum", (int)settings.local.energySpectrum);
-            //material.SetFloat("local_windSpeed", settings.local.windSpeed);
-            //material.SetFloat("local_fetch", settings.local.fetch);
-            //material.SetFloat("local_peaking", settings.local.peaking);
-            //material.SetFloat("local_shortWaves", settings.local.cutoffWavelength);
-            //
-            //material.SetFloat("swell_scale", settings.swell.scale);
-            //material.SetInt("swell_energySpectrum", (int)settings.swell.energySpectrum);
-            //material.SetFloat("swell_windSpeed", settings.swell.windSpeed);
-            //material.SetFloat("swell_fetch", settings.swell.fetch);
-            //material.SetFloat("swell_peaking", settings.swell.peaking);
-            //material.SetFloat("swell_shortWaves", settings.swell.cutoffWavelength);
-            //
-            //material.SetFloat("Depth", settings.depth);
+            material.SetFloat("local_scale", inputs.local.scale);
+            material.SetInt("local_energySpectrum", (int)inputs.local.energySpectrum);
+            material.SetFloat("local_windSpeed", inputs.local.windSpeed);
+            material.SetFloat("local_fetch", inputs.local.fetch);
+            material.SetFloat("local_peaking", inputs.local.peaking);
+            material.SetFloat("local_shortWaves", inputs.local.cutoffWavelength);
+            
+            material.SetFloat("swell_scale", inputs.swell.scale);
+            material.SetInt("swell_energySpectrum", (int)inputs.swell.energySpectrum);
+            material.SetFloat("swell_windSpeed", inputs.swell.windSpeed);
+            material.SetFloat("swell_fetch", inputs.swell.fetch);
+            material.SetFloat("swell_peaking", inputs.swell.peaking);
+            material.SetFloat("swell_shortWaves", inputs.swell.cutoffWavelength);
+            
+            material.SetFloat("Depth", inputs.depth);
         }
 
         private static void SetCascadeMaterialProps(Material material, OceanSimulationSettings simulationSettings)

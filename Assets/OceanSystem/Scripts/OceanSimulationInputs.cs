@@ -10,8 +10,8 @@ namespace OceanSystem
         public FoamParams foam = FoamParams.GetDefault();
         public SpectrumParams local = SpectrumParams.GetDefaultLocal();
         public SpectrumParams swell = SpectrumParams.GetDefaultSwell();
-        public Texture2D equalizerRamp0 = EqualizerPreset.GetDefaultRamp();
-        public Texture2D equalizerRamp1 = EqualizerPreset.GetDefaultRamp();
+        public Texture2D equalizerRamp0;
+        public Texture2D equalizerRamp1;
         public float equalizerLerpValue;
     }
 }
