@@ -24,6 +24,8 @@ cbuffer Params
     uint Size;
     uint CascadesCount;
     float Chop;
+    float LocalWindDirection;
+    float SwellDirection;
 };
 
 float NormalRandom(uint3 id)
@@ -67,10 +69,10 @@ void CalculateInitialsForCascade(uint3 id)
 		float omega = Frequency(kLength, Depth);
 		float dOmegadk = FrequencyDerivative(kLength, Depth);
 
-		float spectrum = FullSpectrum(omega, theta, Spectrums[0]) * Spectrums[0].scale
+        float spectrum = FullSpectrum(omega, theta - LocalWindDirection / 180 * OCEANOGRAPHY_PI, Spectrums[0]) * Spectrums[0].scale
 			* ShortWavesFade(kLength, Spectrums[0].shortWavesFade);
 		if (Spectrums[1].scale > 0)
-			spectrum += FullSpectrum(omega, theta, Spectrums[1]) * Spectrums[1].scale
+            spectrum += FullSpectrum(omega, theta - SwellDirection / 180 * OCEANOGRAPHY_PI, Spectrums[1]) * Spectrums[1].scale
 				* ShortWavesFade(kLength, Spectrums[1].shortWavesFade);
 		
         float rampUV = saturate((-RampsXLimits.x + log10(2 * OCEANOGRAPHY_PI / kLength)) / (RampsXLimits.y - RampsXLimits.x));

@@ -16,8 +16,9 @@ namespace OceanSystem
 
         [Header("Simulation")]
         [SerializeField] private OceanSimulationSettings _simulationSettings;
-        [SerializeField] private OceanWavesSettings _wavesSettings;
-        [SerializeField] private OceanEqualizerPreset _equalizerPreset;
+        [SerializeField] private WindWavesInputsProvider _waveInputsProvider;
+        [SerializeField] private float _windDirection;
+        [SerializeField] private float _swellDirection;
 
         [Header("Mesh")]
         [SerializeField] private Transform _viewer;
@@ -57,7 +58,7 @@ namespace OceanSystem
         private void Setup()
         {
             if (_oceanSimulation == null)
-                _oceanSimulation = new OceanSimulation(_simulationSettings, _wavesSettings, _equalizerPreset);
+                _oceanSimulation = new OceanSimulation(_simulationSettings);
             if (!_meshObject)
                 InstantiateMeshObject();
         }
@@ -111,9 +112,9 @@ namespace OceanSystem
 
         private void UpdateSimulation()
         {
+            _waveInputsProvider.PopulateInputs(_oceanSimulation.WindWavesInputs, _windDirection, _swellDirection, 0);
+
             _oceanSimulation.SimulationSettings = _simulationSettings;
-            _oceanSimulation.WavesSettings = _wavesSettings;
-            _oceanSimulation.EqualizerPreset = _equalizerPreset;
             _oceanSimulation.Update();
         }
 

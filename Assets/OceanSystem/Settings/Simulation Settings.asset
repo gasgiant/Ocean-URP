@@ -18,13 +18,13 @@ MonoBehaviour:
   _simulateFoam: 1
   _updateSpectrum: 1
   _domainsMode: 0
-  _simulationScale: 400
+  _simulationScale: 679.06
   _allowOverlap: 0
   _minWavesInCascade: 6
-  _c0Scale: 0
-  _c1Scale: 0
-  _c2Scale: 0
-  _c3Scale: 0
+  _c0Scale: 6530
+  _c1Scale: 165.95
+  _c2Scale: 30.84
+  _c3Scale: 5.62
   _readbackCascades: 0
   _samplingIterations: 3
   _displayWavesSettings: {fileID: 11400000, guid: 07b4d7e62a3e90d4cb735581891aeb1c, type: 2}

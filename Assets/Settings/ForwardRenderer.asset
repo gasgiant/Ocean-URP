@@ -33,7 +33,7 @@ MonoBehaviour:
   m_Active: 1
   _settings:
     skyMapResolution: 256
-    updateSkyMap: 0
+    updateSkyMap: 1
     transparency: 1
     underwaterEffect: 1
 --- !u!114 &11400000

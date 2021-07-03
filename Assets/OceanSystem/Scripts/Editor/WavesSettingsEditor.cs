@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace OceanSystem
 {
-    [CustomEditor(typeof(OceanWavesSettings))]
+    //[CustomEditor(typeof(OceanWavesSettings))]
     [CanEditMultipleObjects]
     public class WavesSettingsEditor : Editor
     {
@@ -48,8 +48,8 @@ namespace OceanSystem
             EditorGUILayout.PropertyField(foam);
             EditorGUI.indentLevel -= 1;
 
-            DrawSpectrumSettings(local, localSpectrumProperties, wavesSettings.local);
-            DrawSpectrumSettings(swell, swellSpectrumProperties, wavesSettings.swell);
+            //DrawSpectrumSettings(local, localSpectrumProperties, wavesSettings.local);
+            //DrawSpectrumSettings(swell, swellSpectrumProperties, wavesSettings.swell);
 
             serializedObject.ApplyModifiedProperties();
         }
@@ -63,7 +63,7 @@ namespace OceanSystem
                 EditorGUILayout.LabelField("Energy", EditorStyles.boldLabel);
                 EditorGUILayout.PropertyField(props.energySpectrum);
                 EditorGUILayout.PropertyField(props.windSpeed);
-                if (settings.energySpectrum != EnergySpectrum.PM)
+                if (settings.energySpectrum != (int)SpectrumSettings.EnergySpectrumModel.PM)
                 {
                     EditorGUILayout.PropertyField(props.fetch);
                     EditorGUILayout.PropertyField(props.peaking);

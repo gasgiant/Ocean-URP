@@ -471,8 +471,9 @@ MonoBehaviour:
   _probe: {fileID: 0}
   _cubemap: {fileID: 0}
   _simulationSettings: {fileID: 11400000, guid: 59c5d1e11cdd336428ee3e1f68810c3f, type: 2}
-  _wavesSettings: {fileID: 11400000, guid: 07b4d7e62a3e90d4cb735581891aeb1c, type: 2}
-  _equalizerPreset: {fileID: 11400000, guid: 1fd9d91ff7b9c9a4c91fe8d00b1d9ef0, type: 2}
+  _waveInputsProvider: {fileID: 11400000, guid: df699443f1cde8d41930862a7ec6c83d, type: 2}
+  _windDirection: 0
+  _swellDirection: 0
   _viewer: {fileID: 1687258585}
   _minMeshScale: 15
   _clipMapLevels: 7

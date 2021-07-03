@@ -36,6 +36,16 @@ namespace OceanSystem
         }
 #endif
 
+        public static Texture2D GetDefaultRamp()
+        {
+            Texture2D tex = new Texture2D(1, 1, TextureFormat.RGHalf, false, true);
+            tex.wrapMode = TextureWrapMode.Clamp;
+            tex.filterMode = FilterMode.Bilinear;
+            tex.SetPixel(0, 0, Color.white);
+            tex.Apply();
+            return tex;
+        }
+
         public Texture2D GetRamp()
         {
             if (_ramp == null)

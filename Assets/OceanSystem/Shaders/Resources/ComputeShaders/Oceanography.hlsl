@@ -10,13 +10,12 @@ float Depth;
 
 struct SpectrumParameters
 {
-	uint energySpectrum;
+	int energySpectrum;
 	float windSpeed;
 	float fetch;
 	float peaking;
 	float scale;
 	float shortWavesFade;
-	float windDirection;
 	float alignment;
 	float extraAlignment;
 };
@@ -94,13 +93,11 @@ float Cosine2s(float theta, float s)
 
 float DirectionSpectrum(float theta, float omega, float peakOmega, SpectrumParameters pars)
 {
-    float angle = theta - pars.windDirection / 180 * OCEANOGRAPHY_PI;
-	
 	//float spread = DonelanBanner(angle, omega, peakOmega);
 	
 	float s = SpreadPowerHasselman(omega, peakOmega, pars.windSpeed)
 			+ lerp(16 * tanh(min(omega / peakOmega / 10, 20)), 25, pars.extraAlignment) * pars.extraAlignment * pars.extraAlignment;
-	float spread = Cosine2s(angle, s);
+	float spread = Cosine2s(theta, s);
 	
     return lerp(0.5 / OCEANOGRAPHY_PI, spread, pars.alignment);
 }

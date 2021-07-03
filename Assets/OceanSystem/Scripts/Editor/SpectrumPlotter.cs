@@ -109,21 +109,21 @@ namespace OceanSystem
 
         private static void SetSpectrumSettingsToMaterial(Material material, OceanWavesSettings settings)
         {
-            material.SetFloat("local_scale", settings.local.scale);
-            material.SetInt("local_energySpectrum", (int)settings.local.energySpectrum);
-            material.SetFloat("local_windSpeed", settings.local.windSpeed);
-            material.SetFloat("local_fetch", settings.local.fetch);
-            material.SetFloat("local_peaking", settings.local.peaking);
-            material.SetFloat("local_shortWaves", settings.local.cutoffWavelength);
-
-            material.SetFloat("swell_scale", settings.swell.scale);
-            material.SetInt("swell_energySpectrum", (int)settings.swell.energySpectrum);
-            material.SetFloat("swell_windSpeed", settings.swell.windSpeed);
-            material.SetFloat("swell_fetch", settings.swell.fetch);
-            material.SetFloat("swell_peaking", settings.swell.peaking);
-            material.SetFloat("swell_shortWaves", settings.swell.cutoffWavelength);
-
-            material.SetFloat("Depth", settings.depth);
+            //material.SetFloat("local_scale", settings.local.scale);
+            //material.SetInt("local_energySpectrum", (int)settings.local.energySpectrum);
+            //material.SetFloat("local_windSpeed", settings.local.windSpeed);
+            //material.SetFloat("local_fetch", settings.local.fetch);
+            //material.SetFloat("local_peaking", settings.local.peaking);
+            //material.SetFloat("local_shortWaves", settings.local.cutoffWavelength);
+            //
+            //material.SetFloat("swell_scale", settings.swell.scale);
+            //material.SetInt("swell_energySpectrum", (int)settings.swell.energySpectrum);
+            //material.SetFloat("swell_windSpeed", settings.swell.windSpeed);
+            //material.SetFloat("swell_fetch", settings.swell.fetch);
+            //material.SetFloat("swell_peaking", settings.swell.peaking);
+            //material.SetFloat("swell_shortWaves", settings.swell.cutoffWavelength);
+            //
+            //material.SetFloat("Depth", settings.depth);
         }
 
         private static void SetCascadeMaterialProps(Material material, OceanSimulationSettings simulationSettings)

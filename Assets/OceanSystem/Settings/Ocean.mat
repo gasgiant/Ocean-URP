@@ -175,7 +175,7 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DiffuseColor: {r: 0, g: 0.025490196, b: 0.033333335, a: 1}
-    - _DownwardReflectionsColor: {r: 0, g: 0.08992542, b: 0.13207549, a: 1}
+    - _DownwardReflectionsColor: {r: 0, g: 0.16245705, b: 0.24528301, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FoamCascadesWeights: {r: 3, g: 1, b: 0.5, a: 0.3}
     - _FogColor: {r: 0.0028835847, g: 0.023913046, b: 0.05660379, a: 1}

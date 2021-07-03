@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace OceanSystem
 {
-    [CustomEditor(typeof(Ocean))]
+    //[CustomEditor(typeof(Ocean))]
     public class OceanEditor : Editor
     {
         private SerializedProperty _reflectionsMode;
@@ -17,8 +17,6 @@ namespace OceanSystem
         private SerializedProperty _vertexDensity;
 
         private SerializedProperty _simulationSettings;
-        private SerializedProperty _wavesSettings;
-        private SerializedProperty _equalizerPreset;
 
         private void OnEnable()
         {
@@ -47,8 +45,6 @@ namespace OceanSystem
             }
 
             EditorGUILayout.PropertyField(_simulationSettings);
-            EditorGUILayout.PropertyField(_wavesSettings);
-            EditorGUILayout.PropertyField(_equalizerPreset);
 
             EditorGUILayout.PropertyField(_viewer);
             EditorGUILayout.PropertyField(_minMeshScale);
@@ -71,8 +67,6 @@ namespace OceanSystem
             _vertexDensity = serializedObject.FindProperty("_vertexDensity");
 
             _simulationSettings = serializedObject.FindProperty("_simulationSettings");
-            _wavesSettings = serializedObject.FindProperty("_wavesSettings");
-            _equalizerPreset = serializedObject.FindProperty("_equalizerPreset");
         }
     }
 }
