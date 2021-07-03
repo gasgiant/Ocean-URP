@@ -3,7 +3,7 @@ using UnityEngine;
 namespace OceanSystem
 {
     [System.Serializable]
-    public struct WindWavesFoamSettings
+    public struct FoamParams
     {
         [Range(-0.1f, 1)]
         public float coverage;
@@ -15,9 +15,9 @@ namespace OceanSystem
         public float decayRate;
         public Vector4 cascadesWeights;
 
-        public static WindWavesFoamSettings GetDefault()
+        public static FoamParams GetDefault()
         {
-            return new WindWavesFoamSettings()
+            return new FoamParams()
             {
                 density = 8.4f,
                 persistence = 0.5f,
@@ -26,9 +26,9 @@ namespace OceanSystem
             };
         }
 
-        public static WindWavesFoamSettings Lerp(WindWavesFoamSettings lhs, WindWavesFoamSettings rhs, float t)
+        public static FoamParams Lerp(FoamParams lhs, FoamParams rhs, float t)
         {
-            WindWavesFoamSettings res = new WindWavesFoamSettings();
+            FoamParams res = new FoamParams();
             res.coverage = Mathf.Lerp(lhs.coverage, rhs.coverage, t);
             res.underwater = Mathf.Lerp(lhs.underwater, rhs.underwater, t);
             res.density = Mathf.Lerp(lhs.density, rhs.density, t);

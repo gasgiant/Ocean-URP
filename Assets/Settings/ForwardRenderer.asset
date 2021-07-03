@@ -18,7 +18,7 @@ MonoBehaviour:
     updateSkyMap: 1
     transparency: 1
     underwaterEffect: 1
---- !u!114 &-6815290047557746167
+--- !u!114 &-6207778124032408749
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -33,7 +33,7 @@ MonoBehaviour:
   m_Active: 1
   _settings:
     skyMapResolution: 256
-    updateSkyMap: 1
+    updateSkyMap: 0
     transparency: 1
     underwaterEffect: 1
 --- !u!114 &11400000
@@ -49,8 +49,8 @@ MonoBehaviour:
   m_Name: ForwardRenderer
   m_EditorClassIdentifier: 
   m_RendererFeatures:
-  - {fileID: -6815290047557746167}
-  m_RendererFeatureMap: 09c2108acf396ba1
+  - {fileID: -6207778124032408749}
+  m_RendererFeatureMap: 53839bb8af8ad9a9
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   shaders:

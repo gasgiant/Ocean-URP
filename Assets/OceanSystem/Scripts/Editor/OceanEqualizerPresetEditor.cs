@@ -3,13 +3,13 @@ using UnityEditor;
 
 namespace OceanSystem
 {
-    [CustomEditor(typeof(OceanEqualizerPreset))]
+    [CustomEditor(typeof(EqualizerPreset))]
     public class OceanEqualizerPresetEditor : Editor
     {
         private const string ShowScale = "OceanEqualizerShowScale";
         private const string ShowChop = "OceanEqualizerShowChop";
 
-        private OceanEqualizerPreset _oceanEqualizerPreset;
+        private EqualizerPreset _oceanEqualizerPreset;
 
         private SerializedProperty _scaleFilters;
         private SerializedProperty _chopFilters;
@@ -28,7 +28,7 @@ namespace OceanSystem
 
         private void OnEnable()
         {
-            _oceanEqualizerPreset = (OceanEqualizerPreset)target;
+            _oceanEqualizerPreset = (EqualizerPreset)target;
             _scaleFilters = serializedObject.FindProperty("_scaleFilters");
             _chopFilters = serializedObject.FindProperty("_chopFilters");
             _displayWavesSettings = serializedObject.FindProperty("_displayWavesSettings");
@@ -38,7 +38,7 @@ namespace OceanSystem
         {
             serializedObject.Update();
             GUI.enabled = false;
-            EditorGUILayout.ObjectField("Script:", MonoScript.FromScriptableObject(_oceanEqualizerPreset), typeof(OceanEqualizerPreset), false);
+            EditorGUILayout.ObjectField("Script:", MonoScript.FromScriptableObject(_oceanEqualizerPreset), typeof(EqualizerPreset), false);
             GUI.enabled = true;
 
             EditorGUILayout.PropertyField(_displayWavesSettings);

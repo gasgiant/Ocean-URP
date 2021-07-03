@@ -6,9 +6,13 @@ namespace OceanSystem
     public class OceanSimulation
     {
         public OceanCollision Collision => _collision;
-        public WindWavesSimulationInputs WindWavesInputs => _inputs;
         public OceanSimulationSettings SimulationSettings;
-        private readonly WindWavesSimulationInputs _inputs = new WindWavesSimulationInputs();
+        public OceanSimulationInputsProvider InputsProvider;
+        public float LocalWindDirection;
+        public float SwellDirection;
+        public float WindForce01;
+
+        private readonly OceanSimulationInputs _inputs = new OceanSimulationInputs();
 
         private static float OceanTime => (float)(Time.timeSinceLevelLoadAsDouble % 18000);
 
@@ -37,7 +41,7 @@ namespace OceanSystem
         private RenderTexture _fftBuffer;
         private RenderTexture _fftInOut;
         private RenderTexture _turbulence;
-        private SpectrumSettings[] _spectrums = new SpectrumSettings[2];
+        private SpectrumParams[] _spectrums = new SpectrumParams[2];
         private ComputeBuffer _spectrumsBuffer;
         private OceanCollision _collision;
         private Vector2Int _currrentTextureParams = -Vector2Int.one;
@@ -175,6 +179,8 @@ namespace OceanSystem
 
         private void CalculateInitialSpectrum(CommandBuffer cmd)
         {
+            InputsProvider.PopulateInputs(_inputs, WindForce01);
+
             Vector4 cutoffsLow, cutoffsHigh;
             SimulationSettings.CalculateCascadeDomains(out cutoffsLow, out cutoffsHigh);
 
@@ -184,12 +190,13 @@ namespace OceanSystem
             cmd.SetComputeVectorParam(_initialSpectrumShader, SimualtionVariables.LengthScales, SimulationSettings.LengthScales());
             cmd.SetComputeVectorParam(_initialSpectrumShader, SimualtionVariables.CutoffsHigh, cutoffsHigh);
             cmd.SetComputeVectorParam(_initialSpectrumShader, SimualtionVariables.CutoffsLow, cutoffsLow);
-            cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.LocalWindDirection, _inputs.localWindDirection);
-            cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.SwellDirection, _inputs.swellDirection);
+            cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.LocalWindDirection, LocalWindDirection);
+            cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.SwellDirection, SwellDirection);
+            cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.EqualizerLerpValue, _inputs.equalizerLerpValue);
             cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.Depth, _inputs.depth);
             cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.Chop, _inputs.chop);
             cmd.SetComputeVectorParam(_initialSpectrumShader,
-                SimualtionVariables.RampsXLimits, new Vector4(OceanEqualizerPreset.XMin, OceanEqualizerPreset.XMax));
+                SimualtionVariables.RampsXLimits, new Vector4(EqualizerPreset.XMin, EqualizerPreset.XMax));
 
             _spectrums[0] = _inputs.local;
             _spectrums[1] = _inputs.swell;
@@ -204,7 +211,9 @@ namespace OceanSystem
             cmd.SetComputeTextureParam(_initialSpectrumShader,
                 _initialSpectrumKernel, SimualtionVariables.Noise, _gaussianNoise);
             cmd.SetComputeTextureParam(_initialSpectrumShader,
-                _initialSpectrumKernel, SimualtionVariables.EqualizerRamp, _inputs.equalizerRamp);
+                _initialSpectrumKernel, SimualtionVariables.EqualizerRamp0, _inputs.equalizerRamp0);
+            cmd.SetComputeTextureParam(_initialSpectrumShader,
+                _initialSpectrumKernel, SimualtionVariables.EqualizerRamp1, _inputs.equalizerRamp1);
             // Calculating initial spectrum
             cmd.DispatchCompute(_initialSpectrumShader,
                 _initialSpectrumKernel, _size / LocalWorkGroupsX, _size / LocalWorkGroupsY, 1);
@@ -218,10 +227,10 @@ namespace OceanSystem
                 _conjugateSpectrumKernel, _size / LocalWorkGroupsX, _size / LocalWorkGroupsY, 1);
 
             // setting global shader variables which update only when the initial spectrum updates
-            float windAngle = _inputs.localWindDirection * Mathf.Deg2Rad;
+            float windAngle = LocalWindDirection * Mathf.Deg2Rad;
             Shader.SetGlobalVector(GlobalShaderVariables.WindDirection, new Vector2(Mathf.Cos(windAngle), Mathf.Sin(windAngle)));
             Shader.SetGlobalMatrix(GlobalShaderVariables.WorldToWindSpace,
-                Matrix4x4.Rotate(Quaternion.AngleAxis(-_inputs.localWindDirection, Vector3.up)));
+                Matrix4x4.Rotate(Quaternion.AngleAxis(-LocalWindDirection, Vector3.up)));
             Shader.SetGlobalFloat(GlobalShaderVariables.WindSpeed, _inputs.local.windSpeed);
             Shader.SetGlobalFloat(GlobalShaderVariables.WavesScale, _inputs.local.scale);
             Shader.SetGlobalFloat(GlobalShaderVariables.WavesAlignement, _inputs.local.alignment);
@@ -296,7 +305,9 @@ namespace OceanSystem
             public static readonly int Spectrums = Shader.PropertyToID("Spectrums");
             public static readonly int Time = Shader.PropertyToID("Time");
             public static readonly int DeltaTime = Shader.PropertyToID("DeltaTime");
-            public static readonly int EqualizerRamp = Shader.PropertyToID("EqualizerRamp");
+            public static readonly int EqualizerRamp0 = Shader.PropertyToID("EqualizerRamp0");
+            public static readonly int EqualizerRamp1 = Shader.PropertyToID("EqualizerRamp1");
+            public static readonly int EqualizerLerpValue = Shader.PropertyToID("EqualizerLerpValue");
             public static readonly int H0K = Shader.PropertyToID("H0K");
             public static readonly int WavesData = Shader.PropertyToID("WavesData");
             public static readonly int H0 = Shader.PropertyToID("H0");

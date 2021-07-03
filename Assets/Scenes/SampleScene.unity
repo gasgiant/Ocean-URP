@@ -474,6 +474,7 @@ MonoBehaviour:
   _waveInputsProvider: {fileID: 11400000, guid: df699443f1cde8d41930862a7ec6c83d, type: 2}
   _windDirection: 0
   _swellDirection: 0
+  _windForce: 1
   _viewer: {fileID: 1687258585}
   _minMeshScale: 15
   _clipMapLevels: 7

@@ -54,7 +54,7 @@ namespace OceanSystem
             serializedObject.ApplyModifiedProperties();
         }
 
-        void DrawSpectrumSettings(SerializedProperty spectrumSettingsProperty, SpectrumProperties props, SpectrumSettings settings)
+        void DrawSpectrumSettings(SerializedProperty spectrumSettingsProperty, SpectrumProperties props, SpectrumParams settings)
         {
             spectrumSettingsProperty.isExpanded = EditorGUILayout.BeginFoldoutHeaderGroup(spectrumSettingsProperty.isExpanded, spectrumSettingsProperty.displayName);
             if (spectrumSettingsProperty.isExpanded)
@@ -63,7 +63,7 @@ namespace OceanSystem
                 EditorGUILayout.LabelField("Energy", EditorStyles.boldLabel);
                 EditorGUILayout.PropertyField(props.energySpectrum);
                 EditorGUILayout.PropertyField(props.windSpeed);
-                if (settings.energySpectrum != (int)SpectrumSettings.EnergySpectrumModel.PM)
+                if (settings.energySpectrum != (int)SpectrumParams.EnergySpectrumModel.PM)
                 {
                     EditorGUILayout.PropertyField(props.fetch);
                     EditorGUILayout.PropertyField(props.peaking);

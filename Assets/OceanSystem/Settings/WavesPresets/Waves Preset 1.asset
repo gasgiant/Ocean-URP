@@ -14,16 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   _spectrum:
-    _energySpectrum: 0
-    _windSpeed: 7
-    _fetch: 100
-    _peaking: 3.3
-    _scale: 1
-    _cutoffWavelength: 0
-    _alignment: 1
-    _extraAlignment: 0
+    energySpectrum: 0
+    windSpeed: 2
+    fetch: 100
+    peaking: 3.3
+    scale: 1
+    cutoffWavelength: 0.01
+    alignment: 0
+    extraAlignment: 0
   _foam:
-    coverage: 1
+    coverage: 0
     underwater: 0
     density: 8.4
     persistence: 0.5

@@ -11,8 +11,8 @@ namespace OceanSystem
         private static readonly Color _cascade1Color = new Color(250, 164, 58, 255) / 255;
         private static readonly Color _cascade2Color = new Color(96, 189, 104, 255) / 255;
         private static readonly Color _cascade3Color = new Color(93, 165, 218, 255) / 255;
-        private static readonly Vector2 _graphSize = new Vector2(OceanEqualizerPreset.XMax - OceanEqualizerPreset.XMin, 1);
-        private static readonly Vector2 _leftBottom = new Vector2(OceanEqualizerPreset.XMin, 0.0f);
+        private static readonly Vector2 _graphSize = new Vector2(EqualizerPreset.XMax - EqualizerPreset.XMin, 1);
+        private static readonly Vector2 _leftBottom = new Vector2(EqualizerPreset.XMin, 0.0f);
 
         private static Material _cachedMaterial;
         private static Material PlotMaterial

@@ -3,17 +3,18 @@ using UnityEngine;
 namespace OceanSystem
 {
     [CreateAssetMenu(fileName = "New Ocean Equalizer", menuName = "Ocean/Equalizer Preset")]
-    public class OceanEqualizerPreset : ScriptableObject
+    public class EqualizerPreset : ScriptableObject
     {
         public const float XMin = -1.5f;
         public const float XMax = 3.5f;
         private const int Resolution = 128;
+        private static Color[] _colors = new Color[Resolution];
+        private static Texture2D _defaultRamp;
 
         [SerializeField] private Filter[] _scaleFilters;
         [SerializeField] private Filter[] _chopFilters;
 
         private Texture2D _ramp;
-        private Color[] _colors = new Color[Resolution];
 
 #if UNITY_EDITOR
         [SerializeField] private OceanWavesSettings _displayWavesSettings;
@@ -38,12 +39,13 @@ namespace OceanSystem
 
         public static Texture2D GetDefaultRamp()
         {
-            Texture2D tex = new Texture2D(1, 1, TextureFormat.RGHalf, false, true);
-            tex.wrapMode = TextureWrapMode.Clamp;
-            tex.filterMode = FilterMode.Bilinear;
-            tex.SetPixel(0, 0, Color.white);
-            tex.Apply();
-            return tex;
+            if (_defaultRamp == null)
+                _defaultRamp = new Texture2D(1, 1, TextureFormat.RGHalf, false, true);
+                _defaultRamp.wrapMode = TextureWrapMode.Clamp;
+                _defaultRamp.filterMode = FilterMode.Bilinear;
+                _defaultRamp.SetPixel(0, 0, Color.white);
+                _defaultRamp.Apply();
+            return _defaultRamp;
         }
 
         public Texture2D GetRamp()
@@ -62,23 +64,18 @@ namespace OceanSystem
                 _ramp.filterMode = FilterMode.Bilinear;
             }
 
-            if (_colors.Length != Resolution)
-            {
-                _colors = new Color[Resolution];
-            }
-
             for (int i = 0; i < Resolution; i++)
             {
                 float x = Mathf.Lerp(XMin, XMax, (float)i / Resolution);
-                _colors[i].r = Mathf.Max(0, EvaluateFiltersArray(_scaleFilters, x));
-                _colors[i].g = Mathf.Max(0, EvaluateFiltersArray(_chopFilters, x));
+                _colors[i].r = EvaluateFiltersArray(_scaleFilters, x);
+                _colors[i].g = EvaluateFiltersArray(_chopFilters, x);
             }
 
             _ramp.SetPixels(_colors);
             _ramp.Apply(false);
         }
 
-        float EvaluateFiltersArray(Filter[] filters, float x)
+        private static float EvaluateFiltersArray(Filter[] filters, float x)
         {
             if (filters == null) return 1;
             float v = 1;
@@ -86,7 +83,7 @@ namespace OceanSystem
             {
                 v += filters[j].Evaluate(x);
             }
-            return v;
+            return Mathf.Max(0, v);
         }
 
         private enum FilterType

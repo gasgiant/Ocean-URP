@@ -16,9 +16,11 @@ namespace OceanSystem
 
         [Header("Simulation")]
         [SerializeField] private OceanSimulationSettings _simulationSettings;
-        [SerializeField] private WindWavesInputsProvider _waveInputsProvider;
+        [SerializeField] private OceanSimulationInputsProvider _waveInputsProvider;
         [SerializeField] private float _windDirection;
         [SerializeField] private float _swellDirection;
+        [Range(0, 1)]
+        [SerializeField] private float _windForce;
 
         [Header("Mesh")]
         [SerializeField] private Transform _viewer;
@@ -112,9 +114,12 @@ namespace OceanSystem
 
         private void UpdateSimulation()
         {
-            _waveInputsProvider.PopulateInputs(_oceanSimulation.WindWavesInputs, _windDirection, _swellDirection, 0);
-
             _oceanSimulation.SimulationSettings = _simulationSettings;
+            _oceanSimulation.InputsProvider = _waveInputsProvider;
+            _oceanSimulation.LocalWindDirection = _windDirection;
+            _oceanSimulation.SwellDirection = _swellDirection;
+            _oceanSimulation.WindForce01 = _windForce;
+
             _oceanSimulation.Update();
         }
 

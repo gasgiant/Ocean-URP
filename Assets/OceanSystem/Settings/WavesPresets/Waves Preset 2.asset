@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 455a633a0f497004b93633bceffae765, type: 3}
-  m_Name: Waves Preset
+  m_Name: Waves Preset 2
   m_EditorClassIdentifier: 
   type: 0
   _spectrum:
-    _energySpectrum: 0
-    _windSpeed: 2
-    _fetch: 100
-    _peaking: 3.3
-    _scale: 1
-    _cutoffWavelength: 0
-    _alignment: 1
-    _extraAlignment: 0
+    energySpectrum: 0
+    windSpeed: 7
+    fetch: 100
+    peaking: 3.3
+    scale: 1
+    cutoffWavelength: 0.01
+    alignment: 1
+    extraAlignment: 0
   _foam:
     coverage: 0
     underwater: 0
@@ -30,4 +30,4 @@ MonoBehaviour:
     decayRate: 0.1
     cascadesWeights: {x: 1, y: 1, z: 1, w: 1}
   _chop: 1.4
-  _equalizer: {fileID: 11400000, guid: 1fd9d91ff7b9c9a4c91fe8d00b1d9ef0, type: 2}
+  _equalizer: {fileID: 0}

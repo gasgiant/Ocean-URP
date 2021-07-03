@@ -11,9 +11,9 @@ namespace OceanSystem
         public float depth = 1000;
         [Range(0, 4)]
         public float chop = 1;
-        public WindWavesFoamSettings foam;
-        public SpectrumSettings local;
-        public SpectrumSettings swell;
+        public FoamParams foam;
+        public SpectrumParams local;
+        public SpectrumParams swell;
 
 #if UNITY_EDITOR
         public bool spectrumPlot;

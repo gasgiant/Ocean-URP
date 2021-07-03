@@ -11,9 +11,11 @@ RWTexture2DArray<float4> H0;
 RWTexture2DArray<float4> WavesData;
 RWTexture2DArray<float2> H0K;
 
-StructuredBuffer<SpectrumParameters> Spectrums;
-Texture2D<float2> EqualizerRamp;
-SamplerState samplerEqualizerRamp;
+StructuredBuffer<SpectrumParams> Spectrums;
+Texture2D<float2> EqualizerRamp0;
+SamplerState samplerEqualizerRamp0;
+Texture2D<float2> EqualizerRamp1;
+SamplerState samplerEqualizerRamp1;
 
 cbuffer Params
 {
@@ -26,6 +28,7 @@ cbuffer Params
     float Chop;
     float LocalWindDirection;
     float SwellDirection;
+    float EqualizerLerpValue;
 };
 
 float NormalRandom(uint3 id)
@@ -76,8 +79,10 @@ void CalculateInitialsForCascade(uint3 id)
 				* ShortWavesFade(kLength, Spectrums[1].shortWavesFade);
 		
         float rampUV = saturate((-RampsXLimits.x + log10(2 * OCEANOGRAPHY_PI / kLength)) / (RampsXLimits.y - RampsXLimits.x));
-		float2 eq = EqualizerRamp.SampleLevel(samplerEqualizerRamp, rampUV, 0);
-		float scaleRamp = eq.r;
+		float2 eq0 = EqualizerRamp0.SampleLevel(samplerEqualizerRamp0, rampUV, 0);
+        float2 eq1 = EqualizerRamp1.SampleLevel(samplerEqualizerRamp1, rampUV, 0);
+        float2 eq = lerp(eq0, eq1, EqualizerLerpValue);
+        float scaleRamp = eq.r;
 		float lambda = Chop * eq.g;
 		
 		WavesData[id] = float4(k.x, lambda, k.y, omega);

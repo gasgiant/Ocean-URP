@@ -3,7 +3,7 @@ using UnityEngine;
 namespace OceanSystem
 {
     [System.Serializable]
-    public struct SpectrumSettings
+    public struct SpectrumParams
     {
         public enum EnergySpectrumModel
         {
@@ -28,9 +28,9 @@ namespace OceanSystem
         [Range(0, 1)]
         public float extraAlignment;
 
-        public static SpectrumSettings Lerp(SpectrumSettings lhs, SpectrumSettings rhs, float t)
+        public static SpectrumParams Lerp(SpectrumParams lhs, SpectrumParams rhs, float t)
         {
-            return new SpectrumSettings()
+            return new SpectrumParams()
             {
                 energySpectrum = t < 0.5 ? lhs.energySpectrum : rhs.energySpectrum,
                 windSpeed = Mathf.Lerp(lhs.windSpeed, rhs.windSpeed, t),
@@ -43,9 +43,9 @@ namespace OceanSystem
             };
         }
 
-        public static SpectrumSettings GetDefaultLocal()
+        public static SpectrumParams GetDefaultLocal()
         {
-            SpectrumSettings s = new SpectrumSettings
+            SpectrumParams s = new SpectrumParams
             {
                 energySpectrum = EnergySpectrumModel.PM,
                 windSpeed = 5,
@@ -59,9 +59,9 @@ namespace OceanSystem
             return s;
         }
 
-        public static SpectrumSettings GetDefaultSwell()
+        public static SpectrumParams GetDefaultSwell()
         {
-            SpectrumSettings s = new SpectrumSettings
+            SpectrumParams s = new SpectrumParams
             {
                 energySpectrum = EnergySpectrumModel.JONSWAP,
                 windSpeed = 10,

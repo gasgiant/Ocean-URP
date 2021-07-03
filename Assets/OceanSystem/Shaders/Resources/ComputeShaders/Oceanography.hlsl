@@ -8,7 +8,7 @@ static const float sigmaOverRho = 0.074e-3;
 
 float Depth;
 
-struct SpectrumParameters
+struct SpectrumParams
 {
 	int energySpectrum;
 	float windSpeed;
@@ -91,7 +91,7 @@ float Cosine2s(float theta, float s)
 }
 
 
-float DirectionSpectrum(float theta, float omega, float peakOmega, SpectrumParameters pars)
+float DirectionSpectrum(float theta, float omega, float peakOmega, SpectrumParams pars)
 {
 	//float spread = DonelanBanner(angle, omega, peakOmega);
 	
@@ -164,7 +164,7 @@ float TMACorrection(float omega, float depth)
 		return 1;
 }
 
-float FullSpectrum(float omega, float theta, SpectrumParameters pars)
+float FullSpectrum(float omega, float theta, SpectrumParams pars)
 {
 	float energySpectrum = 1;
 	float spread;

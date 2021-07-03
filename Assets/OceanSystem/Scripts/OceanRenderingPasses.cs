@@ -7,7 +7,7 @@ namespace OceanSystem
     public class OceanGeometryPass : ScriptableRenderPass
     {
         private readonly static ShaderTagId OceanShaderTagId = new ShaderTagId("OceanMain");
-
+        private readonly static ProfilingSampler _profilingSampler = new ProfilingSampler("Ocean Geometry");
         private readonly OceanRenderer.OceanRenderingSettings _settings;
         private FilteringSettings _filteringSettings;
 
@@ -35,7 +35,7 @@ namespace OceanSystem
             SetupCameraGlobals(cmd, camera);
             context.ExecuteCommandBuffer(cmd);
 
-            using (new ProfilingScope(cmd, new ProfilingSampler("Ocean Geometry")))
+            using (new ProfilingScope(cmd, _profilingSampler))
             {
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
