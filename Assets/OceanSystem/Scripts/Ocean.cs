@@ -117,11 +117,9 @@ namespace OceanSystem
 
         private void UpdateSimulation()
         {
-            _oceanSimulation.SimulationSettings = _simulationSettings;
-            _oceanSimulation.InputsProvider = _waveInputsProvider;
-            _oceanSimulation.LocalWindDirection = _windDirection;
-            _oceanSimulation.SwellDirection = _swellDirection;
-            _oceanSimulation.WindForce01 = _windForce;
+            _oceanSimulation.SetSimulationSettings(_simulationSettings);
+            _oceanSimulation.SetInputsProvider(_waveInputsProvider);
+            _oceanSimulation.SetSceneVariables(_windDirection, _swellDirection, _windForce);
 
             _oceanSimulation.Update();
         }

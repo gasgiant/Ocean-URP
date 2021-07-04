@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 455a633a0f497004b93633bceffae765, type: 3}
-  m_Name: Waves Preset 2
+  m_Name: Beaufort_128x4 WindForce 1
   m_EditorClassIdentifier: 
   _type: 0
   _spectrum:

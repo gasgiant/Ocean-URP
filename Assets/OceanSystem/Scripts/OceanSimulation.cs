@@ -6,11 +6,14 @@ namespace OceanSystem
     public class OceanSimulation
     {
         public OceanCollision Collision => _collision;
-        public OceanSimulationSettings SimulationSettings;
-        public OceanSimulationInputsProvider InputsProvider;
-        public float LocalWindDirection;
-        public float SwellDirection;
-        public float WindForce01;
+        
+        // scene variables
+        private float _localWindDirection;
+        private float _swellDirection;
+        private float _windForce01;
+
+        private OceanSimulationSettings _simulationSettings;
+        private OceanSimulationInputsProvider _inputsProvider;
 
         private readonly OceanSimulationInputs _inputs = new OceanSimulationInputs();
 
@@ -46,11 +49,11 @@ namespace OceanSystem
         private OceanCollision _collision;
         private Vector2Int _currrentTextureParams = -Vector2Int.one;
         private bool _isSpectrumInitialized;
-        private bool NeedToCalculateSpectrum => !_isSpectrumInitialized || SimulationSettings.UpdateSpectrum;
+        private bool NeedToCalculateSpectrum => !_isSpectrumInitialized || _simulationSettings.UpdateSpectrum;
 
         public OceanSimulation(OceanSimulationSettings simulationSettings)
         {
-            SimulationSettings = simulationSettings;
+            _simulationSettings = simulationSettings;
 
             _initialSpectrumShader = (ComputeShader)Resources.Load(InitialSpectrumShaderPath);
             _timeDependentSpectrumShader = (ComputeShader)Resources.Load(TimeDependentSpectrumShaderPath);
@@ -88,23 +91,40 @@ namespace OceanSystem
             ReleaseRenderTextures();
         }
 
+        public void SetSimulationSettings(OceanSimulationSettings settings)
+        {
+            _simulationSettings = settings;
+        }
+
+        public void SetInputsProvider(OceanSimulationInputsProvider inputsProvider)
+        {
+            _inputsProvider = inputsProvider;
+        }
+
+        public void SetSceneVariables(float localWindDIrection, float swellDirection, float windForce01)
+        {
+            _localWindDirection = localWindDIrection;
+            _swellDirection = swellDirection;
+            _windForce01 = windForce01;
+        }
+
         private void Setup()
         {
-            Vector2Int newTextureParams = new Vector2Int(SimulationSettings.Resolution, 
-                SimulationSettings.CascadesNumber);
+            Vector2Int newTextureParams = new Vector2Int(_simulationSettings.Resolution, 
+                _simulationSettings.CascadesNumber);
             if (newTextureParams == _currrentTextureParams)
             {
-                _fftInOut.anisoLevel = SimulationSettings.AnisoLevel;
-                _turbulence.anisoLevel = SimulationSettings.AnisoLevel;
+                _fftInOut.anisoLevel = _simulationSettings.AnisoLevel;
+                _turbulence.anisoLevel = _simulationSettings.AnisoLevel;
                 return;
             }
 
             _isSpectrumInitialized = false;
             _currrentTextureParams = newTextureParams;
-            _size = SimulationSettings.Resolution;
-            InitializeRenderTextures(_size, SimulationSettings.CascadesNumber, SimulationSettings.AnisoLevel);
-            SetCascadesKeywords(SimulationSettings.CascadesNumber);
-            _collision = new OceanCollision(_size, _fftInOut, SimulationSettings);
+            _size = _simulationSettings.Resolution;
+            InitializeRenderTextures(_size, _simulationSettings.CascadesNumber, _simulationSettings.AnisoLevel);
+            SetCascadesKeywords(_simulationSettings.CascadesNumber);
+            _collision = new OceanCollision(_size, _fftInOut, _simulationSettings);
         }
 
         private void InitializeRenderTextures(int size, int cascadesNumber, int anisoLevel)
@@ -179,19 +199,19 @@ namespace OceanSystem
 
         private void CalculateInitialSpectrum(CommandBuffer cmd)
         {
-            InputsProvider.PopulateInputs(_inputs, WindForce01);
+            _inputsProvider.PopulateInputs(_inputs, _windForce01);
 
             Vector4 cutoffsLow, cutoffsHigh;
-            SimulationSettings.CalculateCascadeDomains(out cutoffsLow, out cutoffsHigh);
+            _simulationSettings.CalculateCascadeDomains(out cutoffsLow, out cutoffsHigh);
 
             cmd.SetComputeIntParam(_initialSpectrumShader, SimualtionVariables.Size, _size);
-            cmd.SetComputeIntParam(_initialSpectrumShader, SimualtionVariables.CascadesCount, SimulationSettings.CascadesNumber);
+            cmd.SetComputeIntParam(_initialSpectrumShader, SimualtionVariables.CascadesCount, _simulationSettings.CascadesNumber);
 
-            cmd.SetComputeVectorParam(_initialSpectrumShader, SimualtionVariables.LengthScales, SimulationSettings.LengthScales());
+            cmd.SetComputeVectorParam(_initialSpectrumShader, SimualtionVariables.LengthScales, _simulationSettings.LengthScales());
             cmd.SetComputeVectorParam(_initialSpectrumShader, SimualtionVariables.CutoffsHigh, cutoffsHigh);
             cmd.SetComputeVectorParam(_initialSpectrumShader, SimualtionVariables.CutoffsLow, cutoffsLow);
-            cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.LocalWindDirection, LocalWindDirection);
-            cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.SwellDirection, SwellDirection);
+            cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.LocalWindDirection, _localWindDirection);
+            cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.SwellDirection, _swellDirection);
             cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.EqualizerLerpValue, _inputs.equalizerLerpValue);
             cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.Depth, _inputs.depth);
             cmd.SetComputeFloatParam(_initialSpectrumShader, SimualtionVariables.Chop, _inputs.chop);
@@ -229,10 +249,10 @@ namespace OceanSystem
                 _conjugateSpectrumKernel, _size / LocalWorkGroupsX, _size / LocalWorkGroupsY, 1);
 
             // setting global shader variables which update only when the initial spectrum updates
-            float windAngle = LocalWindDirection * Mathf.Deg2Rad;
+            float windAngle = _localWindDirection * Mathf.Deg2Rad;
             Shader.SetGlobalVector(GlobalShaderVariables.WindDirection, new Vector2(Mathf.Cos(windAngle), Mathf.Sin(windAngle)));
             Shader.SetGlobalMatrix(GlobalShaderVariables.WorldToWindSpace,
-                Matrix4x4.Rotate(Quaternion.AngleAxis(-LocalWindDirection, Vector3.up)));
+                Matrix4x4.Rotate(Quaternion.AngleAxis(-_localWindDirection, Vector3.up)));
             Shader.SetGlobalFloat(GlobalShaderVariables.WindSpeed, _inputs.local.windSpeed);
             Shader.SetGlobalFloat(GlobalShaderVariables.WavesScale, _inputs.local.scale);
             Shader.SetGlobalFloat(GlobalShaderVariables.WavesAlignement, _inputs.local.alignment);
@@ -244,7 +264,7 @@ namespace OceanSystem
         {
             // Calculating complex amplitudes
             cmd.SetComputeIntParam(_timeDependentSpectrumShader,
-                SimualtionVariables.CascadesCount, SimulationSettings.CascadesNumber);
+                SimualtionVariables.CascadesCount, _simulationSettings.CascadesNumber);
             cmd.SetComputeFloatParam(_timeDependentSpectrumShader, SimualtionVariables.Time, time);
             cmd.SetComputeTextureParam(_timeDependentSpectrumShader,
                 _calculateAmplitudesKernel, SimualtionVariables.Result, _fftInOut);
@@ -260,10 +280,10 @@ namespace OceanSystem
             cmd.GenerateMips(_fftInOut);
 
             // Simulating foam
-            if (SimulationSettings.SimulateFoam)
+            if (_simulationSettings.SimulateFoam)
             {
                 cmd.SetComputeIntParam(_foamSimulationShader,
-                    SimualtionVariables.CascadesCount, SimulationSettings.CascadesNumber);
+                    SimualtionVariables.CascadesCount, _simulationSettings.CascadesNumber);
                 cmd.SetComputeFloatParam(_foamSimulationShader, SimualtionVariables.DeltaTime, deltaTime);
                 cmd.SetComputeFloatParam(_foamSimulationShader, SimualtionVariables.FoamDecayRate, _inputs.foam.decayRate);
 
@@ -280,7 +300,7 @@ namespace OceanSystem
 
         private void SetGlobalShaderVariables()
         {
-            Shader.SetGlobalVector(GlobalShaderVariables.LengthScales, SimulationSettings.LengthScales());
+            Shader.SetGlobalVector(GlobalShaderVariables.LengthScales, _simulationSettings.LengthScales());
 
             // floam
             Shader.SetGlobalFloat(GlobalShaderVariables.FoamCoverage, _inputs.foam.coverage);

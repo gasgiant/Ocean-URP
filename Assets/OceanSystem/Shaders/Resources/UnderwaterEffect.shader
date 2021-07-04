@@ -24,8 +24,9 @@ Shader "Ocean/UnderwaterEffect"
         float SubmergenceFrag(Varyings input) : SV_Target
         {
             float4 positionCS = float4(input.uv * 2 - 1, UNITY_NEAR_CLIP_VALUE, 1);
-            float4 positionWS = mul(Ocean_InverseViewMatrix, mul(Ocean_InverseProjectionMatrix, positionCS));
-            positionWS = positionWS / positionWS.w;
+            float4 positionVS = mul(Ocean_InverseProjectionMatrix, positionCS);
+            positionVS = positionVS / positionVS.w;
+            float4 positionWS = mul(Ocean_InverseViewMatrix, positionVS);
             float waterHeight = SampleHeight(positionWS.xz, 1, 1);//ShoreModulation(SampleShore(pos.xz).r));
             return positionWS.y - waterHeight + 0.5;
         }

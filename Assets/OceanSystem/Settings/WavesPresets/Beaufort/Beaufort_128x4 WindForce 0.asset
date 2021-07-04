@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 455a633a0f497004b93633bceffae765, type: 3}
+  m_Name: Beaufort_128x4 WindForce 0
+  m_EditorClassIdentifier: 
+  _type: 0
+  _spectrum:
+    energySpectrum: 0
+    windSpeed: 2
+    fetch: 100
+    peaking: 3.3
+    scale: 1
+    cutoffWavelength: 0.01
+    alignment: 1
+    extraAlignment: 0
+  _foam:
+    coverage: 0
+    underwater: 0
+    density: 8.4
+    persistence: 0.5
+    decayRate: 0.1
+    cascadesWeights: {x: 1, y: 1, z: 1, w: 1}
+  _chop: 1.4
+  _equalizer: {fileID: 0}

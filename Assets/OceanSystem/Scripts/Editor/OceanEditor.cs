@@ -3,9 +3,15 @@ using UnityEngine;
 
 namespace OceanSystem
 {
-    //[CustomEditor(typeof(Ocean))]
+    [CustomEditor(typeof(Ocean))]
     public class OceanEditor : Editor
     {
+        private SerializedProperty _simulationSettings;
+        private SerializedProperty _waveInputsProvider;
+        private SerializedProperty _windDirection;
+        private SerializedProperty _swellDirection;
+        private SerializedProperty _windForce;
+
         private SerializedProperty _reflectionsMode;
         private SerializedProperty _probe;
         private SerializedProperty _cubemap;
@@ -15,8 +21,6 @@ namespace OceanSystem
         private SerializedProperty _minMeshScale;
         private SerializedProperty _clipMapLevels;
         private SerializedProperty _vertexDensity;
-
-        private SerializedProperty _simulationSettings;
 
         private void OnEnable()
         {
@@ -29,6 +33,12 @@ namespace OceanSystem
             GUI.enabled = false;
             EditorGUILayout.ObjectField("Script:", MonoScript.FromMonoBehaviour((Ocean)target), typeof(Ocean), false);
             GUI.enabled = true;
+
+            EditorGUILayout.PropertyField(_simulationSettings);
+            EditorGUILayout.PropertyField(_waveInputsProvider);
+            EditorGUILayout.PropertyField(_windDirection);
+            EditorGUILayout.PropertyField(_swellDirection);
+            EditorGUILayout.PropertyField(_windForce);
 
             EditorGUILayout.PropertyField(_material);
             EditorGUILayout.PropertyField(_reflectionsMode);
@@ -44,8 +54,6 @@ namespace OceanSystem
                     break;
             }
 
-            EditorGUILayout.PropertyField(_simulationSettings);
-
             EditorGUILayout.PropertyField(_viewer);
             EditorGUILayout.PropertyField(_minMeshScale);
             EditorGUILayout.PropertyField(_clipMapLevels);
@@ -58,7 +66,7 @@ namespace OceanSystem
         {
             _reflectionsMode = serializedObject.FindProperty("_reflectionsMode");
             _probe = serializedObject.FindProperty("_probe");
-            _cubemap = serializedObject.FindProperty("cubemap");
+            _cubemap = serializedObject.FindProperty("_cubemap");
             _material = serializedObject.FindProperty("_material");
 
             _viewer = serializedObject.FindProperty("_viewer");
@@ -67,6 +75,10 @@ namespace OceanSystem
             _vertexDensity = serializedObject.FindProperty("_vertexDensity");
 
             _simulationSettings = serializedObject.FindProperty("_simulationSettings");
+            _waveInputsProvider = serializedObject.FindProperty("_waveInputsProvider");
+            _windDirection = serializedObject.FindProperty("_windDirection");
+            _swellDirection = serializedObject.FindProperty("_swellDirection");
+            _windForce = serializedObject.FindProperty("_windForce");
         }
     }
 }

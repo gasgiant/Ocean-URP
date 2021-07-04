@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: edf0c5b8497ece048a2992c7947077a6, type: 3}
-  m_Name: Beaufort Scale
+  m_Name: BeaufortScale_128x4
   m_EditorClassIdentifier: 
   _mode: 1
   _timeScale: 1
@@ -19,9 +19,11 @@ MonoBehaviour:
   _localWinds:
   - preset: {fileID: 11400000, guid: df65f54bdb47a0940bb0823559c2ddbc, type: 2}
     windForce: 0
-  - preset: {fileID: 11400000, guid: e5f6dc6ce7643234782d0f380f688f5a, type: 2}
+  - preset: {fileID: 11400000, guid: 77638ba0f7c41af45a29d75ef0b7d611, type: 2}
     windForce: 1
+  - preset: {fileID: 11400000, guid: e5f6dc6ce7643234782d0f380f688f5a, type: 2}
+    windForce: 2
   _localWind: {fileID: 0}
   _swell: {fileID: 0}
   _defaultWindForce: 0
-  _maxWindForce: 1
+  _maxWindForce: 2
