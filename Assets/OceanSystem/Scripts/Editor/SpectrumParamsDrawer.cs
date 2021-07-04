@@ -9,7 +9,7 @@ namespace OceanSystem
             SpectrumParamsDrawerMode mode, bool initializationButtons)
         {
             if (mode == SpectrumParamsDrawerMode.Foldout)
-                spectrumParamsProperty.isExpanded = EditorGUILayout.Foldout(spectrumParamsProperty.isExpanded, spectrumParamsProperty.displayName);
+                spectrumParamsProperty.isExpanded = EditorGUILayout.Foldout(spectrumParamsProperty.isExpanded, spectrumParamsProperty.displayName, true);
             if (mode == SpectrumParamsDrawerMode.FoldoutGroup)
                 spectrumParamsProperty.isExpanded = EditorGUILayout.BeginFoldoutHeaderGroup(spectrumParamsProperty.isExpanded, spectrumParamsProperty.displayName);
             if (mode == SpectrumParamsDrawerMode.Raw || spectrumParamsProperty.isExpanded)

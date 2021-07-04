@@ -77,7 +77,7 @@ namespace OceanSystem
             }
             UpdateSimulation(cmd, OceanTime * _inputs.timeScale, Time.deltaTime * _inputs.timeScale);
             Graphics.ExecuteCommandBuffer(cmd);
-            cmd.Release();
+            CommandBufferPool.Release(cmd);
             _collision.DoReadbacks();
             SetGlobalShaderVariables();
         }

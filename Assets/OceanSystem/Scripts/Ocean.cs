@@ -8,19 +8,22 @@ namespace OceanSystem
     {
         public enum OceanReflectionsMode { Default, RealtimeProbe, Custom }
 
+        [Header("Simulation")]
+        [SerializeField] private OceanSimulationSettings _simulationSettings;
+        [SerializeField] private OceanSimulationInputsProvider _waveInputsProvider;
+
+        [Range(0, 360)]
+        [SerializeField] private float _windDirection;
+        [Range(0, 360)]
+        [SerializeField] private float _swellDirection;
+        [Range(0, 1)]
+        [SerializeField] private float _windForce;
+
         [Header("Rendering")]
         [SerializeField] private Material _material;
         [SerializeField] private OceanReflectionsMode _reflectionsMode;
         [SerializeField] private ReflectionProbe _probe;
         [SerializeField] private Cubemap _cubemap;
-
-        [Header("Simulation")]
-        [SerializeField] private OceanSimulationSettings _simulationSettings;
-        [SerializeField] private OceanSimulationInputsProvider _waveInputsProvider;
-        [SerializeField] private float _windDirection;
-        [SerializeField] private float _swellDirection;
-        [Range(0, 1)]
-        [SerializeField] private float _windForce;
 
         [Header("Mesh")]
         [SerializeField] private Transform _viewer;

@@ -8,6 +8,7 @@ namespace OceanSystem
     {
         private const string ShowScale = "OceanEqualizerShowScale";
         private const string ShowChop = "OceanEqualizerShowChop";
+        private static readonly string[] _filterTypeNames = { "Bell ", "Hight Shelf ", "Low Shelf "};
 
         private EqualizerPreset _oceanEqualizerPreset;
 
@@ -26,6 +27,7 @@ namespace OceanSystem
         private static readonly GUIContent _duplicateButtonContent = new GUIContent("+", "duplicate");
         private static readonly GUIContent _deleteButtonContent = new GUIContent("-", "delete");
         private static readonly GUILayoutOption _miniButtonWidth = GUILayout.Width(20f);
+        private static readonly GUILayoutOption _miniButtonHeight = GUILayout.Height(21);
 
 
         private void OnEnable()
@@ -85,23 +87,33 @@ namespace OceanSystem
         {
             for (int i = 0; i < filters.arraySize; i++)
             {
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                EditorGUI.indentLevel += 1;
+                SerializedProperty prop = filters.GetArrayElementAtIndex(i);
+                int type = prop.FindPropertyRelative("type").enumValueIndex;
+
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Filter " + i.ToString(), EditorStyles.boldLabel);
+                prop.isExpanded = EditorGUILayout.Foldout(prop.isExpanded, _filterTypeNames[type], true);
                 ShowMiniButtons(filters, i);
                 EditorGUILayout.EndHorizontal();
+
                 if (i < filters.arraySize)
                 {
-                    var enumerator = filters.GetArrayElementAtIndex(i).GetEnumerator();
-
-                    EditorGUI.indentLevel += 1;
-                    while (enumerator.MoveNext())
+                    if (prop.isExpanded)
                     {
-                        var current = enumerator.Current as SerializedProperty;
-                        EditorGUILayout.PropertyField(current);
+                        var enumerator = prop.GetEnumerator();
+                        while (enumerator.MoveNext())
+                        {
+                            var current = enumerator.Current as SerializedProperty;
+                            EditorGUILayout.PropertyField(current);
+                        }
                     }
-                    EditorGUI.indentLevel -= 1;
-                    EditorGUILayout.Space();
                 }
+                
+                EditorGUI.indentLevel -= 1;
+                EditorGUILayout.Space(0.5f);
+                EditorGUILayout.EndVertical();
+                
             }
 
             if (GUILayout.Button("Add filter", EditorStyles.miniButton))
@@ -112,11 +124,11 @@ namespace OceanSystem
 
         private void ShowMiniButtons(SerializedProperty list, int index)
         {
-            if (GUILayout.Button(_duplicateButtonContent, EditorStyles.miniButtonLeft, _miniButtonWidth))
+            if (GUILayout.Button(_duplicateButtonContent, EditorStyles.miniButtonLeft, _miniButtonWidth, _miniButtonHeight))
             {
                 list.InsertArrayElementAtIndex(index);
             }
-            if (GUILayout.Button(_deleteButtonContent, EditorStyles.miniButtonRight, _miniButtonWidth))
+            if (GUILayout.Button(_deleteButtonContent, EditorStyles.miniButtonRight, _miniButtonWidth, _miniButtonHeight))
             {
                 int oldSize = list.arraySize;
                 list.DeleteArrayElementAtIndex(index);

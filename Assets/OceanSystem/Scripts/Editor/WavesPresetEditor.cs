@@ -37,7 +37,7 @@ namespace OceanSystem
                 EditorGUILayout.PropertyField(_chop);
                 EditorGUILayout.PropertyField(_equalizer);
                 EditorGUILayout.PropertyField(_foam);
-                SpectrumParamsDrawer.DrawSpectrumParams(_spectrum, spectrumProps, SpectrumParamsDrawer.SpectrumParamsDrawerMode.FoldoutGroup, true);
+                SpectrumParamsDrawer.DrawSpectrumParams(_spectrum, spectrumProps, SpectrumParamsDrawer.SpectrumParamsDrawerMode.Foldout, true);
             }
 
             serializedObject.ApplyModifiedProperties();

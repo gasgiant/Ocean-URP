@@ -15,12 +15,26 @@ namespace OceanSystem
         [SerializeField] private float _depth = 1000;
 
         [SerializeField] private EqualizerPreset _defaultEqualizer;
-        [SerializeField] private WavesPreset[] _localWinds;
+        [SerializeField] private WavesLevel[] _localWinds;
         [SerializeField] private WavesPreset _localWind;
         [SerializeField] private WavesPreset _swell;
 
         [Range(0, 1)]
         [SerializeField] private float _defaultWindForce;
+
+        [SerializeField, HideInInspector] private float _maxWindForce;
+
+        private void OnValidate()
+        {
+            _maxWindForce = 0;
+            for (int i = 0; i < _localWinds.Length; i++)
+            {
+                if (_localWinds[i].windForce < 0)
+                    _localWinds[i].windForce = 0;
+                if (_localWinds[i].windForce > _maxWindForce)
+                    _maxWindForce = _localWinds[i].windForce;
+            }
+        }
 
         public void PopulateInputs(OceanSimulationInputs target)
         {
@@ -41,13 +55,11 @@ namespace OceanSystem
             }
             else
             {
-                LerpVars lerp = GetLerpVars(windForce01, _localWinds.Length);
-                WavesPreset start = _localWinds[lerp.startInd];
-                WavesPreset end = _localWinds[lerp.endInd];
+                LerpVars lerp = GetLerpVars(windForce01, _maxWindForce, _localWinds);
 
-                if (start == null || end == null)
+                if (lerp.start == null || lerp.end == null)
                     return;
-                SetValues(target, start, end, lerp.t);
+                SetValues(target, lerp.start, lerp.end, lerp.t);
             }    
         }
 
@@ -81,22 +93,38 @@ namespace OceanSystem
                 return EqualizerPreset.GetDefaultRamp();
         }
 
-        private static LerpVars GetLerpVars(float t, int count)
+        private static LerpVars GetLerpVars(float windForce01, float maxWindForce, WavesLevel[] wavesLevels)
         {
             LerpVars res = new LerpVars();
-            if (count < 2) return res;
-            float v = Mathf.Clamp01(t) * (count - 1);
-            res.startInd = Mathf.FloorToInt(v);
-            res.endInd = Mathf.CeilToInt(v);
-            res.t = Mathf.InverseLerp(res.startInd, res.endInd, v);
+            if (wavesLevels.Length < 2) return res;
+            float windForce = Mathf.Clamp01(windForce01) * maxWindForce;
+            int i;
+            for (i = 0; i < wavesLevels.Length; i++)
+            {
+                if (windForce < wavesLevels[i].windForce)
+                    break;
+            }
+            if (i == 0) return res;
+            if (i == wavesLevels.Length) i -= 1;
+            res.start = wavesLevels[i - 1].preset;
+            res.end = wavesLevels[i].preset;
+
+            res.t = Mathf.InverseLerp(wavesLevels[i - 1].windForce, wavesLevels[i].windForce, windForce);
             return res;
         }
 
         private struct LerpVars
         {
             public float t;
-            public int startInd;
-            public int endInd;
+            public WavesPreset start;
+            public WavesPreset end;
+        }
+
+        [System.Serializable]
+        private struct WavesLevel
+        {
+            public WavesPreset preset;
+            public float windForce;
         }
     }
 }
