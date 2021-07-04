@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 455a633a0f497004b93633bceffae765, type: 3}
   m_Name: Waves Preset 1
   m_EditorClassIdentifier: 
-  type: 0
+  _type: 0
   _spectrum:
     energySpectrum: 0
     windSpeed: 2

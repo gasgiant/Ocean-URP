@@ -10,40 +10,40 @@ namespace OceanSystem
         public InputsProviderMode Mode => _mode;
 
         [SerializeField] private InputsProviderMode _mode;
+        [Range(0, 1)]
         [SerializeField] private float _timeScale = 1;
         [SerializeField] private float _depth = 1000;
 
         [SerializeField] private EqualizerPreset _defaultEqualizer;
-        [SerializeField] private WavesPreset[] _localPresets;
-        [SerializeField] private WavesPreset _localPreset;
-        [SerializeField] private WavesPreset _swellPreset;
+        [SerializeField] private WavesPreset[] _localWinds;
+        [SerializeField] private WavesPreset _localWind;
+        [SerializeField] private WavesPreset _swell;
 
         [Range(0, 1)]
-        [SerializeField] private float windForce;
+        [SerializeField] private float _defaultWindForce;
 
         public void PopulateInputs(OceanSimulationInputs target)
         {
-            PopulateInputs(target, windForce);
+            PopulateInputs(target, _defaultWindForce);
         }
-
 
         public void PopulateInputs(OceanSimulationInputs target, float windForce01)
         {
             target.timeScale = _timeScale;
             target.depth = _depth;
-            if (_swellPreset != null)
-                target.swell = _swellPreset.Spectrum;
+            if (_swell)
+                target.swell = _swell.Spectrum;
 
-            if (_mode == InputsProviderMode.Fixed || _localPresets == null || _localPresets.Length < 2)
+            if (_mode == InputsProviderMode.Fixed || _localWinds == null || _localWinds.Length < 2)
             {
-                if (_localPreset == null) return;
-                SetValues(target, _localPreset);
+                if (_localWind == null) return;
+                SetValues(target, _localWind);
             }
             else
             {
-                LerpVars lerp = GetLerpVars(windForce01, _localPresets.Length);
-                WavesPreset start = _localPresets[lerp.startInd];
-                WavesPreset end = _localPresets[lerp.endInd];
+                LerpVars lerp = GetLerpVars(windForce01, _localWinds.Length);
+                WavesPreset start = _localWinds[lerp.startInd];
+                WavesPreset end = _localWinds[lerp.endInd];
 
                 if (start == null || end == null)
                     return;
