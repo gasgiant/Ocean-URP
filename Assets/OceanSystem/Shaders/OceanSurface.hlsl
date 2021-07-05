@@ -151,7 +151,7 @@ float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
 	float depthScale = 0;//exp(li.shore.x / Ocean_FogGradientScale);
 	float3 color = FogColor(0 * (1 - abs(li.viewDir.y)) * (1 - abs(li.viewDir.y)) * depthScale);
 	float3 sssColor = SssColor(depthScale);
-	color += sssColor * (sss.x + sss.y);
+	color += sssColor * saturate(sss.x + sss.y);
     float ndotl = saturate(dot(li.normal, li.mainLight.direction));
     color += (ndotl * 0.8 + 0.2f) * li.mainLight.color  * Ocean_DiffuseColor;
 	

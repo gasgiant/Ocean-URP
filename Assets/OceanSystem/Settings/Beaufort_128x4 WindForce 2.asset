@@ -15,7 +15,7 @@ MonoBehaviour:
   _type: 0
   _spectrum:
     energySpectrum: 0
-    windSpeed: 20.7
+    windSpeed: 7
     fetch: 100
     peaking: 3.3
     scale: 1
@@ -23,11 +23,11 @@ MonoBehaviour:
     alignment: 1
     extraAlignment: 0
   _foam:
-    coverage: 0
-    underwater: 0
+    coverage: 0.661
+    underwater: 0.211
     density: 8.4
-    persistence: 0.5
-    decayRate: 0.1
-    cascadesWeights: {x: 1, y: 1, z: 1, w: 1}
-  _chop: 1.4
+    persistence: 0.519
+    decayRate: 0.02
+    cascadesWeights: {x: 3, y: 1, z: 0.3, w: 0.1}
+  _chop: 1.68
   _equalizer: {fileID: 0}

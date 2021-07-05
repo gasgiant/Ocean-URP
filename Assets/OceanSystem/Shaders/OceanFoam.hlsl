@@ -44,12 +44,24 @@ float Bubbles(float2 worldXZ, float3 viewDir, float3 normal, float time)
 float2 Coverage(float4x4 t, float4 mixWeights, float2 worldXZ, float bubblesTex)
 {
 	float4 turbulence = MixTurbulence(t, Ocean_FoamCascadesWeights, mixWeights * ACTIVE_CASCADES);
-    float foamValue = lerp(turbulence.x, (turbulence.z + turbulence.w) * 0.5, Ocean_FoamPersistence);
-	foamValue -= 1;
+    //float foamValue = lerp(turbulence.x, (turbulence.z + turbulence.w) * 0.5, Ocean_FoamPersistence);
+	//foamValue -= 1;
+    float foamValueCurrent = (turbulence.x + turbulence.y) * 0.5;
+    float foamValuePersistent = (turbulence.z + turbulence.w) * 0.5;
+    foamValueCurrent = lerp(foamValueCurrent, foamValuePersistent, 0.5);
+    foamValueCurrent -= 1;
+    foamValuePersistent -= 1;
 	
-    float whiteCaps = saturate((foamValue + Ocean_FoamCoverage) * Ocean_FoamDensity);
-    float underwater = saturate((foamValue + Ocean_FoamCoverage + 0.05 * Ocean_FoamUnderwater) * Ocean_FoamDensity);
-    float bubbles = bubblesTex * saturate((foamValue + Ocean_FoamCoverage + Ocean_FoamUnderwater * 0.2) * Ocean_FoamDensity);
+    float contactTexture = SAMPLE_TEXTURE2D(_ContactFoamTexture, sampler_ContactFoamTexture,
+		worldXZ * 0.04 * float2(Ocean_WindDirection.y, Ocean_WindDirection.x) + 0.00 * Ocean_WindDirection * _Time.y).r;
+    foamValuePersistent += saturate(foamValuePersistent + 1) * contactTexture * 0.2;
+    //foamValuePersistent *= contactTexture * 0.5;
+    float foamValue = max(foamValuePersistent + Ocean_FoamPersistence, foamValueCurrent + Ocean_FoamCoverage);
+	
+	
+    float whiteCaps = saturate(foamValue * Ocean_FoamDensity);
+    float underwater = saturate((foamValue + 0.05 * Ocean_FoamUnderwater) * Ocean_FoamDensity);
+    float bubbles = bubblesTex * saturate((foamValue + Ocean_FoamUnderwater * 0.2) * Ocean_FoamDensity);
 	return float2(whiteCaps, max(underwater, bubbles));
 }
 
