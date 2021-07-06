@@ -26,6 +26,20 @@ struct FoamData
 	float3 tex;
 };
 
+float2 RotateUV(float2 uv, float2 center, float2 rotation, float sgn)
+{
+    uv -= center;
+    float s = rotation.y;
+    float c = rotation.x;
+    float2x2 rMatrix = float2x2(c, -sgn * s, sgn * s, c);
+    rMatrix *= 0.5;
+    rMatrix += 0.5;
+    rMatrix = rMatrix * 2 - 1;
+    uv = mul(uv, rMatrix);
+    uv += center;
+    return uv;
+}
+
 float4 MixTurbulence(float4x4 t, float4 foamWeights, float4 mixWeights)
 {
 	return (t[0] * foamWeights.x + t[1] * foamWeights.y + t[2] * foamWeights.z + t[3] * foamWeights.w) / dot(foamWeights * mixWeights, 1);
@@ -44,25 +58,21 @@ float Bubbles(float2 worldXZ, float3 viewDir, float3 normal, float time)
 float2 Coverage(float4x4 t, float4 mixWeights, float2 worldXZ, float bubblesTex)
 {
 	float4 turbulence = MixTurbulence(t, Ocean_FoamCascadesWeights, mixWeights * ACTIVE_CASCADES);
-    //float foamValue = lerp(turbulence.x, (turbulence.z + turbulence.w) * 0.5, Ocean_FoamPersistence);
-	//foamValue -= 1;
-    float foamValueCurrent = (turbulence.x + turbulence.y) * 0.5;
+    float foamValueCurrent = lerp(turbulence.y, turbulence.x, Ocean_FoamSharpness);
     float foamValuePersistent = (turbulence.z + turbulence.w) * 0.5;
-    foamValueCurrent = lerp(foamValueCurrent, foamValuePersistent, 0.5);
+    foamValueCurrent = lerp(foamValueCurrent, foamValuePersistent, Ocean_FoamPersistence);
     foamValueCurrent -= 1;
     foamValuePersistent -= 1;
 	
-    float contactTexture = SAMPLE_TEXTURE2D(_ContactFoamTexture, sampler_ContactFoamTexture,
-		worldXZ * 0.04 * float2(Ocean_WindDirection.y, Ocean_WindDirection.x) + 0.00 * Ocean_WindDirection * _Time.y).r;
-    foamValuePersistent += saturate(foamValuePersistent + 1) * contactTexture * 0.2;
-    //foamValuePersistent *= contactTexture * 0.5;
-    float foamValue = max(foamValuePersistent + Ocean_FoamPersistence, foamValueCurrent + Ocean_FoamCoverage);
+    float trailTexture = SAMPLE_TEXTURE2D(_FoamTrailTexture, sampler_FoamTrailTexture,
+		RotateUV(worldXZ, 0, Ocean_WindDirection, 1) / Ocean_FoamTrailTextureSize).r;
+    foamValuePersistent += saturate(foamValuePersistent + 1) * trailTexture * Ocean_FoamTrailTextureStrength;
+    float foamValue = max(foamValuePersistent + Ocean_FoamTrail, foamValueCurrent + Ocean_FoamCoverage);
 	
-	
-    float whiteCaps = saturate(foamValue * Ocean_FoamDensity);
-    float underwater = saturate((foamValue + 0.05 * Ocean_FoamUnderwater) * Ocean_FoamDensity);
-    float bubbles = bubblesTex * saturate((foamValue + Ocean_FoamUnderwater * 0.2) * Ocean_FoamDensity);
-	return float2(whiteCaps, max(underwater, bubbles));
+    float surfaceFoam = saturate(foamValue * Ocean_FoamDensity);
+    float denseUnderwaterFoam = saturate((foamValue + 0.05 * Ocean_FoamUnderwater) * Ocean_FoamDensity);
+    float sparseUnderwaterFoam = bubblesTex * saturate((foamValue + Ocean_FoamUnderwater * 0.2) * Ocean_FoamDensity);
+    return float2(surfaceFoam, max(denseUnderwaterFoam, sparseUnderwaterFoam));
 }
 
 float ContactFoam(float4 positionNDC, float viewDepth, float2 worldXZ, float time)

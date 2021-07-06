@@ -82,7 +82,7 @@ namespace OceanSystem
             Graphics.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);
             _collision.DoReadbacks();
-            SetGlobalShaderVariables();
+            SetGlobalFoamVariables();
         }
 
         public void ReleaseResources()
@@ -248,14 +248,7 @@ namespace OceanSystem
             cmd.DispatchCompute(_initialSpectrumShader,
                 _conjugateSpectrumKernel, _size / LocalWorkGroupsX, _size / LocalWorkGroupsY, 1);
 
-            // setting global shader variables which update only when the initial spectrum updates
-            float windAngle = _localWindDirection * Mathf.Deg2Rad;
-            Shader.SetGlobalVector(GlobalShaderVariables.WindDirection, new Vector2(Mathf.Cos(windAngle), Mathf.Sin(windAngle)));
-            Shader.SetGlobalMatrix(GlobalShaderVariables.WorldToWindSpace,
-                Matrix4x4.Rotate(Quaternion.AngleAxis(-_localWindDirection, Vector3.up)));
-            Shader.SetGlobalFloat(GlobalShaderVariables.WindSpeed, _inputs.local.windSpeed);
-            Shader.SetGlobalFloat(GlobalShaderVariables.WavesScale, _inputs.local.scale);
-            Shader.SetGlobalFloat(GlobalShaderVariables.WavesAlignement, _inputs.local.alignment);
+            SetGlobalVariables();
 
             _isSpectrumInitialized = true;
         }
@@ -298,16 +291,29 @@ namespace OceanSystem
             }
         }
 
-        private void SetGlobalShaderVariables()
+        private void SetGlobalVariables()
         {
             Shader.SetGlobalVector(GlobalShaderVariables.LengthScales, _simulationSettings.LengthScales());
+            float windAngle = _localWindDirection * Mathf.Deg2Rad;
+            Shader.SetGlobalVector(GlobalShaderVariables.WindDirection, new Vector2(Mathf.Cos(windAngle), Mathf.Sin(windAngle)));
+            Shader.SetGlobalMatrix(GlobalShaderVariables.WorldToWindSpace,
+                Matrix4x4.Rotate(Quaternion.AngleAxis(-_localWindDirection, Vector3.up)));
+            Shader.SetGlobalFloat(GlobalShaderVariables.WindSpeed, _inputs.local.windSpeed);
+            Shader.SetGlobalFloat(GlobalShaderVariables.WavesScale, _inputs.local.scale);
+            Shader.SetGlobalFloat(GlobalShaderVariables.WavesAlignement, _inputs.local.alignment);
+        }
 
-            // floam
-            Shader.SetGlobalFloat(GlobalShaderVariables.FoamCoverage, _inputs.foam.coverage);
-            Shader.SetGlobalFloat(GlobalShaderVariables.FoamUnderwater, _inputs.foam.underwater);
-            Shader.SetGlobalFloat(GlobalShaderVariables.FoamDensity, _inputs.foam.density);
-            Shader.SetGlobalFloat(GlobalShaderVariables.FoamPersistence, _inputs.foam.persistence);
-            Shader.SetGlobalVector(GlobalShaderVariables.FoamCascadesWeights, _inputs.foam.cascadesWeights);
+        private void SetGlobalFoamVariables()
+        {
+            Shader.SetGlobalFloat(FoamParams.ShaderVariables.Coverage, _inputs.foam.coverage);
+            Shader.SetGlobalFloat(FoamParams.ShaderVariables.Density, _inputs.foam.density);
+            Shader.SetGlobalFloat(FoamParams.ShaderVariables.Sharpness, _inputs.foam.sharpness);
+            Shader.SetGlobalFloat(FoamParams.ShaderVariables.Persistence, _inputs.foam.persistence);
+            Shader.SetGlobalFloat(FoamParams.ShaderVariables.Trail, _inputs.foam.trail);
+            Shader.SetGlobalFloat(FoamParams.ShaderVariables.TrailTextureStrength, _inputs.foam.trailTextureStrength);
+            Shader.SetGlobalVector(FoamParams.ShaderVariables.TrailTextureSize, _inputs.foam.trailTextureSize);
+            Shader.SetGlobalFloat(FoamParams.ShaderVariables.Underwater, _inputs.foam.underwater);
+            Shader.SetGlobalVector(FoamParams.ShaderVariables.CascadesWeights, _inputs.foam.cascadesWeights);
         }
         
 
@@ -353,13 +359,6 @@ namespace OceanSystem
             public static readonly int WavesAlignement = Shader.PropertyToID("Ocean_WavesAlignement");
             public static readonly int WindDirection = Shader.PropertyToID("Ocean_WindDirection");
             public static readonly int WorldToWindSpace = Shader.PropertyToID("Ocean_WorldToWindSpace");
-
-            // foam
-            public static readonly int FoamCoverage = Shader.PropertyToID("Ocean_FoamCoverage");
-            public static readonly int FoamUnderwater = Shader.PropertyToID("Ocean_FoamUnderwater");
-            public static readonly int FoamDensity = Shader.PropertyToID("Ocean_FoamDensity");
-            public static readonly int FoamPersistence = Shader.PropertyToID("Ocean_FoamPersistence");
-            public static readonly int FoamCascadesWeights = Shader.PropertyToID("Ocean_FoamCascadesWeights");
         }
     }
 }

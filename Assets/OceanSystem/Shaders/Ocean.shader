@@ -67,6 +67,8 @@ Shader "Ocean/Ocean"
 
         // foam
         _FoamTexture("Foam Noise", 2D) = "gray" {}
+        [NoScaleOffset]
+        _FoamTrailTexture("Trail Texture", 2D) = "white" {}
         _ContactFoamTexture("Contact Foam Texture", 2D) = "white" {}
         _FoamNormalsDetail("Normal Strength", Range(0, 1.0)) = 0.5
         _WhitecapsColor("Whitecaps Albedo", Color) = (1, 1, 1, 1)

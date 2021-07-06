@@ -3,6 +3,8 @@
 
 TEXTURE2D(_FoamTexture);
 SAMPLER(sampler_FoamTexture);
+TEXTURE2D(_FoamTrailTexture);
+SAMPLER(sampler_FoamTrailTexture);
 TEXTURE2D(_ContactFoamTexture);
 SAMPLER(sampler_ContactFoamTexture);
 

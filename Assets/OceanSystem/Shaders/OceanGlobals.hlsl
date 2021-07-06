@@ -19,9 +19,13 @@ float4x4 Ocean_WorldToWindSpace;
 
 // foam
 float Ocean_FoamCoverage;
-float Ocean_FoamUnderwater;
 float Ocean_FoamDensity;
+float Ocean_FoamSharpness;
 float Ocean_FoamPersistence;
+float Ocean_FoamTrail;
+float Ocean_FoamTrailTextureStrength;
+float2 Ocean_FoamTrailTextureSize;
+float Ocean_FoamUnderwater;
 float4 Ocean_FoamCascadesWeights;
 
 // camera
@@ -58,8 +62,6 @@ float2 Ocean_TintGradientParams;
 
 float3 SampleOceanSpecCube(float3 dir)
 {
-    //float4 envSample = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0, samplerunity_SpecCube0, dir, 0);
-    //return DecodeHDREnvironment(envSample, unity_SpecCube0_HDR);
     float4 envSample = SAMPLE_TEXTURECUBE_LOD(Ocean_SpecCube, samplerOcean_SpecCube, dir, 0);
     return DecodeHDREnvironment(envSample, Ocean_SpecCube_HDR);
 }

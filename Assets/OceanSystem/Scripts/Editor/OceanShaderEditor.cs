@@ -56,6 +56,7 @@ namespace OceanSystem
 		// foam
 		MaterialProperty foamEditorExpanded = null;
 		MaterialProperty foamTexture = null;
+		MaterialProperty foamTrailTexture = null;
 		MaterialProperty contactFoamTexture = null;
 		MaterialProperty foamNormalsDetail = null;
 		MaterialProperty whitecapsColor = null;
@@ -125,6 +126,7 @@ namespace OceanSystem
 			foamNormalsDetail = FindProperty("_FoamNormalsDetail", properties);
 			whitecapsColor = FindProperty("_WhitecapsColor", properties);
 			foamTexture = FindProperty("_FoamTexture", properties);
+			foamTrailTexture = FindProperty("_FoamTrailTexture", properties);
 			underwaterFoamParallax = FindProperty("_UnderwaterFoamParallax", properties);
 			contactFoam = FindProperty("_ContactFoam", properties);
 			contactFoamTexture = FindProperty("_ContactFoamTexture", properties);
@@ -220,6 +222,7 @@ namespace OceanSystem
 				editor.ShaderProperty(contactFoamEnabled, MakeLabel(contactFoamEnabled));
 				editor.TexturePropertySingleLine(new GUIContent("Whitecaps"), foamTexture,
 						whitecapsColor);
+				editor.TexturePropertySingleLine(MakeLabel(foamTrailTexture), foamTrailTexture);
 				editor.TexturePropertySingleLine(new GUIContent("Contact Foam"), contactFoamTexture,
 						contactFoam);
 				editor.ShaderProperty(foamNormalsDetail, MakeLabel(foamNormalsDetail));
