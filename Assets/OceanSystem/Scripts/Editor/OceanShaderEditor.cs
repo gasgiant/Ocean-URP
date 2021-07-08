@@ -55,11 +55,12 @@ namespace OceanSystem
 
 		// foam
 		MaterialProperty foamEditorExpanded = null;
-		MaterialProperty foamTexture = null;
+		MaterialProperty surfaceFoamAlbedo = null;
+		MaterialProperty foamUnderwaterTexture = null;
 		MaterialProperty foamTrailTexture = null;
 		MaterialProperty contactFoamTexture = null;
 		MaterialProperty foamNormalsDetail = null;
-		MaterialProperty whitecapsColor = null;
+		MaterialProperty surfaceFoamTint = null;
 		MaterialProperty underwaterFoamParallax = null;
 		MaterialProperty contactFoam = null;
 
@@ -124,8 +125,9 @@ namespace OceanSystem
 			// foam
 			foamEditorExpanded = FindProperty("foamEditorExpanded", properties);
 			foamNormalsDetail = FindProperty("_FoamNormalsDetail", properties);
-			whitecapsColor = FindProperty("_WhitecapsColor", properties);
-			foamTexture = FindProperty("_FoamTexture", properties);
+			surfaceFoamTint = FindProperty("_FoamTint", properties);
+			surfaceFoamAlbedo = FindProperty("_SurfaceFoamAlbedo", properties);
+			foamUnderwaterTexture = FindProperty("_FoamUnderwaterTexture", properties);
 			foamTrailTexture = FindProperty("_FoamTrailTexture", properties);
 			underwaterFoamParallax = FindProperty("_UnderwaterFoamParallax", properties);
 			contactFoam = FindProperty("_ContactFoam", properties);
@@ -220,8 +222,11 @@ namespace OceanSystem
 				EditorGUI.indentLevel += 1;
 				editor.ShaderProperty(wavesFoamEnabled, MakeLabel(wavesFoamEnabled));
 				editor.ShaderProperty(contactFoamEnabled, MakeLabel(contactFoamEnabled));
-				editor.TexturePropertySingleLine(new GUIContent("Whitecaps"), foamTexture,
-						whitecapsColor);
+				editor.TexturePropertySingleLine(new GUIContent("Surface Albedo"), surfaceFoamAlbedo, surfaceFoamTint);
+				editor.TextureScaleOffsetProperty(surfaceFoamAlbedo);
+				editor.TexturePropertySingleLine(MakeLabel(foamUnderwaterTexture), foamUnderwaterTexture);
+				editor.TextureScaleOffsetProperty(foamUnderwaterTexture);
+
 				editor.TexturePropertySingleLine(MakeLabel(foamTrailTexture), foamTrailTexture);
 				editor.TexturePropertySingleLine(new GUIContent("Contact Foam"), contactFoamTexture,
 						contactFoam);

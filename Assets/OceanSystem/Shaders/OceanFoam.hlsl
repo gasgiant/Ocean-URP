@@ -23,7 +23,7 @@ struct FoamData
 {
 	float2 coverage;
 	float3 normal;
-	float3 tex;
+	float3 surfaceAlbedo;
 };
 
 float2 RotateUV(float2 uv, float2 center, float2 rotation, float sgn)
@@ -47,15 +47,17 @@ float4 MixTurbulence(float4x4 t, float4 foamWeights, float4 mixWeights)
 
 float Bubbles(float2 worldXZ, float3 viewDir, float3 normal, float time)
 {
-	float2 parallaxDir = (viewDir.xz / (dot(normal, viewDir)) + 0.5 * normal.xz);
-    float bubbles1 = SAMPLE_TEXTURE2D(_FoamTexture, sampler_FoamTexture, 
-		worldXZ - parallaxDir * _UnderwaterFoamParallax - 2 * Ocean_WindDirection * time).r;
-    float bubbles2 = SAMPLE_TEXTURE2D(_FoamTexture, sampler_FoamTexture,
-		worldXZ - parallaxDir * _UnderwaterFoamParallax * 2 - Ocean_WindDirection * time).r;
-	return saturate(5 * saturate(lerp(-0.5, 2, (bubbles1 + bubbles2) * 0.5)));
+    float2 uv = TRANSFORM_TEX(worldXZ, _FoamUnderwaterTexture);
+	float2 parallaxDir = (viewDir.xz / (dot(normal, viewDir)) + 0.4 * normal.xz);
+    float bubbles1 = SAMPLE_TEXTURE2D(_FoamUnderwaterTexture, sampler_FoamUnderwaterTexture,
+		uv - parallaxDir * _UnderwaterFoamParallax).r;
+    float bubbles2 = SAMPLE_TEXTURE2D(_FoamUnderwaterTexture, sampler_FoamUnderwaterTexture,
+		uv - parallaxDir * _UnderwaterFoamParallax * 0.5 + 0.4 * normal.xz + 0.5 
+		- 0.5 * Ocean_WindDirection * time).r;
+	return max(bubbles1, bubbles2);
 }
 
-float2 Coverage(float4x4 t, float4 mixWeights, float2 worldXZ, float bubblesTex)
+float2 Coverage(float4x4 t, float4 mixWeights, float2 worldXZ, float underwaterBubblesTex)
 {
 	float4 turbulence = MixTurbulence(t, Ocean_FoamCascadesWeights, mixWeights * ACTIVE_CASCADES);
     float foamValueCurrent = lerp(turbulence.y, turbulence.x, Ocean_FoamSharpness);
@@ -75,14 +77,16 @@ float2 Coverage(float4x4 t, float4 mixWeights, float2 worldXZ, float bubblesTex)
         trailTexture = lerp(trailTexture0, trailTexture1, Ocean_FoamTrailBlendValue);
     }   
 	else
+    {
         trailTexture = trailTexture0;
+    }
 	
     foamValuePersistent += saturate(foamValuePersistent + 1) * trailTexture * Ocean_FoamTrailTextureStrength;
-    float foamValue = max(foamValuePersistent + Ocean_FoamTrail, foamValueCurrent + Ocean_FoamCoverage);
+    float foamValue = max((foamValuePersistent + Ocean_FoamTrail), foamValueCurrent + Ocean_FoamCoverage);
 	
     float surfaceFoam = saturate(foamValue * Ocean_FoamDensity);
-    float denseUnderwaterFoam = saturate((foamValue + 0.05 * Ocean_FoamUnderwater) * Ocean_FoamDensity);
-    float sparseUnderwaterFoam = bubblesTex * saturate((foamValue + Ocean_FoamUnderwater * 0.2) * Ocean_FoamDensity);
+    float denseUnderwaterFoam = saturate((foamValue + 0.02 * Ocean_FoamUnderwater) * Ocean_FoamDensity);
+    float sparseUnderwaterFoam = underwaterBubblesTex * saturate((foamValue + Ocean_FoamUnderwater * 0.2) * Ocean_FoamDensity * 0.8);
     return float2(surfaceFoam, max(denseUnderwaterFoam, sparseUnderwaterFoam));
 }
 
@@ -102,7 +106,7 @@ FoamData GetFoamData(FoamInput i)
 	FoamData data;
 	data.coverage = 0;
 	data.normal = float3(0, 1, 0);
-	data.tex = 0;
+	data.surfaceAlbedo = 1;
 	
 	#if !defined(WAVES_FOAM_ENABLED) && !defined(CONTACT_FOAM_ENABLED)
 	return data;
@@ -119,10 +123,8 @@ FoamData GetFoamData(FoamInput i)
 	data.coverage.x = saturate(data.coverage.x + ContactFoam(i.positionNDC, i.viewDepth, i.worldXZ, i.time));
 	#endif
 	
-	float foamNoise = SAMPLE_TEXTURE2D(_FoamTexture, sampler_FoamTexture, i.worldXZ).r * 0.5;
-    foamNoise += SAMPLE_TEXTURE2D(_FoamTexture, sampler_FoamTexture, i.worldXZ - Ocean_WindDirection * i.time * 0.7).r * 0.5;
-	foamNoise = 1 - saturate(lerp(-1.1, 4, foamNoise));
-	data.tex = foamNoise;
+    float2 uv = TRANSFORM_TEX(i.worldXZ, _SurfaceFoamAlbedo);
+    data.surfaceAlbedo = SAMPLE_TEXTURE2D(_SurfaceFoamAlbedo, sampler_SurfaceFoamAlbedo, uv).r;
 	return data;
 }
 

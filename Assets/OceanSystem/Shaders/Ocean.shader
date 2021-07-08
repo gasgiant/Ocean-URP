@@ -66,12 +66,13 @@ Shader "Ocean/Ocean"
         _SssFadeDistance("Fade Distance", Float) = 30
 
         // foam
-        _FoamTexture("Foam Noise", 2D) = "gray" {}
+        _SurfaceFoamAlbedo("Albedo", 2D) = "white" {}
+        _FoamUnderwaterTexture("Underwater Texture", 2D) = "gray" {}
         [NoScaleOffset]
         _FoamTrailTexture("Trail Texture", 2D) = "white" {}
         _ContactFoamTexture("Contact Foam Texture", 2D) = "white" {}
         _FoamNormalsDetail("Normal Strength", Range(0, 1.0)) = 0.5
-        _WhitecapsColor("Whitecaps Albedo", Color) = (1, 1, 1, 1)
+        _FoamTint("Tint", Color) = (1, 1, 1, 1)
         _UnderwaterFoamParallax("Underwater Parallax", Range(0, 3.0)) = 1.2
         _ContactFoam("Contact Foam", Range(0, 1.0)) = 0
     }

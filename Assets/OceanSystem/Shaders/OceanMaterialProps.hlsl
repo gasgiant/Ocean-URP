@@ -1,8 +1,12 @@
 ﻿#if !defined(OCEAN_MATERIAL_PROPS_INCLUDED)
 #define OCEAN_MATERIAL_PROPS_INCLUDED
 
-TEXTURE2D(_FoamTexture);
-SAMPLER(sampler_FoamTexture);
+TEXTURE2D(_SurfaceFoamAlbedo);
+SAMPLER(sampler_SurfaceFoamAlbedo);
+float4 _SurfaceFoamAlbedo_ST;
+TEXTURE2D(_FoamUnderwaterTexture);
+SAMPLER(sampler_FoamUnderwaterTexture);
+float4 _FoamUnderwaterTexture_ST;
 TEXTURE2D(_FoamTrailTexture);
 SAMPLER(sampler_FoamTrailTexture);
 TEXTURE2D(_ContactFoamTexture);
@@ -38,7 +42,7 @@ float _SssFadeDistance;
 
 // foam
 float _FoamNormalsDetail;
-float4 _WhitecapsColor;
+float4 _FoamTint;
 float4 _UnderwaterFoamColor;
 float _UnderwaterFoamParallax;
 float _ContactFoam;

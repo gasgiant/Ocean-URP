@@ -27,11 +27,11 @@ MonoBehaviour:
     density: 8.4
     sharpness: 0.763
     persistence: 0.618
-    trail: 0.577
-    trailTextureStrength: 0.499
-    trailTextureSize: {x: 400, y: 100}
-    underwater: 0.4
+    trail: 0.663
+    trailTextureStrength: 0.384
+    trailTextureSize: {x: 200, y: 50}
+    underwater: 0.533
     decayRate: 0.1
-    cascadesWeights: {x: 3, y: 1, z: 0.3, w: 0.3}
+    cascadesWeights: {x: 3, y: 1, z: 0.3, w: 0.1}
   _chop: 1.68
   _equalizer: {fileID: 0}
