@@ -50,11 +50,13 @@ namespace OceanSystem
 
             if (_mode == InputsProviderMode.Fixed || _localWinds == null || _localWinds.Length < 2)
             {
+                target.foamTrailUpdateTime = 0;
                 if (_localWind == null) return;
                 SetValues(target, _localWind);
             }
             else
             {
+                target.foamTrailUpdateTime = 1;
                 LerpVars lerp = GetLerpVars(windForce01, _maxWindForce, _localWinds);
 
                 if (lerp.start == null || lerp.end == null)

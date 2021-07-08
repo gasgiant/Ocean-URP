@@ -23,11 +23,15 @@ MonoBehaviour:
     alignment: 1
     extraAlignment: 0
   _foam:
-    coverage: 0
-    underwater: 0
+    coverage: 0.649
     density: 8.4
-    persistence: 0.5
+    sharpness: 0.763
+    persistence: 0.618
+    trail: 0.577
+    trailTextureStrength: 0.592
+    trailTextureSize: {x: 100, y: 25}
+    underwater: 0.4
     decayRate: 0.1
-    cascadesWeights: {x: 1, y: 1, z: 1, w: 1}
-  _chop: 1.4
+    cascadesWeights: {x: 3, y: 1, z: 0.3, w: 0.3}
+  _chop: 1.68
   _equalizer: {fileID: 0}

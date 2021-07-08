@@ -1,4 +1,4 @@
-Shader "Hidden/SpectrumPlot"
+Shader "Hidden/Ocean/SpectrumPlot"
 {
     Properties
     {

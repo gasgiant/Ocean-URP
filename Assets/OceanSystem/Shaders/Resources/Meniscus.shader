@@ -1,4 +1,4 @@
-Shader "Hidden/Ocean/UnderwaterEffect"
+Shader "Ocean/Meniscus"
 {
     Properties
     {

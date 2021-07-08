@@ -15,7 +15,7 @@ MonoBehaviour:
   _type: 0
   _spectrum:
     energySpectrum: 0
-    windSpeed: 7
+    windSpeed: 13.7
     fetch: 100
     peaking: 3.3
     scale: 1
@@ -25,13 +25,13 @@ MonoBehaviour:
   _foam:
     coverage: 0.649
     density: 8.4
-    sharpness: 0.535
+    sharpness: 0.763
     persistence: 0.618
-    trail: 0.556
-    trailTextureStrength: 0.276
-    trailTextureSize: {x: 100, y: 50}
+    trail: 0.577
+    trailTextureStrength: 0.499
+    trailTextureSize: {x: 400, y: 100}
     underwater: 0.4
-    decayRate: 0.02
-    cascadesWeights: {x: 3, y: 1, z: 0.3, w: 0.1}
+    decayRate: 0.1
+    cascadesWeights: {x: 3, y: 1, z: 0.3, w: 0.3}
   _chop: 1.68
   _equalizer: {fileID: 0}

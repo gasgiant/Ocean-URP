@@ -1,4 +1,4 @@
-Shader "Ocean/StereographicSky"
+Shader "Hidden/Ocean/StereographicSky"
 {
     Properties
     {

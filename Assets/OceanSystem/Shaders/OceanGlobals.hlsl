@@ -24,9 +24,13 @@ float Ocean_FoamSharpness;
 float Ocean_FoamPersistence;
 float Ocean_FoamTrail;
 float Ocean_FoamTrailTextureStrength;
-float2 Ocean_FoamTrailTextureSize;
 float Ocean_FoamUnderwater;
 float4 Ocean_FoamCascadesWeights;
+float2 Ocean_FoamTrailTextureSize0;
+float2 Ocean_FoamTrailTextureSize1;
+float2 Ocean_FoamTrailDirection0;
+float2 Ocean_FoamTrailDirection1;
+float Ocean_FoamTrailBlendValue;
 
 // camera
 float4x4 Ocean_InverseViewMatrix;

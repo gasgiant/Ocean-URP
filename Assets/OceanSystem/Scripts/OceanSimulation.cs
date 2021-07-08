@@ -14,7 +14,6 @@ namespace OceanSystem
 
         private OceanSimulationSettings _simulationSettings;
         private OceanSimulationInputsProvider _inputsProvider;
-
         private readonly OceanSimulationInputs _inputs = new OceanSimulationInputs();
 
         private static float OceanTime => (float)(Time.timeSinceLevelLoadAsDouble % 18000);
@@ -28,6 +27,7 @@ namespace OceanSystem
         private readonly ComputeShader _initialSpectrumShader;
         private readonly ComputeShader _timeDependentSpectrumShader;
         private readonly ComputeShader _foamSimulationShader;
+        private readonly FoamVariablesController _foamVariablesController = new FoamVariablesController();
 
         private readonly int _generateNoiseKernel;
         private readonly int _initialSpectrumKernel;
@@ -81,8 +81,7 @@ namespace OceanSystem
             UpdateSimulation(cmd, OceanTime * _inputs.timeScale, Time.deltaTime * _inputs.timeScale);
             Graphics.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);
-            _collision.DoReadbacks();
-            SetGlobalFoamVariables();
+            _collision.DoReadbacks(); 
         }
 
         public void ReleaseResources()
@@ -248,7 +247,8 @@ namespace OceanSystem
             cmd.DispatchCompute(_initialSpectrumShader,
                 _conjugateSpectrumKernel, _size / LocalWorkGroupsX, _size / LocalWorkGroupsY, 1);
 
-            SetGlobalVariables();
+            SetGlobalShaderVariables();
+            _foamVariablesController.SetGlobalFoamVariables(_inputs, _localWindDirection);
 
             _isSpectrumInitialized = true;
         }
@@ -291,7 +291,7 @@ namespace OceanSystem
             }
         }
 
-        private void SetGlobalVariables()
+        private void SetGlobalShaderVariables()
         {
             Shader.SetGlobalVector(GlobalShaderVariables.LengthScales, _simulationSettings.LengthScales());
             float windAngle = _localWindDirection * Mathf.Deg2Rad;
@@ -302,20 +302,6 @@ namespace OceanSystem
             Shader.SetGlobalFloat(GlobalShaderVariables.WavesScale, _inputs.local.scale);
             Shader.SetGlobalFloat(GlobalShaderVariables.WavesAlignement, _inputs.local.alignment);
         }
-
-        private void SetGlobalFoamVariables()
-        {
-            Shader.SetGlobalFloat(FoamParams.ShaderVariables.Coverage, _inputs.foam.coverage);
-            Shader.SetGlobalFloat(FoamParams.ShaderVariables.Density, _inputs.foam.density);
-            Shader.SetGlobalFloat(FoamParams.ShaderVariables.Sharpness, _inputs.foam.sharpness);
-            Shader.SetGlobalFloat(FoamParams.ShaderVariables.Persistence, _inputs.foam.persistence);
-            Shader.SetGlobalFloat(FoamParams.ShaderVariables.Trail, _inputs.foam.trail);
-            Shader.SetGlobalFloat(FoamParams.ShaderVariables.TrailTextureStrength, _inputs.foam.trailTextureStrength);
-            Shader.SetGlobalVector(FoamParams.ShaderVariables.TrailTextureSize, _inputs.foam.trailTextureSize);
-            Shader.SetGlobalFloat(FoamParams.ShaderVariables.Underwater, _inputs.foam.underwater);
-            Shader.SetGlobalVector(FoamParams.ShaderVariables.CascadesWeights, _inputs.foam.cascadesWeights);
-        }
-        
 
         private static class SimualtionVariables
         {

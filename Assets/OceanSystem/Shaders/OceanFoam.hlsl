@@ -64,8 +64,19 @@ float2 Coverage(float4x4 t, float4 mixWeights, float2 worldXZ, float bubblesTex)
     foamValueCurrent -= 1;
     foamValuePersistent -= 1;
 	
-    float trailTexture = SAMPLE_TEXTURE2D(_FoamTrailTexture, sampler_FoamTrailTexture,
-		RotateUV(worldXZ, 0, Ocean_WindDirection, 1) / Ocean_FoamTrailTextureSize).r;
+    float trailTexture;
+	
+    float trailTexture0 = SAMPLE_TEXTURE2D(_FoamTrailTexture, sampler_FoamTrailTexture,
+		RotateUV(worldXZ, 0, Ocean_FoamTrailDirection0, 1) / Ocean_FoamTrailTextureSize0).r;
+    if (Ocean_FoamTrailBlendValue > 0)
+    {
+        float trailTexture1 = SAMPLE_TEXTURE2D(_FoamTrailTexture, sampler_FoamTrailTexture,
+		RotateUV(worldXZ, 0, Ocean_FoamTrailDirection1, 1) / Ocean_FoamTrailTextureSize1).r;
+        trailTexture = lerp(trailTexture0, trailTexture1, Ocean_FoamTrailBlendValue);
+    }   
+	else
+        trailTexture = trailTexture0;
+	
     foamValuePersistent += saturate(foamValuePersistent + 1) * trailTexture * Ocean_FoamTrailTextureStrength;
     float foamValue = max(foamValuePersistent + Ocean_FoamTrail, foamValueCurrent + Ocean_FoamCoverage);
 	

@@ -47,18 +47,5 @@ namespace OceanSystem
             res.decayRate = Mathf.Lerp(lhs.decayRate, rhs.decayRate, t);
             return res;
         }
-
-        public static class ShaderVariables
-        {
-            public static readonly int Coverage = Shader.PropertyToID("Ocean_FoamCoverage");
-            public static readonly int Density = Shader.PropertyToID("Ocean_FoamDensity");
-            public static readonly int Sharpness = Shader.PropertyToID("Ocean_FoamSharpness");
-            public static readonly int Persistence = Shader.PropertyToID("Ocean_FoamPersistence");
-            public static readonly int Trail = Shader.PropertyToID("Ocean_FoamTrail");
-            public static readonly int TrailTextureStrength = Shader.PropertyToID("Ocean_FoamTrailTextureStrength");
-            public static readonly int TrailTextureSize = Shader.PropertyToID("Ocean_FoamTrailTextureSize");
-            public static readonly int Underwater = Shader.PropertyToID("Ocean_FoamUnderwater");
-            public static readonly int CascadesWeights = Shader.PropertyToID("Ocean_FoamCascadesWeights");
-        }
     }
 }

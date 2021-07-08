@@ -69,7 +69,7 @@ namespace OceanSystem
 		{
 			targetMaterial = editor.target as Material;
 			this.editor = editor;
-			skyMapMaterial = new Material(Shader.Find("Ocean/StereographicSky"));
+			skyMapMaterial = new Material(Shader.Find("Hidden/Ocean/StereographicSky"));
 			FindProperties(properties);
 			ShaderProperties();
 		}

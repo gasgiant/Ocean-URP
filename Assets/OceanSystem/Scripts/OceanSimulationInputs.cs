@@ -13,6 +13,7 @@ namespace OceanSystem
         public Texture2D equalizerRamp0;
         public Texture2D equalizerRamp1;
         public float equalizerLerpValue;
+        public float foamTrailUpdateTime;
     }
 }
 

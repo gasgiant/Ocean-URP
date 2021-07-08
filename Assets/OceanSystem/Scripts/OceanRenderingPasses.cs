@@ -88,7 +88,7 @@ namespace OceanSystem
         public OceanUnderwaterEffectPass(OceanRenderer.OceanRenderingSettings settings)
         {
             _settings = settings;
-            _underwaterEffectMaterial = new Material(Shader.Find("Ocean/UnderwaterEffect"));
+            _underwaterEffectMaterial = new Material(Shader.Find("Hidden/Ocean/UnderwaterEffect"));
         }
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
@@ -140,7 +140,7 @@ namespace OceanSystem
         public OceanSkyMapPass(OceanRenderer.OceanRenderingSettings settings)
         {
             this._settings = settings;
-            _skyMapMaterial = new Material(Shader.Find("Ocean/StereographicSky"));
+            _skyMapMaterial = new Material(Shader.Find("Hidden/Ocean/StereographicSky"));
         }
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)

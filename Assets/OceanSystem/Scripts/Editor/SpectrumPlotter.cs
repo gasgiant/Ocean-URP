@@ -20,7 +20,7 @@ namespace OceanSystem
             get
             {
                 if (_cachedMaterial == null)
-                    _cachedMaterial = new Material(Shader.Find("Hidden/SpectrumPlot"));
+                    _cachedMaterial = new Material(Shader.Find("Hidden/Ocean/SpectrumPlot"));
                 return _cachedMaterial;
             }
         }
