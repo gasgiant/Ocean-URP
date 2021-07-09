@@ -7,6 +7,7 @@ namespace OceanSystem
     public class WavesPresetEditor : Editor
     {
         private SerializedProperty _type;
+        private SerializedProperty _referenceWaveHeight;
         private SerializedProperty _spectrum;
         private SerializedProperty _foam;
         private SerializedProperty _chop;
@@ -28,24 +29,21 @@ namespace OceanSystem
 
             EditorGUILayout.PropertyField(_type);
             EditorGUILayout.Space();
-            if (_type.enumValueIndex == (int)WavesPreset.PresetType.Swell)
-            {
-                SpectrumParamsDrawer.DrawSpectrumParams(_spectrum, spectrumProps, SpectrumParamsDrawer.SpectrumParamsDrawerMode.Raw, true);
-            }
-            else
+            SpectrumParamsDrawer.DrawSpectrumParams(_spectrum, spectrumProps, SpectrumParamsDrawer.SpectrumParamsDrawerMode.Foldout, true);
+            EditorGUILayout.PropertyField(_referenceWaveHeight);
+            if (_type.enumValueIndex == (int)WavesPreset.PresetType.Local)
             {
                 EditorGUILayout.PropertyField(_chop);
                 EditorGUILayout.PropertyField(_equalizer);
                 EditorGUILayout.PropertyField(_foam);
-                SpectrumParamsDrawer.DrawSpectrumParams(_spectrum, spectrumProps, SpectrumParamsDrawer.SpectrumParamsDrawerMode.Foldout, true);
             }
-
             serializedObject.ApplyModifiedProperties();
         }
 
         private void FindProperties()
         {
             _type = serializedObject.FindProperty("_type");
+            _referenceWaveHeight = serializedObject.FindProperty("_referenceWaveHeight");
             _spectrum = serializedObject.FindProperty("_spectrum");
             _foam = serializedObject.FindProperty("_foam");
             _chop = serializedObject.FindProperty("_chop");

@@ -16,22 +16,22 @@ Shader "Ocean/Ocean"
 
         // colors
         [HDR]
-        _FogColor("Main", Color) = (0, 0, 0, 1)
+        _DeepScatterColor("Deep Scattering", Color) = (0, 0, 0, 1)
         _FogDensity("Fog Density", Float) = 0.1
         [HDR]
-        _SssColor("Subsurface scattering", Color) = (0, 0, 0, 1)
+        _SssColor("Shallow Scattering", Color) = (0, 0, 0, 1)
         [HDR]
         _DiffuseColor("Diffuse", Color) = (0, 0, 0, 1)
-        _TintColor0("", Vector) = (1, 1, 1, 1)
-        _TintColor1("", Vector) = (1, 1, 1, 1)
-        _TintColor2("", Vector) = (1, 1, 1, 1)
-        _TintColor3("", Vector) = (1, 1, 1, 1)
-        _TintColor4("", Vector) = (1, 1, 1, 1)
-        _TintColor5("", Vector) = (1, 1, 1, 1)
-        _TintColor6("", Vector) = (1, 1, 1, 1)
-        _TintColor7("", Vector) = (1, 1, 1, 1)
-        _TintGradientParams("", Vector) = (1, 1, 1, 1)
-        _TintDepthScale("Tint Depth Scale", Float) = 10
+        _AbsorptionColor0("", Vector) = (1, 1, 1, 1)
+        _AbsorptionColor1("", Vector) = (1, 1, 1, 1)
+        _AbsorptionColor2("", Vector) = (1, 1, 1, 1)
+        _AbsorptionColor3("", Vector) = (1, 1, 1, 1)
+        _AbsorptionColor4("", Vector) = (1, 1, 1, 1)
+        _AbsorptionColor5("", Vector) = (1, 1, 1, 1)
+        _AbsorptionColor6("", Vector) = (1, 1, 1, 1)
+        _AbsorptionColor7("", Vector) = (1, 1, 1, 1)
+        _AbsorptionGradientParams("", Vector) = (1, 1, 1, 1)
+        _AbsorptionDepthScale("Absorbtion Scale", Float) = 10
 
         // downward reflections mask
         [HDR]
@@ -57,16 +57,15 @@ Shader "Ocean/Ocean"
         _RefractionStrengthUnderwater("Strength Water-Air", Float) = 0.75
 
         // subsurface scattering
-        _SssSunStrength("Sun Strength", Range(0.0, 3.0)) = 0
-        _SssEnvironmentStrength("Environment Strength", Range(0.0, 3.0)) = 0
+        _SssSunStrength("Sun", Range(0.0, 1)) = 0
+        _SssEnvironmentStrength("Environment", Range(0.0, 1)) = 0
         _SssSpread("Spread", Range(0.0, 1.0)) = 0.2
         _SssNormalStrength("Normal Strength", Range(0.0, 1.0)) = 1
-        _SssHeight("Height", Range(-1.0, 2.0)) = 0
-        _SssHeightMult("Height Mult", Range(0, 2.0)) = 1
+        _SssHeightBias("Height Bias", Range(-1, 1)) = 0
         _SssFadeDistance("Fade Distance", Float) = 30
 
         // foam
-        _SurfaceFoamAlbedo("Albedo", 2D) = "white" {}
+        _FoamAlbedo("Albedo", 2D) = "white" {}
         _FoamUnderwaterTexture("Underwater Texture", 2D) = "gray" {}
         [NoScaleOffset]
         _FoamTrailTexture("Trail Texture", 2D) = "white" {}

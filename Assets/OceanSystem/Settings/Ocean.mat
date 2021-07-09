@@ -48,6 +48,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _FoamAlbedo:
+        m_Texture: {fileID: 2800000, guid: b3cc8537b21085a4c8677a3987f09953, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _FoamTexture:
         m_Texture: {fileID: 2800000, guid: e98d03927fb7cac46a98f32099947a8b, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -105,6 +109,7 @@ Material:
     - Ocean_DownwardReflectionsSmoothness: 0
     - Ocean_FogDensity: 0.1
     - Ocean_TintDepthScale: 10
+    - _AbsorptionDepthScale: 10
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -153,10 +158,11 @@ Material:
     - _SssEnvironmentStrength: 0.21
     - _SssFadeDistance: 30
     - _SssHeight: 0.2
-    - _SssHeightMult: 0.58
-    - _SssNormalStrength: 1
-    - _SssSpread: 0.2
-    - _SssSunStrength: 0.35
+    - _SssHeightBias: 0
+    - _SssHeightMult: 0.63
+    - _SssNormalStrength: 0.779
+    - _SssSpread: 0.498
+    - _SssSunStrength: 0.12
     - _Surface: 0
     - _TRANSPARENCY_ENABLED: 1
     - _TintDepthScale: 10
@@ -166,7 +172,7 @@ Material:
     - _WAVES_FOAM_ENABLED: 1
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - foamEditorExpanded: 1
+    - foamEditorExpanded: 0
     - horizonEditorExpanded: 0
     - sssEditorExpanded: 0
     m_Colors:
@@ -184,8 +190,18 @@ Material:
     - Ocean_TintColor6: {r: 1, g: 1, b: 1, a: 1}
     - Ocean_TintColor7: {r: 1, g: 1, b: 1, a: 1}
     - Ocean_TintGradientParams: {r: 4, g: 0, b: 0, a: 0}
+    - _AbsorptionColor0: {r: 0, g: 0.041025557, b: 0.094412796, a: 0}
+    - _AbsorptionColor1: {r: 0, g: 0.17351386, b: 0.43203577, a: 0.2}
+    - _AbsorptionColor2: {r: 0.16198544, g: 0.68352747, b: 0.79865986, a: 0.66608685}
+    - _AbsorptionColor3: {r: 1, g: 1, b: 1, a: 1}
+    - _AbsorptionColor4: {r: 1, g: 1, b: 1, a: 1}
+    - _AbsorptionColor5: {r: 1, g: 1, b: 1, a: 1}
+    - _AbsorptionColor6: {r: 1, g: 1, b: 1, a: 1}
+    - _AbsorptionColor7: {r: 1, g: 1, b: 1, a: 1}
+    - _AbsorptionGradientParams: {r: 4, g: 0, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _DeepScatterColor: {r: 0, g: 0.012745098, b: 0.04019608, a: 1}
     - _DiffuseColor: {r: 0, g: 0.025490196, b: 0.033333335, a: 1}
     - _DownwardReflectionsColor: {r: 0.015895328, g: 0.09349897, b: 0.1792453, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

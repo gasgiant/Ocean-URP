@@ -6,7 +6,7 @@ float3 ColorThroughWater(float3 color, float3 volumeColor, float distThroughWate
 {
 	distThroughWater = max(0, distThroughWater);
 	depth = max(0, depth);
-	color *= TintColor(exp(-(distThroughWater + depth) / Ocean_TintDepthScale));
+    color *= AbsorptionTint(exp(-(distThroughWater + depth) / Ocean_AbsorptionDepthScale));
 	return lerp(color, volumeColor, 1 - saturate(exp(-Ocean_FogDensity * distThroughWater)));
 }
 
@@ -17,7 +17,7 @@ float3 UnderwaterFogColor(float3 viewDir, float3 lightDir, float depth)
 	float sssFactor = 0.1 * pow(max(0, 1 - viewDir.y + bias), 3);
 	sssFactor *= 1 + pow(saturate(dot(lightDir, -viewDir)), 4);
 	sssFactor *= saturate(1 - depthScale);
-    float3 color = FogColor(depthScale) * max(0.5, saturate(2 - viewDir.y + bias));
+    float3 color = DeepScatterColor(depthScale) * max(0.5, saturate(2 - viewDir.y + bias));
 	float3 sssColor = SssColor(depthScale);
 	color = color + sssColor * sssFactor;
 	return color;

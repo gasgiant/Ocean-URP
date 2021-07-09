@@ -16,6 +16,7 @@ float Ocean_WavesScale;
 float Ocean_WavesAlignement;
 float2 Ocean_WindDirection;
 float4x4 Ocean_WorldToWindSpace;
+float Ocean_ReferenceWaveHeight;
 
 // foam
 float Ocean_FoamCoverage;
@@ -48,20 +49,20 @@ float Ocean_DownwardReflectionsRadius;
 float Ocean_DownwardReflectionsSharpness;
 
 // colors
-float3 Ocean_FogColor;
+float3 Ocean_DeepScatterColor;
 float3 Ocean_SssColor;
 float3 Ocean_DiffuseColor;
-float Ocean_TintDepthScale;
+float Ocean_AbsorptionDepthScale;
 float Ocean_FogDensity;
-float4 Ocean_TintColor0;
-float4 Ocean_TintColor1;
-float4 Ocean_TintColor2;
-float4 Ocean_TintColor3;
-float4 Ocean_TintColor4;
-float4 Ocean_TintColor5;
-float4 Ocean_TintColor6;
-float4 Ocean_TintColor7;
-float2 Ocean_TintGradientParams;
+float4 Ocean_AbsorptionColor0;
+float4 Ocean_AbsorptionColor1;
+float4 Ocean_AbsorptionColor2;
+float4 Ocean_AbsorptionColor3;
+float4 Ocean_AbsorptionColor4;
+float4 Ocean_AbsorptionColor5;
+float4 Ocean_AbsorptionColor6;
+float4 Ocean_AbsorptionColor7;
+float2 Ocean_AbsorptionGradientParams;
 
 
 float3 SampleOceanSpecCube(float3 dir)
@@ -83,9 +84,9 @@ float3 OceanEnvironmentDiffuse(float3 dir)
     return max(0.0, SampleSH9(coefficients, dir));
 }
 
-float3 FogColor(float t)
+float3 DeepScatterColor(float t)
 {
-    return Ocean_FogColor;
+    return Ocean_DeepScatterColor;
 }
 
 float3 SssColor(float t)
@@ -98,20 +99,20 @@ float3 DiffuseColor(float t)
     return Ocean_DiffuseColor;
 }
 
-float3 TintColor(float t)
+float3 AbsorptionTint(float t)
 {
     float4 colors[GRADIENT_MAX_KEYS] =
     {
-        Ocean_TintColor0,
-        Ocean_TintColor1,
-        Ocean_TintColor2,
-        Ocean_TintColor3,
-        Ocean_TintColor4,
-        Ocean_TintColor5,
-        Ocean_TintColor6,
-        Ocean_TintColor7
+        Ocean_AbsorptionColor0,
+        Ocean_AbsorptionColor1,
+        Ocean_AbsorptionColor2,
+        Ocean_AbsorptionColor3,
+        Ocean_AbsorptionColor4,
+        Ocean_AbsorptionColor5,
+        Ocean_AbsorptionColor6,
+        Ocean_AbsorptionColor7
     };
-    Gradient g = CreateGradient(colors, Ocean_TintGradientParams);
+    Gradient g = CreateGradient(colors, Ocean_AbsorptionGradientParams);
     return SampleGradient(g, t);
 }
 

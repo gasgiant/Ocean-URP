@@ -45,24 +45,36 @@ namespace OceanSystem
         {
             target.timeScale = _timeScale;
             target.depth = _depth;
+
+            float referenceWaveHeight = 0;
             if (_swell)
+            {
                 target.swell = _swell.Spectrum;
+                referenceWaveHeight += _swell.ReferenceWaveHeight;
+            }
 
             if (_mode == InputsProviderMode.Fixed || _localWinds == null || _localWinds.Length < 2)
             {
                 target.foamTrailUpdateTime = 0;
-                if (_localWind == null) return;
-                SetValues(target, _localWind);
+                if (_localWind != null)
+                {
+                    SetValues(target, _localWind);
+                    referenceWaveHeight += _localWind.ReferenceWaveHeight;
+                }
             }
             else
             {
                 target.foamTrailUpdateTime = 1;
                 LerpVars lerp = GetLerpVars(windForce01, _maxWindForce, _localWinds);
 
-                if (lerp.start == null || lerp.end == null)
-                    return;
-                SetValues(target, lerp.start, lerp.end, lerp.t);
-            }    
+                if (lerp.start != null && lerp.end != null)
+                {
+                    SetValues(target, lerp.start, lerp.end, lerp.t);
+                    referenceWaveHeight += Mathf.Lerp(lerp.start.ReferenceWaveHeight,
+                        lerp.end.ReferenceWaveHeight, lerp.t);
+                }
+            }
+            target.referenceWaveHeight = referenceWaveHeight;
         }
 
         private void SetValues(OceanSimulationInputs target, WavesPreset preset)

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Beaufort_128x4 WindForce 1
   m_EditorClassIdentifier: 
   _type: 0
+  _referenceWaveHeight: 4.67
   _spectrum:
     energySpectrum: 0
     windSpeed: 7

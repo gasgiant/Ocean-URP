@@ -13,11 +13,11 @@ namespace OceanSystem
 		MaterialProperty contactFoamEnabled = null;
 
 		// colors
-		MaterialProperty fogColor = null;
+		MaterialProperty deepScatterColor = null;
 		MaterialProperty fogDensity = null;
 		MaterialProperty sssColor = null;
 		MaterialProperty diffuseColor = null;
-		MaterialProperty tintDepthScale = null;
+		MaterialProperty absorbtionDepthScale = null;
 
 		// downward reflections mask
 		MaterialProperty downwardReflectionsColor;
@@ -49,13 +49,12 @@ namespace OceanSystem
 		MaterialProperty sssEnvironmentStrength = null;
 		MaterialProperty sssSpread = null;
 		MaterialProperty sssNormalStrength = null;
-		MaterialProperty sssHeight = null;
-		MaterialProperty sssHeightMult = null;
+		MaterialProperty sssHeightBias = null;
 		MaterialProperty sssFadeDistance = null;
 
 		// foam
 		MaterialProperty foamEditorExpanded = null;
-		MaterialProperty surfaceFoamAlbedo = null;
+		MaterialProperty foamAlbedo = null;
 		MaterialProperty foamUnderwaterTexture = null;
 		MaterialProperty foamTrailTexture = null;
 		MaterialProperty contactFoamTexture = null;
@@ -82,11 +81,11 @@ namespace OceanSystem
 			contactFoamEnabled = FindProperty("_CONTACT_FOAM_ENABLED", properties);
 
 			// colors
-			fogColor = FindProperty("_FogColor", properties);
+			deepScatterColor = FindProperty("_DeepScatterColor", properties);
 			fogDensity = FindProperty("_FogDensity", properties);
 			sssColor = FindProperty("_SssColor", properties);
 			diffuseColor = FindProperty("_DiffuseColor", properties);
-			tintDepthScale = FindProperty("_TintDepthScale", properties);
+			absorbtionDepthScale = FindProperty("_AbsorptionDepthScale", properties);
 
 			// downward reflections mask
 			downwardReflectionsColor = FindProperty("_DownwardReflectionsColor", properties);
@@ -118,15 +117,14 @@ namespace OceanSystem
 			sssEnvironmentStrength = FindProperty("_SssEnvironmentStrength", properties);
 			sssSpread = FindProperty("_SssSpread", properties);
 			sssNormalStrength = FindProperty("_SssNormalStrength", properties);
-			sssHeight = FindProperty("_SssHeight", properties);
-			sssHeightMult = FindProperty("_SssHeightMult", properties);
+			sssHeightBias = FindProperty("_SssHeightBias", properties);
 			sssFadeDistance = FindProperty("_SssFadeDistance", properties);
 
 			// foam
 			foamEditorExpanded = FindProperty("foamEditorExpanded", properties);
 			foamNormalsDetail = FindProperty("_FoamNormalsDetail", properties);
 			surfaceFoamTint = FindProperty("_FoamTint", properties);
-			surfaceFoamAlbedo = FindProperty("_SurfaceFoamAlbedo", properties);
+			foamAlbedo = FindProperty("_FoamAlbedo", properties);
 			foamUnderwaterTexture = FindProperty("_FoamUnderwaterTexture", properties);
 			foamTrailTexture = FindProperty("_FoamTrailTexture", properties);
 			underwaterFoamParallax = FindProperty("_UnderwaterFoamParallax", properties);
@@ -138,16 +136,16 @@ namespace OceanSystem
 		{
 			EditorGUILayout.LabelField("Colors", EditorStyles.boldLabel);
 			EditorGUI.indentLevel += 1;
-			editor.ShaderProperty(fogColor, MakeLabel(fogColor));
+			editor.ShaderProperty(deepScatterColor, MakeLabel(deepScatterColor));
 			editor.ShaderProperty(fogDensity, MakeLabel(fogDensity));
 			editor.ShaderProperty(sssColor, MakeLabel(sssColor));
 			editor.ShaderProperty(diffuseColor, MakeLabel(diffuseColor));
 			editor.ShaderProperty(downwardReflectionsColor, MakeLabel(downwardReflectionsColor));
 			EditorGUI.BeginChangeCheck();
-			Gradient tint = EditorGUILayout.GradientField(new GUIContent("Tint Gradient"), GetGradient(OceanMaterialProps.TintGradient), false);
+			Gradient tint = EditorGUILayout.GradientField(new GUIContent("Absorbtion Gradient"), GetGradient(OceanMaterialProps.TintGradient), false);
 			if (EditorGUI.EndChangeCheck())
 				SetGradient(OceanMaterialProps.TintGradient, tint);
-			editor.ShaderProperty(tintDepthScale, MakeLabel(tintDepthScale));
+			editor.ShaderProperty(absorbtionDepthScale, MakeLabel(absorbtionDepthScale));
 			EditorGUI.indentLevel -= 1;
 			EditorGUILayout.Space();
 
@@ -208,8 +206,7 @@ namespace OceanSystem
 				editor.ShaderProperty(sssEnvironmentStrength, MakeLabel(sssEnvironmentStrength));
 				editor.ShaderProperty(sssSpread, MakeLabel(sssSpread));
 				editor.ShaderProperty(sssNormalStrength, MakeLabel(sssNormalStrength));
-				editor.ShaderProperty(sssHeight, MakeLabel(sssHeight));
-				editor.ShaderProperty(sssHeightMult, MakeLabel(sssHeightMult));
+				editor.ShaderProperty(sssHeightBias, MakeLabel(sssHeightBias));
 				editor.ShaderProperty(sssFadeDistance, MakeLabel(sssFadeDistance));
 				EditorGUI.indentLevel -= 1;
 				EditorGUILayout.Space();
@@ -223,8 +220,8 @@ namespace OceanSystem
 				editor.ShaderProperty(wavesFoamEnabled, MakeLabel(wavesFoamEnabled));
 				editor.ShaderProperty(contactFoamEnabled, MakeLabel(contactFoamEnabled));
 
-				editor.TexturePropertySingleLine(new GUIContent("Surface Albedo"), surfaceFoamAlbedo, surfaceFoamTint);
-				DrawTilingProperty(surfaceFoamAlbedo);
+				editor.TexturePropertySingleLine(new GUIContent("Albedo"), foamAlbedo, surfaceFoamTint);
+				DrawTilingProperty(foamAlbedo);
 
 				editor.TexturePropertySingleLine(MakeLabel(foamUnderwaterTexture), foamUnderwaterTexture);
 				DrawTilingProperty(foamUnderwaterTexture);

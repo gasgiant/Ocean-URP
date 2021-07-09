@@ -180,22 +180,22 @@ namespace OceanSystem
 
     public static class OceanMaterialProps
     {
-        public static readonly int FogColor = Shader.PropertyToID("_FogColor");
+        public static readonly int FogColor = Shader.PropertyToID("_DeepScatterColor");
         public static readonly int SssColor = Shader.PropertyToID("_SssColor");
         public static readonly int DiffuseColor = Shader.PropertyToID("_DiffuseColor");
-        public static readonly int TintDepthScale = Shader.PropertyToID("_TintDepthScale");
+        public static readonly int TintDepthScale = Shader.PropertyToID("_AbsorptionDepthScale");
         public static readonly int FogDensity = Shader.PropertyToID("_FogDensity");
         public static readonly int[] TintGradient =
         {
-            Shader.PropertyToID("_TintGradientParams"),
-            Shader.PropertyToID("_TintColor0"),
-            Shader.PropertyToID("_TintColor1"),
-            Shader.PropertyToID("_TintColor2"),
-            Shader.PropertyToID("_TintColor3"),
-            Shader.PropertyToID("_TintColor4"),
-            Shader.PropertyToID("_TintColor5"),
-            Shader.PropertyToID("_TintColor6"),
-            Shader.PropertyToID("_TintColor7")
+            Shader.PropertyToID("_AbsorptionGradientParams"),
+            Shader.PropertyToID("_AbsorptionColor0"),
+            Shader.PropertyToID("_AbsorptionColor1"),
+            Shader.PropertyToID("_AbsorptionColor2"),
+            Shader.PropertyToID("_AbsorptionColor3"),
+            Shader.PropertyToID("_AbsorptionColor4"),
+            Shader.PropertyToID("_AbsorptionColor5"),
+            Shader.PropertyToID("_AbsorptionColor6"),
+            Shader.PropertyToID("_AbsorptionColor7")
         };
 
         public static readonly int DownwardReflectionsColor = Shader.PropertyToID("_DownwardReflectionsColor");
@@ -206,22 +206,22 @@ namespace OceanSystem
     public static class OceanGlobalProps
     {
         public static readonly int SpecCube = Shader.PropertyToID("Ocean_SpecCube");
-        public static readonly int FogColor = Shader.PropertyToID("Ocean_FogColor");
+        public static readonly int FogColor = Shader.PropertyToID("Ocean_DeepScatterColor");
         public static readonly int SssColor = Shader.PropertyToID("Ocean_SssColor");
         public static readonly int DiffuseColor = Shader.PropertyToID("Ocean_DiffuseColor");
-        public static readonly int TintDepthScale = Shader.PropertyToID("Ocean_TintDepthScale");
+        public static readonly int TintDepthScale = Shader.PropertyToID("Ocean_AbsorptionDepthScale");
         public static readonly int FogDensity = Shader.PropertyToID("Ocean_FogDensity");
         public static readonly int[] TintGradient =
         {
-            Shader.PropertyToID("Ocean_TintGradientParams"),
-            Shader.PropertyToID("Ocean_TintColor0"),
-            Shader.PropertyToID("Ocean_TintColor1"),
-            Shader.PropertyToID("Ocean_TintColor2"),
-            Shader.PropertyToID("Ocean_TintColor3"),
-            Shader.PropertyToID("Ocean_TintColor4"),
-            Shader.PropertyToID("Ocean_TintColor5"),
-            Shader.PropertyToID("Ocean_TintColor6"),
-            Shader.PropertyToID("Ocean_TintColor7")
+            Shader.PropertyToID("Ocean_AbsorptionGradientParams"),
+            Shader.PropertyToID("Ocean_AbsorptionColor0"),
+            Shader.PropertyToID("Ocean_AbsorptionColor1"),
+            Shader.PropertyToID("Ocean_AbsorptionColor2"),
+            Shader.PropertyToID("Ocean_AbsorptionColor3"),
+            Shader.PropertyToID("Ocean_AbsorptionColor4"),
+            Shader.PropertyToID("Ocean_AbsorptionColor5"),
+            Shader.PropertyToID("Ocean_AbsorptionColor6"),
+            Shader.PropertyToID("Ocean_AbsorptionColor7")
         };
 
         public static readonly int DownwardReflectionsColorID = Shader.PropertyToID("Ocean_DownwardReflectionsColor");

@@ -1,9 +1,9 @@
 ﻿#if !defined(OCEAN_MATERIAL_PROPS_INCLUDED)
 #define OCEAN_MATERIAL_PROPS_INCLUDED
 
-TEXTURE2D(_SurfaceFoamAlbedo);
-SAMPLER(sampler_SurfaceFoamAlbedo);
-float4 _SurfaceFoamAlbedo_ST;
+TEXTURE2D(_FoamAlbedo);
+SAMPLER(sampler_FoamAlbedo);
+float4 _FoamAlbedo_ST;
 TEXTURE2D(_FoamUnderwaterTexture);
 SAMPLER(sampler_FoamUnderwaterTexture);
 float4 _FoamUnderwaterTexture_ST;
@@ -38,8 +38,7 @@ float _SssSunStrength;
 float _SssEnvironmentStrength;
 float _SssSpread;
 float _SssNormalStrength;
-float _SssHeight;
-float _SssHeightMult;
+float _SssHeightBias;
 float _SssFadeDistance;
 
 // foam

@@ -8,6 +8,7 @@ namespace OceanSystem
         public enum PresetType { Local, Swell }
 
         [SerializeField] private PresetType _type;
+        [SerializeField] private float _referenceWaveHeight = 1;
         [SerializeField] private SpectrumParams _spectrum = SpectrumParams.GetDefaultLocal();
         [SerializeField] private FoamParams _foam = FoamParams.GetDefault();
         [Range(0, 2)]
@@ -16,6 +17,9 @@ namespace OceanSystem
 
         public SpectrumParams Spectrum => _spectrum;
         public EqualizerPreset Equalizer => _equalizer;
+
+        public float ReferenceWaveHeight => _referenceWaveHeight;
+
         public float Chop => _chop;
         public FoamParams Foam => _foam;
     }

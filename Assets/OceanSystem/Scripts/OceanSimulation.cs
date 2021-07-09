@@ -301,6 +301,7 @@ namespace OceanSystem
             Shader.SetGlobalFloat(GlobalShaderVariables.WindSpeed, _inputs.local.windSpeed);
             Shader.SetGlobalFloat(GlobalShaderVariables.WavesScale, _inputs.local.scale);
             Shader.SetGlobalFloat(GlobalShaderVariables.WavesAlignement, _inputs.local.alignment);
+            Shader.SetGlobalFloat(GlobalShaderVariables.ReferenceWaveHeight, _inputs.referenceWaveHeight);
         }
 
         private static class SimualtionVariables
@@ -345,6 +346,7 @@ namespace OceanSystem
             public static readonly int WavesAlignement = Shader.PropertyToID("Ocean_WavesAlignement");
             public static readonly int WindDirection = Shader.PropertyToID("Ocean_WindDirection");
             public static readonly int WorldToWindSpace = Shader.PropertyToID("Ocean_WorldToWindSpace");
+            public static readonly int ReferenceWaveHeight = Shader.PropertyToID("Ocean_ReferenceWaveHeight");
         }
     }
 }

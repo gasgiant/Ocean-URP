@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Beaufort_128x4 WindForce 0
   m_EditorClassIdentifier: 
   _type: 0
+  _referenceWaveHeight: 0.1
   _spectrum:
     energySpectrum: 0
     windSpeed: 2
@@ -24,9 +25,13 @@ MonoBehaviour:
     extraAlignment: 0
   _foam:
     coverage: 0
-    underwater: 0
     density: 8.4
+    sharpness: 0.5
     persistence: 0.5
+    trail: 0
+    trailTextureStrength: 0.5
+    trailTextureSize: {x: 100, y: 50}
+    underwater: 0
     decayRate: 0.1
     cascadesWeights: {x: 1, y: 1, z: 1, w: 1}
   _chop: 1.4

@@ -23,7 +23,7 @@ struct FoamData
 {
 	float2 coverage;
 	float3 normal;
-	float3 surfaceAlbedo;
+	float3 albedo;
 };
 
 float2 RotateUV(float2 uv, float2 center, float2 rotation, float sgn)
@@ -103,7 +103,7 @@ FoamData GetFoamData(FoamInput i)
 	FoamData data;
 	data.coverage = 0;
 	data.normal = float3(0, 1, 0);
-	data.surfaceAlbedo = 1;
+	data.albedo = 1;
 	
 	#if !defined(WAVES_FOAM_ENABLED) && !defined(CONTACT_FOAM_ENABLED)
 	return data;
@@ -120,8 +120,8 @@ FoamData GetFoamData(FoamInput i)
 	data.coverage.x = saturate(data.coverage.x + ContactFoam(i.positionNDC, i.viewDepth, i.worldUV, i.time));
 	#endif
 	
-    float2 uv = TRANSFORM_TEX(i.worldUV, _SurfaceFoamAlbedo);
-    data.surfaceAlbedo = SAMPLE_TEXTURE2D(_SurfaceFoamAlbedo, sampler_SurfaceFoamAlbedo, uv).r;
+    float2 uv = TRANSFORM_TEX(i.worldUV, _FoamAlbedo);
+    data.albedo = SAMPLE_TEXTURE2D(_FoamAlbedo, sampler_FoamAlbedo, uv).r;
 	return data;
 }
 

@@ -120,11 +120,20 @@ float3 ReflectionBackface(LightingInput li)
 	//#endif
 }
 
+float3 LitFoamColor(LightingInput li, FoamData foamData)
+{
+    float ndotl = (0.2 + 0.8 * saturate(dot(foamData.normal, li.mainLight.direction))) 
+		* li.mainLight.shadowAttenuation;
+    return foamData.albedo * _FoamTint.rgb * 
+		(ndotl * li.mainLight.color + OceanEnvironmentDiffuse(foamData.normal));
+}
+
 float2 SubsurfaceScatteringFactor(LightingInput li)
 {
-	float normalFactor = saturate(dot(li.normal, li.viewDir) + 1 - _SssNormalStrength);
-	float heightFactor = saturate(li.positionWS.y * _SssHeightMult + _SssHeight);
-    float sun = _SssSunStrength * normalFactor * pow(saturate(dot(li.mainLight.direction, -li.viewDir)), min(50, 1 / _SssSpread));
+    float normalFactor = saturate(dot(normalize(lerp(li.viewDir, li.normal, _SssNormalStrength)), li.viewDir));
+    float heightFactor = saturate((li.positionWS.y + Ocean_ReferenceWaveHeight * (1 + _SssHeightBias)) * 0.5 / max(0.5, Ocean_ReferenceWaveHeight));
+    heightFactor = pow(abs(heightFactor), max(1, Ocean_ReferenceWaveHeight * 0.4));
+    float sun = _SssSunStrength * normalFactor * heightFactor * pow(saturate(dot(li.mainLight.direction, -li.viewDir)), min(50, 1 / _SssSpread));
     float environment = _SssEnvironmentStrength * normalFactor * heightFactor * saturate(1 - li.viewDir.y);
 	float2 factor = float2(sun, environment);
 	factor *= _SssFadeDistance / (_SssFadeDistance + li.viewDist);
@@ -143,14 +152,13 @@ float3 RefractionCoords(float refractionStrength, float4 positionNDC, float view
 	refractedScreenUV = (positionNDC.xy + uvOffset) / positionNDC.w;
     rawDepth = SampleSceneDepth(refractedScreenUV);
 	return float3(refractedScreenUV, rawDepth);
-
 }
 
-float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
+float3 Refraction(LightingInput li, FoamData foamData, float2 sss, float3 foamColor)
 {
 	float depthScale = 0;//exp(li.shore.x / Ocean_FogGradientScale);
-	float3 color = FogColor(0 * (1 - abs(li.viewDir.y)) * (1 - abs(li.viewDir.y)) * depthScale);
-	float3 sssColor = SssColor(depthScale);
+    float3 color = DeepScatterColor(0 * (1 - abs(li.viewDir.y)) * (1 - abs(li.viewDir.y)) * depthScale);
+    float3 sssColor = SssColor(depthScale);
 	color += sssColor * saturate(sss.x + sss.y);
     float ndotl = saturate(dot(li.normal, li.mainLight.direction));
     color += (ndotl * 0.8 + 0.2f) * li.mainLight.color  * Ocean_DiffuseColor;
@@ -164,12 +172,10 @@ float3 Refraction(LightingInput li, FoamData foamData, float2 sss)
 	color = ColorThroughWater(backgroundColor, color, backgroundDistance, -backgroundPositionWS.y);
 	#endif
 	
-	#if defined(WAVES_FOAM_ENABLED) || defined(CONTACT_FOAM_ENABLED)
+	#ifdef WAVES_FOAM_ENABLED
 	float underwaterFoamVisibility = 20 / (20 + li.viewDist);
-	float3 tint = TintColor(0.8);
-	float3 light =  0.3 * li.mainLight.color;
-	float3 underwaterFoamColor = foamData.surfaceAlbedo * _FoamTint.rgb 
-		* (OceanEnvironmentDiffuse(float3(0, 1, 0)) * tint + light * tint) * tint;
+	float3 tint = AbsorptionTint(0.8);
+	float3 underwaterFoamColor = foamColor * tint * tint;
 	color = lerp(color, underwaterFoamColor, foamData.coverage.y * underwaterFoamVisibility);
 	#endif
 	return color;
@@ -183,16 +189,6 @@ float3 RefractionBackface(LightingInput li, float3 refractionDir)
 	#else
 	return SampleOceanSpecCube(refractionDir);
 	#endif
-}
-
-float4 SurfaceFoam(LightingInput li, FoamData foamData, float sss)
-{
-    float3 albedo = foamData.surfaceAlbedo * _FoamTint.rgb;
-    float3 color = saturate(dot(foamData.normal, li.mainLight.direction))
-		* albedo * li.mainLight.shadowAttenuation * li.mainLight.color;
-    color += albedo * OceanEnvironmentDiffuse(foamData.normal);
-    color += sss.x * li.mainLight.color;
-	return float4(color, foamData.coverage.x);
 }
 
 float4 HorizonBlend(LightingInput li)
@@ -222,16 +218,19 @@ float3 GetOceanColor(LightingInput li, FoamData foamData)
 		Ocean_WavesAlignement, _RoughnessDistance);
 	
 	float2 sss = SubsurfaceScatteringFactor(li);
+    float3 foamLitColor = 0;
+	#if defined(WAVES_FOAM_ENABLED) || defined(CONTACT_FOAM_ENABLED)
+	foamLitColor = LitFoamColor(li, foamData);
+	#endif
 	
 	float fresnel = EffectiveFresnel(bi);
 	float3 specular = Specular(li, bi) * Pow5(1 - foamData.coverage.y);
 	float3 reflected = Reflection(li, bi);
-	float3 refracted = Refraction(li, foamData, sss);
+    float3 refracted = Refraction(li, foamData, sss, foamLitColor);
 	float4 horizon = HorizonBlend(li);
 	float3 color = specular + lerp(refracted, reflected, fresnel);
 	#if defined(WAVES_FOAM_ENABLED) || defined(CONTACT_FOAM_ENABLED)
-	float4 surfaceFoam = SurfaceFoam(li, foamData, sss.x);
-	color = lerp(color, surfaceFoam.rgb, surfaceFoam.a);
+	color = lerp(color, foamLitColor, foamData.coverage.x);
 	#endif
 	color = lerp(color, horizon.rgb, horizon.a);
 	return color;

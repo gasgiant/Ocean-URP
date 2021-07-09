@@ -4,7 +4,7 @@ using UnityEditor;
 namespace OceanSystem
 {
     [CustomEditor(typeof(EqualizerPreset))]
-    public class OceanEqualizerPresetEditor : Editor
+    public class EqualizerPresetEditor : Editor
     {
         private const string ShowScale = "OceanEqualizerShowScale";
         private const string ShowChop = "OceanEqualizerShowChop";
