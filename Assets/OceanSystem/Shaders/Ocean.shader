@@ -124,7 +124,7 @@ Shader "Ocean/Ocean"
                 float3 positionWS   : TEXCOORD0;
                 float viewDepth     : TEXCOORD1;
                 float4 positionNDC  : TEXCOORD2;
-                float2 worldXZ      : TEXCOORD3;
+                float2 worldUV      : TEXCOORD3;
                 #ifdef REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR
                 float4 shadowCoord  : TEXCOORD4;
                 #endif
@@ -135,12 +135,12 @@ Shader "Ocean/Ocean"
                 Varyings output;
 
                 output.positionWS = ClipMapVertex(input.positionOS.xyz, input.uv);
-                output.worldXZ = output.positionWS.xz;
+                output.worldUV = output.positionWS.xz;
 
                 float viewDist = length(output.positionWS - _WorldSpaceCameraPos);
 
                 float4 weights = LodWeights(viewDist, _CascadesFadeDist);
-                output.positionWS += SampleDisplacement(output.worldXZ, weights, 1);
+                output.positionWS += SampleDisplacement(output.worldUV, weights, 1);
 
                 float3 positionOS = TransformWorldToObject(output.positionWS);
                 VertexPositionInputs positionInputs = GetVertexPositionInputs(positionOS);
@@ -161,12 +161,12 @@ Shader "Ocean/Ocean"
 
                 float4 lodWeights = LodWeights(viewDist, _CascadesFadeDist);
                 float4 shoreWeights = 1;// ShoreModulation(i.shore.x);
-                float4x4 derivatives = SampleDerivatives(input.worldXZ, lodWeights * shoreWeights);
+                float4x4 derivatives = SampleDerivatives(input.worldUV, lodWeights * shoreWeights);
                 float3 normal = NormalFromDerivatives(derivatives, 1);
 
                 FoamInput fi;
                 fi.derivatives = derivatives;
-                fi.worldXZ = input.worldXZ;
+                fi.worldUV = input.worldUV;
                 fi.lodWeights = lodWeights;
                 fi.shoreWeights = shoreWeights;
                 fi.positionNDC = input.positionNDC;

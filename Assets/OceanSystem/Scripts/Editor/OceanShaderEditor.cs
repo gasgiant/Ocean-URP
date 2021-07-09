@@ -222,19 +222,34 @@ namespace OceanSystem
 				EditorGUI.indentLevel += 1;
 				editor.ShaderProperty(wavesFoamEnabled, MakeLabel(wavesFoamEnabled));
 				editor.ShaderProperty(contactFoamEnabled, MakeLabel(contactFoamEnabled));
+
 				editor.TexturePropertySingleLine(new GUIContent("Surface Albedo"), surfaceFoamAlbedo, surfaceFoamTint);
-				editor.TextureScaleOffsetProperty(surfaceFoamAlbedo);
+				DrawTilingProperty(surfaceFoamAlbedo);
+
 				editor.TexturePropertySingleLine(MakeLabel(foamUnderwaterTexture), foamUnderwaterTexture);
-				editor.TextureScaleOffsetProperty(foamUnderwaterTexture);
+				DrawTilingProperty(foamUnderwaterTexture);
+
+				editor.TexturePropertySingleLine(new GUIContent("Contact Foam"), contactFoamTexture, contactFoam);
+				DrawTilingProperty(contactFoamTexture);
 
 				editor.TexturePropertySingleLine(MakeLabel(foamTrailTexture), foamTrailTexture);
-				editor.TexturePropertySingleLine(new GUIContent("Contact Foam"), contactFoamTexture,
-						contactFoam);
+
 				editor.ShaderProperty(foamNormalsDetail, MakeLabel(foamNormalsDetail));
 				editor.ShaderProperty(underwaterFoamParallax, MakeLabel(underwaterFoamParallax));
 				EditorGUI.indentLevel -= 1;
 			}
 			EditorGUILayout.EndFoldoutHeaderGroup();
+		}
+
+		private static void DrawTilingProperty(MaterialProperty prop)
+        {
+			Rect rect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(EditorGUIUtility.singleLineHeight * 1.3f));
+			float labelWidth = EditorGUIUtility.labelWidth;
+			float controlStartX = rect.x + labelWidth;
+			Rect labelRect = new Rect(rect.x + 14, rect.y, labelWidth - 14, EditorGUIUtility.singleLineHeight);
+			Rect valueRect = new Rect(controlStartX - 14, rect.y, rect.width - labelWidth + 14, EditorGUIUtility.singleLineHeight);
+			EditorGUI.PrefixLabel(labelRect, new GUIContent("Tiling"));
+			prop.textureScaleAndOffset = EditorGUI.Vector2Field(valueRect, GUIContent.none, prop.textureScaleAndOffset);
 		}
 
 		private void DrawSkyMapPreview()

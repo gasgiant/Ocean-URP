@@ -29,7 +29,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ContactFoamTexture:
-        m_Texture: {fileID: 2800000, guid: d231d4df9f38bce428ed1ed8c5e04e26, type: 3}
+        m_Texture: {fileID: 2800000, guid: 59dbbddfa177fb04abfff22b3ff5470d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -53,12 +53,12 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FoamTrailTexture:
-        m_Texture: {fileID: 2800000, guid: 7edcc90e0bdd5e041a8bc8e089c94f1b, type: 3}
+        m_Texture: {fileID: 2800000, guid: 04679a4fcbf91f64fb356dd28c5ddaaf, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FoamUnderwaterTexture:
-        m_Texture: {fileID: 2800000, guid: d2ab2b13f14fe514c94cd8a6f0a457ac, type: 3}
-        m_Scale: {x: 1.3, y: 1.3}
+        m_Texture: {fileID: 2800000, guid: 8f48e7e3bb6e6a040b70ccac20bb032f, type: 3}
+        m_Scale: {x: 0.2, y: 0.2}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
@@ -112,7 +112,7 @@ Material:
     - _CascadesFadeDist: 20
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _ContactFoam: 0.075
+    - _ContactFoam: 0.109
     - _Cull: 0
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
@@ -162,7 +162,7 @@ Material:
     - _TintDepthScale: 10
     - _UNDERWATER_ENABLED: 1
     - _UnderwaterFoam: 0.36
-    - _UnderwaterFoamParallax: 1.49
+    - _UnderwaterFoamParallax: 1.67
     - _WAVES_FOAM_ENABLED: 1
     - _WorkflowMode: 1
     - _ZWrite: 1

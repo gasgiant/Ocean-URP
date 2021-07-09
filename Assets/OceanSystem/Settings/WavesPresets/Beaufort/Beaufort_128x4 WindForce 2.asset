@@ -27,8 +27,8 @@ MonoBehaviour:
     density: 8.4
     sharpness: 0.763
     persistence: 0.618
-    trail: 0.663
-    trailTextureStrength: 0.384
+    trail: 0.593
+    trailTextureStrength: 0.348
     trailTextureSize: {x: 200, y: 50}
     underwater: 0.533
     decayRate: 0.1

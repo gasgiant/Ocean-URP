@@ -454,9 +454,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 8e7f5c95bf1ca694393e9963da06cc52, type: 2}
   pass: 0
-  width: 256
-  height: 256
-  savePath: UnderwaterFoam
+  width: 128
+  height: 128
+  savePath: ContactFoam
 --- !u!4 &1658702251
 Transform:
   m_ObjectHideFlags: 0
@@ -518,7 +518,7 @@ MonoBehaviour:
   _waveInputsProvider: {fileID: 11400000, guid: df699443f1cde8d41930862a7ec6c83d, type: 2}
   _windDirection: 155
   _swellDirection: 0
-  _windForce: 0.397
+  _windForce: 0.528
   _material: {fileID: 2100000, guid: 10252c97548dc8b47995a41628c2d275, type: 2}
   _reflectionsMode: 0
   _probe: {fileID: 0}

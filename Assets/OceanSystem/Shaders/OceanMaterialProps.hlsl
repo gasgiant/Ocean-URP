@@ -7,10 +7,12 @@ float4 _SurfaceFoamAlbedo_ST;
 TEXTURE2D(_FoamUnderwaterTexture);
 SAMPLER(sampler_FoamUnderwaterTexture);
 float4 _FoamUnderwaterTexture_ST;
-TEXTURE2D(_FoamTrailTexture);
-SAMPLER(sampler_FoamTrailTexture);
 TEXTURE2D(_ContactFoamTexture);
 SAMPLER(sampler_ContactFoamTexture);
+float4 _ContactFoamTexture_ST;
+TEXTURE2D(_FoamTrailTexture);
+SAMPLER(sampler_FoamTrailTexture);
+
 
 
 CBUFFER_START(UnityPerMaterial)
