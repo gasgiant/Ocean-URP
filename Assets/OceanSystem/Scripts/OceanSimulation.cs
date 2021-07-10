@@ -3,17 +3,20 @@ using UnityEngine.Rendering;
 
 namespace OceanSystem
 {
-    public class OceanSimulation
+    [ExecuteAlways]
+    public class OceanSimulation : MonoBehaviour
     {
+        [SerializeField] private OceanSimulationSettings _simulationSettings;
+        [SerializeField] private OceanSimulationInputsProvider _inputsProvider;
+        [Range(0, 360)]
+        [SerializeField] private float _localWindDirection;
+        [Range(0, 360)]
+        [SerializeField] private float _swellDirection;
+        [Range(0, 1)]
+        [SerializeField] private float _windForce01;
+
         public OceanCollision Collision => _collision;
         
-        // scene variables
-        private float _localWindDirection;
-        private float _swellDirection;
-        private float _windForce01;
-
-        private OceanSimulationSettings _simulationSettings;
-        private OceanSimulationInputsProvider _inputsProvider;
         private readonly OceanSimulationInputs _inputs = new OceanSimulationInputs();
 
         private static float OceanTime => (float)(Time.timeSinceLevelLoadAsDouble % 18000);
@@ -24,17 +27,17 @@ namespace OceanSystem
         private const int LocalWorkGroupsX = 8;
         private const int LocalWorkGroupsY = 8;
 
-        private readonly ComputeShader _initialSpectrumShader;
-        private readonly ComputeShader _timeDependentSpectrumShader;
-        private readonly ComputeShader _foamSimulationShader;
-        private readonly FoamVariablesController _foamVariablesController = new FoamVariablesController();
+        private ComputeShader _initialSpectrumShader;
+        private ComputeShader _timeDependentSpectrumShader;
+        private ComputeShader _foamSimulationShader;
+        private FoamVariablesController _foamVariablesController = new FoamVariablesController();
 
-        private readonly int _generateNoiseKernel;
-        private readonly int _initialSpectrumKernel;
-        private readonly int _conjugateSpectrumKernel;
-        private readonly int _calculateAmplitudesKernel;
-        private readonly int _simulateFoamKernel;
-        private readonly int _initializeFoamKernel;
+        private int _generateNoiseKernel;
+        private int _initialSpectrumKernel;
+        private int _conjugateSpectrumKernel;
+        private int _calculateAmplitudesKernel;
+        private int _simulateFoamKernel;
+        private int _initializeFoamKernel;
 
         private int _size;
         private RenderTexture _gaussianNoise;
@@ -51,10 +54,8 @@ namespace OceanSystem
         private bool _isSpectrumInitialized;
         private bool NeedToCalculateSpectrum => !_isSpectrumInitialized || _simulationSettings.UpdateSpectrum;
 
-        public OceanSimulation(OceanSimulationSettings simulationSettings)
+        public void Awake()
         {
-            _simulationSettings = simulationSettings;
-
             _initialSpectrumShader = (ComputeShader)Resources.Load(InitialSpectrumShaderPath);
             _timeDependentSpectrumShader = (ComputeShader)Resources.Load(TimeDependentSpectrumShaderPath);
             _foamSimulationShader = (ComputeShader)Resources.Load(FoamSimulationShaderPath);
@@ -65,40 +66,37 @@ namespace OceanSystem
             _calculateAmplitudesKernel = _timeDependentSpectrumShader.FindKernel("CalculateAmplitudes");
             _simulateFoamKernel = _foamSimulationShader.FindKernel("Simulate");
             _initializeFoamKernel = _foamSimulationShader.FindKernel("Initialize");
-
-            _spectrumsBuffer = new ComputeBuffer(2, 7 * sizeof(float) + 1 * sizeof(int));
             _currrentTextureParams = -Vector2Int.one;
         }
 
-        public void Update()
+        private void Update()
         {
-            Setup();
-            CommandBuffer cmd = CommandBufferPool.Get("Ocean Simulation");
-            if (NeedToCalculateSpectrum)
+            if (Setup())
             {
-                CalculateInitialSpectrum(cmd);
+                CommandBuffer cmd = CommandBufferPool.Get("Ocean Simulation");
+                if (NeedToCalculateSpectrum)
+                {
+                    CalculateInitialSpectrum(cmd);
+                }
+                UpdateSimulation(cmd, OceanTime * _inputs.timeScale, Time.deltaTime * _inputs.timeScale);
+                Graphics.ExecuteCommandBuffer(cmd);
+                CommandBufferPool.Release(cmd);
+                _collision.DoReadbacks();
             }
-            UpdateSimulation(cmd, OceanTime * _inputs.timeScale, Time.deltaTime * _inputs.timeScale);
-            Graphics.ExecuteCommandBuffer(cmd);
-            CommandBufferPool.Release(cmd);
-            _collision.DoReadbacks(); 
         }
 
-        public void ReleaseResources()
+        private void OnDestroy()
         {
-            if (_spectrumsBuffer != null) _spectrumsBuffer.Release();
-            ReleaseRenderTextures();
+            Cleanup();
         }
 
-        public void SetSimulationSettings(OceanSimulationSettings settings)
+#if UNITY_EDITOR
+        private void OnDisable()
         {
-            _simulationSettings = settings;
+            if (!Application.isPlaying)
+                Cleanup();
         }
-
-        public void SetInputsProvider(OceanSimulationInputsProvider inputsProvider)
-        {
-            _inputsProvider = inputsProvider;
-        }
+#endif 
 
         public void SetSceneVariables(float localWindDIrection, float swellDirection, float windForce01)
         {
@@ -107,15 +105,23 @@ namespace OceanSystem
             _windForce01 = windForce01;
         }
 
-        private void Setup()
+        private bool Setup()
         {
+            if (!_simulationSettings || !_inputsProvider)
+            {
+                return false;
+            }
+
+            if (_spectrumsBuffer == null)
+                _spectrumsBuffer = new ComputeBuffer(2, 7 * sizeof(float) + 1 * sizeof(int));
+
             Vector2Int newTextureParams = new Vector2Int(_simulationSettings.Resolution, 
                 _simulationSettings.CascadesNumber);
             if (newTextureParams == _currrentTextureParams)
             {
                 _fftInOut.anisoLevel = _simulationSettings.AnisoLevel;
                 _turbulence.anisoLevel = _simulationSettings.AnisoLevel;
-                return;
+                return true;
             }
 
             _isSpectrumInitialized = false;
@@ -124,6 +130,15 @@ namespace OceanSystem
             InitializeRenderTextures(_size, _simulationSettings.CascadesNumber, _simulationSettings.AnisoLevel);
             SetCascadesKeywords(_simulationSettings.CascadesNumber);
             _collision = new OceanCollision(_size, _fftInOut, _simulationSettings);
+
+            return true;
+        }
+
+        private void Cleanup()
+        {
+            if (_spectrumsBuffer != null) _spectrumsBuffer.Release();
+            ReleaseRenderTextures();
+            _currrentTextureParams = -Vector2Int.one;
         }
 
         private void InitializeRenderTextures(int size, int cascadesNumber, int anisoLevel)

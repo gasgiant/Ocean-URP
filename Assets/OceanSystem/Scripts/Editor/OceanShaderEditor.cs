@@ -219,7 +219,11 @@ namespace OceanSystem
 				EditorGUI.indentLevel += 1;
 				editor.ShaderProperty(wavesFoamEnabled, MakeLabel(wavesFoamEnabled));
 				editor.ShaderProperty(contactFoamEnabled, MakeLabel(contactFoamEnabled));
-
+				if (contactFoamEnabled.floatValue > 0)
+				{
+					EditorGUILayout.HelpBox("Depth Texture must be enabled in the pipline asset for contact foam to work correctly.", MessageType.Info);
+					EditorGUILayout.Space();
+				}
 				editor.TexturePropertySingleLine(new GUIContent("Albedo"), foamAlbedo, surfaceFoamTint);
 				DrawTilingProperty(foamAlbedo);
 

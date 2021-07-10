@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BeaufortScale_128x4
   m_EditorClassIdentifier: 
   _mode: 1
-  _timeScale: 0.479
+  _timeScale: 1
   _depth: 1000
   _defaultEqualizer: {fileID: 11400000, guid: 1fd9d91ff7b9c9a4c91fe8d00b1d9ef0, type: 2}
   _localWinds:

@@ -8,10 +8,10 @@ namespace OceanSystem
     {
         private readonly static ShaderTagId OceanShaderTagId = new ShaderTagId("OceanMain");
         private readonly static ProfilingSampler _profilingSampler = new ProfilingSampler("Ocean Geometry");
-        private readonly OceanRenderer.OceanRenderingSettings _settings;
+        private readonly OceanRendererFeature.OceanRenderingSettings _settings;
         private FilteringSettings _filteringSettings;
 
-        public OceanGeometryPass(OceanRenderer.OceanRenderingSettings settings)
+        public OceanGeometryPass(OceanRendererFeature.OceanRenderingSettings settings)
         {
             _settings = settings;
             _filteringSettings = new FilteringSettings(RenderQueueRange.all);
@@ -20,11 +20,11 @@ namespace OceanSystem
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
 #if UNITY_EDITOR
-            if (!OceanRenderer.IsRendering) return;
+            if (!OceanRendererFeature.IsRendering) return;
 #endif
 
             CameraData cameraData = renderingData.cameraData;
-            if (!OceanRenderer.IsCorrectCameraType(cameraData.cameraType)) return;
+            if (!OceanRendererFeature.IsCorrectCameraType(cameraData.cameraType)) return;
             Camera camera = cameraData.camera;
 
             DrawingSettings drawingSettings = new DrawingSettings(OceanShaderTagId,
@@ -79,13 +79,13 @@ namespace OceanSystem
 
     public class OceanUnderwaterEffectPass : ScriptableRenderPass
     {
-        private readonly OceanRenderer.OceanRenderingSettings _settings;
+        private readonly OceanRendererFeature.OceanRenderingSettings _settings;
         private readonly Material _underwaterEffectMaterial;
         private RenderTargetIdentifier _submergenceTarget;
         private static readonly int _submergenceTargetID = Shader.PropertyToID("SubmergenceTarget");
         private static readonly int _cameraSubmergenceTextureID = Shader.PropertyToID("Ocean_CameraSubmergenceTexture");
 
-        public OceanUnderwaterEffectPass(OceanRenderer.OceanRenderingSettings settings)
+        public OceanUnderwaterEffectPass(OceanRendererFeature.OceanRenderingSettings settings)
         {
             _settings = settings;
             _underwaterEffectMaterial = new Material(Shader.Find("Hidden/Ocean/UnderwaterEffect"));
@@ -101,11 +101,11 @@ namespace OceanSystem
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
 #if UNITY_EDITOR
-            if (!OceanRenderer.IsRendering) return;
+            if (!OceanRendererFeature.IsRendering) return;
 #endif
 
             CameraData cameraData = renderingData.cameraData;
-            if (!OceanRenderer.IsCorrectCameraType(cameraData.cameraType)) return;
+            if (!OceanRendererFeature.IsCorrectCameraType(cameraData.cameraType)) return;
 
             if (_settings.underwaterEffect)
             {
@@ -129,7 +129,7 @@ namespace OceanSystem
 
     public class OceanSkyMapPass : ScriptableRenderPass
     {
-        private OceanRenderer.OceanRenderingSettings _settings;
+        private OceanRendererFeature.OceanRenderingSettings _settings;
 
         private static readonly int _skyMapID = Shader.PropertyToID("Ocean_SkyMap");
         private readonly Material _skyMapMaterial;
@@ -137,7 +137,7 @@ namespace OceanSystem
         private bool _skyMapRendered;
         private bool NeedToRenderSkyMap => _settings.updateSkyMap || !_skyMapRendered;
 
-        public OceanSkyMapPass(OceanRenderer.OceanRenderingSettings settings)
+        public OceanSkyMapPass(OceanRendererFeature.OceanRenderingSettings settings)
         {
             this._settings = settings;
             _skyMapMaterial = new Material(Shader.Find("Hidden/Ocean/StereographicSky"));
@@ -155,13 +155,13 @@ namespace OceanSystem
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
 #if UNITY_EDITOR
-            if (!OceanRenderer.IsRendering) return;
+            if (!OceanRendererFeature.IsRendering) return;
 #endif
 
             if (NeedToRenderSkyMap)
             {
                 CameraData cameraData = renderingData.cameraData;
-                if (!OceanRenderer.IsCorrectCameraType(cameraData.cameraType)) return;
+                if (!OceanRendererFeature.IsCorrectCameraType(cameraData.cameraType)) return;
 
                 CommandBuffer cmd = CommandBufferPool.Get("Ocean Sky Map");
                 RenderSkyMap(cmd);

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,16 +6,15 @@ namespace OceanSystem
     [CustomEditor(typeof(OceanRenderer))]
     public class OceanRendererEditor : Editor
     {
-        private const string RequirementTextures = "Depth Texture and Opaque Texture must " +
-            "be enabled in the pipeline asset.";
-        private const string RequirementDownsampling = "Opaque downsampling must be None.";
+        private SerializedProperty _reflectionsMode;
+        private SerializedProperty _probe;
+        private SerializedProperty _cubemap;
+        private SerializedProperty _material;
 
-        private SerializedProperty _settings;
-        private SerializedProperty _skyMapResolution;
-        private SerializedProperty _updateSkyMap;
-        private SerializedProperty _transparency;
-        private SerializedProperty _underwater;
-
+        private SerializedProperty _viewer;
+        private SerializedProperty _minMeshScale;
+        private SerializedProperty _clipMapLevels;
+        private SerializedProperty _vertexDensity;
 
         private void OnEnable()
         {
@@ -26,49 +24,45 @@ namespace OceanSystem
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
+            GUI.enabled = false;
+            EditorGUILayout.ObjectField("Script:", MonoScript.FromMonoBehaviour((OceanRenderer)target), typeof(OceanRenderer), false);
+            GUI.enabled = true;
 
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(_skyMapResolution);
-            EditorGUILayout.PropertyField(_updateSkyMap);
-            EditorGUILayout.PropertyField(_transparency);
-            EditorGUILayout.PropertyField(_underwater);
-
-            if (_transparency.boolValue || _underwater.boolValue)
+            EditorGUILayout.PropertyField(_material);
+            EditorGUILayout.PropertyField(_reflectionsMode);
+            switch ((OceanRenderer.OceanReflectionsMode)_reflectionsMode.enumValueIndex)
             {
-                string message = RequirementTextures;
-                if (_underwater.boolValue)
-                    message += " " + RequirementDownsampling;
-                EditorGUILayout.HelpBox(message, MessageType.Info, true);
+                case OceanRenderer.OceanReflectionsMode.RealtimeProbe:
+                    EditorGUILayout.PropertyField(_probe);
+                    break;
+                case OceanRenderer.OceanReflectionsMode.Custom:
+                    EditorGUILayout.PropertyField(_cubemap);
+                    break;
+                default:
+                    break;
             }
 
-            EditorGUILayout.Space();
-            bool newValue = EditorGUILayout.Toggle("Render In Edit Mode", 
-                EditorPrefs.GetBool(OceanRenderer.RenderInEditModePrefName));
-            OceanRenderer.RenderInEditMode = newValue;
-            EditorPrefs.SetBool(OceanRenderer.RenderInEditModePrefName, newValue);
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                EditorApplication.QueuePlayerLoopUpdate();
-                QueueDelayedPlayerLoopUpdate();
-            }
+            EditorGUILayout.PropertyField(_viewer);
+            EditorGUILayout.PropertyField(_minMeshScale);
+            EditorGUILayout.PropertyField(_clipMapLevels);
+            EditorGUILayout.PropertyField(_vertexDensity);
 
             serializedObject.ApplyModifiedProperties();
         }
 
-        async private void QueueDelayedPlayerLoopUpdate()
-        {
-            await Task.Delay(100);
-            EditorApplication.QueuePlayerLoopUpdate();
-        }
-
         private void FindProperties()
         {
-            _settings = serializedObject.FindProperty("_settings");
-            _skyMapResolution = _settings.FindPropertyRelative("skyMapResolution");
-            _updateSkyMap = _settings.FindPropertyRelative("updateSkyMap"); ;
-            _transparency = _settings.FindPropertyRelative("transparency"); ;
-            _underwater = _settings.FindPropertyRelative("underwaterEffect"); ;
+            _reflectionsMode = serializedObject.FindProperty("_reflectionsMode");
+            _probe = serializedObject.FindProperty("_probe");
+            _cubemap = serializedObject.FindProperty("_cubemap");
+            _material = serializedObject.FindProperty("_material");
+
+            _viewer = serializedObject.FindProperty("_viewer");
+            _minMeshScale = serializedObject.FindProperty("_minMeshScale");
+            _clipMapLevels = serializedObject.FindProperty("_clipMapLevels");
+            _vertexDensity = serializedObject.FindProperty("_vertexDensity");
         }
     }
 }
+
+

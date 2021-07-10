@@ -172,7 +172,7 @@ Material:
     - _WAVES_FOAM_ENABLED: 1
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - foamEditorExpanded: 0
+    - foamEditorExpanded: 1
     - horizonEditorExpanded: 0
     - sssEditorExpanded: 0
     m_Colors:
