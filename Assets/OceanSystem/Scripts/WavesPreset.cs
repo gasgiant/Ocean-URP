@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace OceanSystem
 {
-    [CreateAssetMenu(fileName = "New Waves Preset", menuName = "Ocean/Wind Waves Preset")]
+    [CreateAssetMenu(fileName = "New Waves Preset", menuName = "Ocean/Waves Preset")]
     public class WavesPreset : ScriptableObject
     {
         public enum PresetType { Local, Swell }

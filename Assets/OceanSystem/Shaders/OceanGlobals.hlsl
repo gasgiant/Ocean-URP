@@ -43,17 +43,16 @@ SAMPLER(samplerOcean_SpecCube);
 float4 Ocean_SpecCube_HDR;
 TEXTURE2D(Ocean_SkyMap);
 SAMPLER(samplerOcean_SkyMap);
-// downward reflections mask
-float4 Ocean_DownwardReflectionsColor;
-float Ocean_DownwardReflectionsRadius;
-float Ocean_DownwardReflectionsSharpness;
+// reflections mask
+float4 Ocean_ReflectionsMaskColor;
+float Ocean_ReflectionsMaskRadius;
+float Ocean_ReflectionsMaskSharpness;
 
 // colors
 float3 Ocean_DeepScatterColor;
 float3 Ocean_SssColor;
 float3 Ocean_DiffuseColor;
-float Ocean_AbsorptionDepthScale;
-float Ocean_FogDensity;
+
 float4 Ocean_AbsorptionColor0;
 float4 Ocean_AbsorptionColor1;
 float4 Ocean_AbsorptionColor2;
@@ -63,6 +62,9 @@ float4 Ocean_AbsorptionColor5;
 float4 Ocean_AbsorptionColor6;
 float4 Ocean_AbsorptionColor7;
 float2 Ocean_AbsorptionGradientParams;
+
+float Ocean_FogDensity;
+float Ocean_AbsorptionDepthScale;
 
 
 float3 SampleOceanSpecCube(float3 dir)

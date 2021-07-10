@@ -18,6 +18,7 @@ struct LightingInput
 	float3 normal;
 	float3 viewDir;
 	float viewDist;
+    float roughnessMap;
 	float3 positionWS;
 	float4 shore;
 	float4 positionNDC;
@@ -91,11 +92,11 @@ float3 Reflection(LightingInput li, BrunetonInputs bi)
         bi.normal_windSpace,
         bi.tangentX_windSpace,
         bi.tangentY_windSpace,
-        bi.slopeVarianceSquared * _RoughnessScale);
+        bi.slopeVarianceSquared);
 
 	#ifdef PLANAR_REFLECTIONS_ENABLED
 	float4 local = GetPlanarReflection(li.viewDir, li.normal, li.positionWS, 
-		bi.slopeVarianceSquared.x * _RoughnessScale * 100, 1 - _ReflectionNormalStength);
+		bi.slopeVarianceSquared.x * 100, 1 - _ReflectionNormalStength);
 	return lerp(sky, local.rgb, local.a);
 	#else
 	return sky;
@@ -213,7 +214,7 @@ float3 GetOceanColor(LightingInput li, FoamData foamData)
     bi.normal_windSpace = mul(Ocean_WorldToWindSpace, float4(li.normal, 0)).xyz;
     bi.tangentX_windSpace = mul(Ocean_WorldToWindSpace, float4(tangentX, 0)).xyz;
     bi.tangentY_windSpace = mul(Ocean_WorldToWindSpace, float4(tangentY, 0)).xyz;
-	bi.slopeVarianceSquared = _RoughnessScale
+    bi.slopeVarianceSquared = _RoughnessScale * (1 + li.roughnessMap * 0.3)
 		* SlopeVarianceSquared(Ocean_WindSpeed * Ocean_WavesScale, li.viewDist,
 		Ocean_WavesAlignement, _RoughnessDistance);
 	

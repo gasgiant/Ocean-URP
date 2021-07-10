@@ -9,6 +9,7 @@ namespace OceanSystem
         public enum OceanReflectionsMode { Default, RealtimeProbe, Custom }
 
         [SerializeField] private Material _material;
+        [SerializeField] private OceanColorsPreset _colorsPreset;
         [SerializeField] private OceanReflectionsMode _reflectionsMode;
         [SerializeField] private ReflectionProbe _probe;
         [SerializeField] private Cubemap _cubemap;
@@ -49,7 +50,7 @@ namespace OceanSystem
 
         private bool Setup()
         {
-            if (!_material)
+            if (!_material || !_colorsPreset)
             {
                 Cleanup();
                 return false;
@@ -133,86 +134,46 @@ namespace OceanSystem
         {
             if (_reflectionsMode == OceanReflectionsMode.RealtimeProbe && _probe != null)
             {
-                Shader.SetGlobalTexture(OceanGlobalProps.SpecCube, _probe.realtimeTexture);
+                Shader.SetGlobalTexture(GlobalShaderVariables.Misc.SpecCube, _probe.realtimeTexture);
             }
             else if (_reflectionsMode == OceanReflectionsMode.Custom && _cubemap != null)
             {
-                Shader.SetGlobalTexture(OceanGlobalProps.SpecCube, _cubemap);
+                Shader.SetGlobalTexture(GlobalShaderVariables.Misc.SpecCube, _cubemap);
             }
             else
             {
-                Shader.SetGlobalTexture(OceanGlobalProps.SpecCube, ReflectionProbe.defaultTexture);
+                Shader.SetGlobalTexture(GlobalShaderVariables.Misc.SpecCube, ReflectionProbe.defaultTexture);
             }
         }
 
         private void SetGlobalColorVariables()
         {
-            Shader.SetGlobalVector(OceanGlobalProps.FogColor, _material.GetVector(OceanMaterialProps.FogColor));
-            Shader.SetGlobalVector(OceanGlobalProps.SssColor, _material.GetVector(OceanMaterialProps.SssColor));
-            Shader.SetGlobalVector(OceanGlobalProps.DiffuseColor, _material.GetVector(OceanMaterialProps.DiffuseColor));
-            Shader.SetGlobalFloat(OceanGlobalProps.TintDepthScale, _material.GetFloat(OceanMaterialProps.TintDepthScale));
-            Shader.SetGlobalFloat(OceanGlobalProps.FogDensity, _material.GetFloat(OceanMaterialProps.FogDensity));
-            for (int i = 0; i < OceanGlobalProps.TintGradient.Length; i++)
-            {
-                Shader.SetGlobalVector(OceanGlobalProps.TintGradient[i], _material.GetVector(OceanMaterialProps.TintGradient[i]));
-            }
+            Shader.SetGlobalVector(GlobalShaderVariables.Colors.DeepScatterColor, _colorsPreset.DeepScatter);
+            Shader.SetGlobalVector(GlobalShaderVariables.Colors.ShallowScatterColor, _colorsPreset.ShallowScatter);
+            Shader.SetGlobalVector(GlobalShaderVariables.Colors.DiffuseColor, _colorsPreset.Diffuse);
+            Shader.SetGlobalVector(GlobalShaderVariables.Colors.ReflectionMaskColor, _colorsPreset.ReflectionMask);
+            SetGlobalGradient(GlobalShaderVariables.Colors.AbsorbtionGradient, _colorsPreset.Absorbtion);
 
-            Shader.SetGlobalVector(OceanGlobalProps.DownwardReflectionsColorID, _material.GetVector(OceanMaterialProps.DownwardReflectionsColor));
-            Shader.SetGlobalFloat(OceanGlobalProps.DownwardReflectionsRadiusID, _material.GetFloat(OceanMaterialProps.DownwardReflectionsRadius));
-            Shader.SetGlobalFloat(OceanGlobalProps.DownwardReflectionsSharpnessID, _material.GetFloat(OceanMaterialProps.DownwardReflectionsSharpness));
+            Shader.SetGlobalFloat(GlobalShaderVariables.Misc.FogDensity, _material.GetFloat(MaterialProps.FogDensity));
+            Shader.SetGlobalFloat(GlobalShaderVariables.Misc.AbsorbtionDepthScale, _material.GetFloat(MaterialProps.AbsorbtionDepthScale));
+            Shader.SetGlobalFloat(GlobalShaderVariables.Misc.ReflectionMaskRadius, _material.GetFloat(MaterialProps.ReflectionMaskRadius));
+            Shader.SetGlobalFloat(GlobalShaderVariables.Misc.ReflectionMaskSharpness, _material.GetFloat(MaterialProps.ReflectionMaskSharpness));
+        }
+
+        private void SetGlobalGradient(int[] propIDs, Gradient grad)
+        {
+            for (int i = 0; i < grad.colorKeys.Length; i++)
+            {
+                Vector4 v = grad.colorKeys[i].color.linear;
+                v.w = grad.colorKeys[i].time;
+                Shader.SetGlobalVector(propIDs[i + 1], v);
+            }
+            Shader.SetGlobalVector(propIDs[0],
+                new Vector2(grad.colorKeys.Length, (float)grad.mode));
         }
     }
 
-    public static class OceanMaterialProps
-    {
-        public static readonly int FogColor = Shader.PropertyToID("_DeepScatterColor");
-        public static readonly int SssColor = Shader.PropertyToID("_SssColor");
-        public static readonly int DiffuseColor = Shader.PropertyToID("_DiffuseColor");
-        public static readonly int TintDepthScale = Shader.PropertyToID("_AbsorptionDepthScale");
-        public static readonly int FogDensity = Shader.PropertyToID("_FogDensity");
-        public static readonly int[] TintGradient =
-        {
-            Shader.PropertyToID("_AbsorptionGradientParams"),
-            Shader.PropertyToID("_AbsorptionColor0"),
-            Shader.PropertyToID("_AbsorptionColor1"),
-            Shader.PropertyToID("_AbsorptionColor2"),
-            Shader.PropertyToID("_AbsorptionColor3"),
-            Shader.PropertyToID("_AbsorptionColor4"),
-            Shader.PropertyToID("_AbsorptionColor5"),
-            Shader.PropertyToID("_AbsorptionColor6"),
-            Shader.PropertyToID("_AbsorptionColor7")
-        };
-
-        public static readonly int DownwardReflectionsColor = Shader.PropertyToID("_DownwardReflectionsColor");
-        public static readonly int DownwardReflectionsRadius = Shader.PropertyToID("_DownwardReflectionsRadius");
-        public static readonly int DownwardReflectionsSharpness = Shader.PropertyToID("_DownwardReflectionsSharpness");
-    }
-
-    public static class OceanGlobalProps
-    {
-        public static readonly int SpecCube = Shader.PropertyToID("Ocean_SpecCube");
-        public static readonly int FogColor = Shader.PropertyToID("Ocean_DeepScatterColor");
-        public static readonly int SssColor = Shader.PropertyToID("Ocean_SssColor");
-        public static readonly int DiffuseColor = Shader.PropertyToID("Ocean_DiffuseColor");
-        public static readonly int TintDepthScale = Shader.PropertyToID("Ocean_AbsorptionDepthScale");
-        public static readonly int FogDensity = Shader.PropertyToID("Ocean_FogDensity");
-        public static readonly int[] TintGradient =
-        {
-            Shader.PropertyToID("Ocean_AbsorptionGradientParams"),
-            Shader.PropertyToID("Ocean_AbsorptionColor0"),
-            Shader.PropertyToID("Ocean_AbsorptionColor1"),
-            Shader.PropertyToID("Ocean_AbsorptionColor2"),
-            Shader.PropertyToID("Ocean_AbsorptionColor3"),
-            Shader.PropertyToID("Ocean_AbsorptionColor4"),
-            Shader.PropertyToID("Ocean_AbsorptionColor5"),
-            Shader.PropertyToID("Ocean_AbsorptionColor6"),
-            Shader.PropertyToID("Ocean_AbsorptionColor7")
-        };
-
-        public static readonly int DownwardReflectionsColorID = Shader.PropertyToID("Ocean_DownwardReflectionsColor");
-        public static readonly int DownwardReflectionsRadiusID = Shader.PropertyToID("Ocean_DownwardReflectionsRadius");
-        public static readonly int DownwardReflectionsSharpnessID = Shader.PropertyToID("Ocean_DownwardReflectionsSharpness");
-    }
+    
 }
 
 

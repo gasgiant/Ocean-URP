@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 371a7bc07364d16479bb575e841e8c40, type: 3}
+  m_Name: Colors
+  m_EditorClassIdentifier: 
+  _deepScatter: {r: 0, g: 0.011764706, b: 0.039215688, a: 1}
+  _shallowScatter: {r: 0, g: 1, b: 0.8926091, a: 1}
+  _diffuse: {r: 0, g: 0.025490196, b: 0.033333335, a: 1}
+  _reflectionMask: {r: 0.015895328, g: 0.09349897, b: 0.1792453, a: 1}
+  _absorbtion:
+    serializedVersion: 2
+    key0: {r: 0, g: 0.2238422, b: 0.33962262, a: 1}
+    key1: {r: 0, g: 0.45352036, b: 0.6886792, a: 1}
+    key2: {r: 0.43915984, g: 0.84532803, b: 0.9056604, a: 0}
+    key3: {r: 1, g: 1, b: 1, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 13107
+    ctime2: 43652
+    ctime3: 65535
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 4
+    m_NumAlphaKeys: 2

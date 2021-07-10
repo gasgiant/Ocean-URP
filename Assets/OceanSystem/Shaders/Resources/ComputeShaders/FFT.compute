@@ -3,29 +3,7 @@
 #pragma kernel Scale
 #pragma kernel Permute
 
-#pragma multi_compile _ FFT_INVERSE
-#pragma multi_compile _ FFT_PING_PONG
-#pragma multi_compile _ FFT_DIRECTION
-
 #define PI 3.1415926
-
-#if defined(FFT_PING_PONG)
-#define PingPong true
-#else
-#define PingPong false
-#endif
-
-#if defined(FFT_DIRECTION)
-#define Direction true
-#else
-#define Direction false
-#endif
-
-#if defined(FFT_INVERSE)
-#define Inverse true
-#else
-#define Inverse false
-#endif
 
 RWTexture2D<float4> PrecomputedData;
 RWTexture2DArray<float4> Buffer0;
@@ -36,6 +14,9 @@ cbuffer Params
     uint Step;
     uint Size;
     uint TargetsCount;
+	bool Direction;
+	bool PingPong;
+	bool Inverse;
 };
 
 

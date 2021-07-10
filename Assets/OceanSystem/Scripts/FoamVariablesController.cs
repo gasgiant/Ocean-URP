@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace OceanSystem
 {
+    using ShaderVariables = GlobalShaderVariables.Foam;
     public class FoamVariablesController
     {
         private Vector2 _foamTrailTextureSize0;
@@ -57,22 +58,6 @@ namespace OceanSystem
 
         }
 
-        public static class ShaderVariables
-        {
-            public static readonly int Coverage = Shader.PropertyToID("Ocean_FoamCoverage");
-            public static readonly int Density = Shader.PropertyToID("Ocean_FoamDensity");
-            public static readonly int Sharpness = Shader.PropertyToID("Ocean_FoamSharpness");
-            public static readonly int Persistence = Shader.PropertyToID("Ocean_FoamPersistence");
-            public static readonly int Trail = Shader.PropertyToID("Ocean_FoamTrail");
-            public static readonly int TrailTextureStrength = Shader.PropertyToID("Ocean_FoamTrailTextureStrength");
-            public static readonly int Underwater = Shader.PropertyToID("Ocean_FoamUnderwater");
-            public static readonly int CascadesWeights = Shader.PropertyToID("Ocean_FoamCascadesWeights");
-
-            public static readonly int TrailTextureSize0 = Shader.PropertyToID("Ocean_FoamTrailTextureSize0");
-            public static readonly int TrailTextureSize1 = Shader.PropertyToID("Ocean_FoamTrailTextureSize1");
-            public static readonly int TrailDirection0 = Shader.PropertyToID("Ocean_FoamTrailDirection0");
-            public static readonly int TrailDirection1 = Shader.PropertyToID("Ocean_FoamTrailDirection1");
-            public static readonly int TrailBlendValue = Shader.PropertyToID("Ocean_FoamTrailBlendValue");
-        }
+        
     }
 }

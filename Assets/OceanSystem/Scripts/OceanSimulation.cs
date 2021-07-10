@@ -178,8 +178,8 @@ namespace OceanSystem
             _fftBuffer = RenderingUtils.CreateRenderTexture(displacementAndDerivativesTextureDescriptor, TextureWrapMode.Repeat, FilterMode.Trilinear, anisoLevel);
             _fftInOut = RenderingUtils.CreateRenderTexture(displacementAndDerivativesTextureDescriptor, TextureWrapMode.Repeat, FilterMode.Trilinear, anisoLevel);
 
-            Shader.SetGlobalTexture(GlobalShaderVariables.DisplacementAndDerivatives, _fftInOut);
-            Shader.SetGlobalTexture(GlobalShaderVariables.Turbulence, _turbulence);
+            Shader.SetGlobalTexture(GlobalShaderVariables.Simulation.DisplacementAndDerivatives, _fftInOut);
+            Shader.SetGlobalTexture(GlobalShaderVariables.Simulation.Turbulence, _turbulence);
 
             _initialSpectrumShader.SetInt(SimualtionVariables.Size, size);
             _initialSpectrumShader.SetInt(SimualtionVariables.CascadesCount, cascadesNumber);
@@ -308,20 +308,19 @@ namespace OceanSystem
 
         private void SetGlobalShaderVariables()
         {
-            Shader.SetGlobalVector(GlobalShaderVariables.LengthScales, _simulationSettings.LengthScales());
+            Shader.SetGlobalVector(GlobalShaderVariables.Simulation.LengthScales, _simulationSettings.LengthScales());
             float windAngle = _localWindDirection * Mathf.Deg2Rad;
-            Shader.SetGlobalVector(GlobalShaderVariables.WindDirection, new Vector2(Mathf.Cos(windAngle), Mathf.Sin(windAngle)));
-            Shader.SetGlobalMatrix(GlobalShaderVariables.WorldToWindSpace,
+            Shader.SetGlobalVector(GlobalShaderVariables.Simulation.WindDirection, new Vector2(Mathf.Cos(windAngle), Mathf.Sin(windAngle)));
+            Shader.SetGlobalMatrix(GlobalShaderVariables.Simulation.WorldToWindSpace,
                 Matrix4x4.Rotate(Quaternion.AngleAxis(-_localWindDirection, Vector3.up)));
-            Shader.SetGlobalFloat(GlobalShaderVariables.WindSpeed, _inputs.local.windSpeed);
-            Shader.SetGlobalFloat(GlobalShaderVariables.WavesScale, _inputs.local.scale);
-            Shader.SetGlobalFloat(GlobalShaderVariables.WavesAlignement, _inputs.local.alignment);
-            Shader.SetGlobalFloat(GlobalShaderVariables.ReferenceWaveHeight, _inputs.referenceWaveHeight);
+            Shader.SetGlobalFloat(GlobalShaderVariables.Simulation.WindSpeed, _inputs.local.windSpeed);
+            Shader.SetGlobalFloat(GlobalShaderVariables.Simulation.WavesScale, _inputs.local.scale);
+            Shader.SetGlobalFloat(GlobalShaderVariables.Simulation.WavesAlignement, _inputs.local.alignment);
+            Shader.SetGlobalFloat(GlobalShaderVariables.Simulation.ReferenceWaveHeight, _inputs.referenceWaveHeight);
         }
 
         private static class SimualtionVariables
         {
-            // Shader props IDs
             public static readonly int Size = Shader.PropertyToID("Size");
             public static readonly int CascadesCount = Shader.PropertyToID("CascadesCount");
             public static readonly int LengthScales = Shader.PropertyToID("LengthScales");
@@ -346,22 +345,6 @@ namespace OceanSystem
             public static readonly int Noise = Shader.PropertyToID("Noise");
             public static readonly int Turbulence = Shader.PropertyToID("Turbulence");
             public static readonly int FoamDecayRate = Shader.PropertyToID("FoamDecayRate");
-        }
-
-        private static class GlobalShaderVariables
-        {
-            // textures
-            public static readonly int DisplacementAndDerivatives = Shader.PropertyToID("Ocean_DisplacementAndDerivatives");
-            public static readonly int Turbulence = Shader.PropertyToID("Ocean_Turbulence");
-
-            // waves
-            public static readonly int LengthScales = Shader.PropertyToID("Ocean_LengthScales");
-            public static readonly int WindSpeed = Shader.PropertyToID("Ocean_WindSpeed");
-            public static readonly int WavesScale = Shader.PropertyToID("Ocean_WavesScale");
-            public static readonly int WavesAlignement = Shader.PropertyToID("Ocean_WavesAlignement");
-            public static readonly int WindDirection = Shader.PropertyToID("Ocean_WindDirection");
-            public static readonly int WorldToWindSpace = Shader.PropertyToID("Ocean_WorldToWindSpace");
-            public static readonly int ReferenceWaveHeight = Shader.PropertyToID("Ocean_ReferenceWaveHeight");
         }
     }
 }

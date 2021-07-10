@@ -10,6 +10,7 @@ namespace OceanSystem
         private SerializedProperty _probe;
         private SerializedProperty _cubemap;
         private SerializedProperty _material;
+        private SerializedProperty _colorsPreset;
 
         private SerializedProperty _viewer;
         private SerializedProperty _minMeshScale;
@@ -29,6 +30,7 @@ namespace OceanSystem
             GUI.enabled = true;
 
             EditorGUILayout.PropertyField(_material);
+            EditorGUILayout.PropertyField(_colorsPreset);
             EditorGUILayout.PropertyField(_reflectionsMode);
             switch ((OceanRenderer.OceanReflectionsMode)_reflectionsMode.enumValueIndex)
             {
@@ -56,6 +58,7 @@ namespace OceanSystem
             _probe = serializedObject.FindProperty("_probe");
             _cubemap = serializedObject.FindProperty("_cubemap");
             _material = serializedObject.FindProperty("_material");
+            _colorsPreset = serializedObject.FindProperty("_colorsPreset");
 
             _viewer = serializedObject.FindProperty("_viewer");
             _minMeshScale = serializedObject.FindProperty("_minMeshScale");

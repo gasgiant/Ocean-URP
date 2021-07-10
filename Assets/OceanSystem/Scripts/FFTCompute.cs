@@ -65,37 +65,28 @@ namespace OceanSystem
 
             cmd.SetComputeIntParam(fftShader, ShaderVariables.TargetsCount, input.volumeDepth);
 
-            if (inverse)
-                cmd.EnableShaderKeyword("FFT_INVERSE");
-            else
-                cmd.DisableShaderKeyword("FFT_INVERSE");
+            cmd.SetComputeFloatParam(fftShader, ShaderVariables.Inverse, inverse ? 1 : 0);
 
             bool pingPong = false;
             cmd.SetComputeTextureParam(fftShader, _fftStepKernel, ShaderVariables.PrecomputedData, GetPrecomputedData(size));
             cmd.SetComputeTextureParam(fftShader, _fftStepKernel, ShaderVariables.Buffer0, input);
             cmd.SetComputeTextureParam(fftShader, _fftStepKernel, ShaderVariables.Buffer1, buffer);
 
-            cmd.DisableShaderKeyword("FFT_DIRECTION");
+            cmd.SetComputeFloatParam(fftShader, ShaderVariables.Direction, 0);
             for (int i = 0; i < logSize; i++)
             {
                 pingPong = !pingPong;
                 cmd.SetComputeIntParam(fftShader, ShaderVariables.Step, i);
-                if (pingPong)
-                    cmd.EnableShaderKeyword("FFT_PING_PONG");
-                else
-                    cmd.DisableShaderKeyword("FFT_PING_PONG");
+                cmd.SetComputeFloatParam(fftShader, ShaderVariables.PingPong, pingPong ? 1 : 0);
                 cmd.DispatchCompute(fftShader, _fftStepKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
             }
 
-            cmd.EnableShaderKeyword("FFT_DIRECTION");
+            cmd.SetComputeFloatParam(fftShader, ShaderVariables.Direction, 1);
             for (int i = 0; i < logSize; i++)
             {
                 pingPong = !pingPong;
                 cmd.SetComputeIntParam(fftShader, ShaderVariables.Step, i);
-                if (pingPong)
-                    cmd.EnableShaderKeyword("FFT_PING_PONG");
-                else
-                    cmd.DisableShaderKeyword("FFT_PING_PONG");
+                cmd.SetComputeFloatParam(fftShader, ShaderVariables.PingPong, pingPong ? 1 : 0);
                 cmd.DispatchCompute(fftShader, _fftStepKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
             }
 
@@ -170,6 +161,9 @@ namespace OceanSystem
             public static readonly int Size = Shader.PropertyToID("Size");
             public static readonly int Step = Shader.PropertyToID("Step");
             public static readonly int TargetsCount = Shader.PropertyToID("TargetsCount");
+            public static readonly int Direction = Shader.PropertyToID("Direction");
+            public static readonly int PingPong = Shader.PropertyToID("PingPong");
+            public static readonly int Inverse = Shader.PropertyToID("Inverse");
         }
     }
 }

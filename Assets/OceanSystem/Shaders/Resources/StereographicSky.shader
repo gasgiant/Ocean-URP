@@ -28,8 +28,8 @@ Shader "Hidden/Ocean/StereographicSky"
                 float sqrs = dot(xy, xy);
                 float3 dir = float3(2 * xy.x, 1 - sqrs, 2 * xy.y) / (1 + sqrs);
                 float3 col = SampleOceanSpecCube(dir);
-                float t = saturate((-dir.y + Ocean_DownwardReflectionsRadius) * Ocean_DownwardReflectionsSharpness);
-                col = lerp(col, Ocean_DownwardReflectionsColor.rgb, t * Ocean_DownwardReflectionsColor.w);
+                float t = saturate((-dir.y + Ocean_ReflectionsMaskRadius) * Ocean_ReflectionsMaskSharpness);
+                col = lerp(col, Ocean_ReflectionsMaskColor.rgb, t * Ocean_ReflectionsMaskColor.w);
                 return float4(col, 1);
             }
             ENDHLSL

@@ -10,6 +10,7 @@ struct FoamInput
 {
 	float4x4 derivatives;
 	float2 worldUV;
+    float viewDist;
 	float4 lodWeights;
 	float4 shoreWeights;
     float4 positionNDC;
@@ -54,7 +55,7 @@ float DeepFoam(float2 worldUV, float3 viewDir, float3 normal, float time)
     return value;
 }
 
-float2 Coverage(float4x4 t, float4 mixWeights, float2 worldUV, float deepFoam)
+float2 Coverage(float4x4 t, float4 mixWeights, float2 worldUV, float deepFoam, float bias)
 {
 	float4 turbulence = MixTurbulence(t, Ocean_FoamCascadesWeights, mixWeights * ACTIVE_CASCADES);
     float foamValueCurrent = lerp(turbulence.y, turbulence.x, Ocean_FoamSharpness);
@@ -79,7 +80,7 @@ float2 Coverage(float4x4 t, float4 mixWeights, float2 worldUV, float deepFoam)
     }
 	
     foamValuePersistent += saturate(foamValuePersistent + 1) * trailTexture * Ocean_FoamTrailTextureStrength;
-    float foamValue = max((foamValuePersistent + Ocean_FoamTrail), foamValueCurrent + Ocean_FoamCoverage);
+    float foamValue = max((foamValuePersistent + Ocean_FoamTrail * (1 - bias)), foamValueCurrent + Ocean_FoamCoverage * (1 - bias));
 	
     float surfaceFoam = saturate(foamValue * Ocean_FoamDensity);
     float shallowUnderwaterFoam = saturate((foamValue + 0.1 * Ocean_FoamUnderwater) * Ocean_FoamDensity);
@@ -111,7 +112,12 @@ FoamData GetFoamData(FoamInput i)
 	
 	#ifdef WAVES_FOAM_ENABLED
 	float4x4 turbulence = SampleTurbulence(i.worldUV, i.lodWeights * i.shoreWeights);
-	data.coverage = Coverage(turbulence, i.lodWeights, i.worldUV, DeepFoam(i.worldUV, i.viewDir, i.normal, i.time));
+	float deepFoam = DeepFoam(i.worldUV, i.viewDir, i.normal, i.time);
+	float bias = SAMPLE_TEXTURE2D(_FoamDetailMap, sampler_FoamDetailMap,
+		TRANSFORM_TEX(i.worldUV, _FoamDetailMap) * 0.01).r;
+	bias *= saturate(i.viewDist / Ocean_LengthScales.x * 0.5);
+	data.coverage = Coverage(turbulence, i.lodWeights, i.worldUV, deepFoam, bias);
+	data.coverage *= 1 - saturate((_WorldSpaceCameraPos.y + i.viewDist * 0.5 - 2000) * 0.0005);
 	float4 normalWeights = saturate(float4(1, 0.66, 0.33, 0) + _FoamNormalsDetail) * ACTIVE_CASCADES;
 	data.normal = NormalFromDerivatives(i.derivatives, normalWeights);
 	#endif

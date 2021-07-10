@@ -2,9 +2,10 @@ Shader "Ocean/Ocean"
 {
     Properties
     {
+        surfaceEditorExpanded("", Float) = 0
+        volumeEditorExpanded("", Float) = 0
+        distantViewEditorExpanded("", Float) = 0
         foamEditorExpanded("", Float) = 0
-        sssEditorExpanded("", Float) = 0
-        horizonEditorExpanded("", Float) = 0
 
         [Toggle(WAVES_FOAM_ENABLED)]
         _WAVES_FOAM_ENABLED("Waves Foam", Float) = 0
@@ -14,55 +15,35 @@ Shader "Ocean/Ocean"
 
         [MaterialToggle] _ReceiveShadows("Receive Shadows", Float) = 0
 
-        // colors
-        [HDR]
-        _DeepScatterColor("Deep Scattering", Color) = (0, 0, 0, 1)
-        _FogDensity("Fog Density", Float) = 0.1
-        [HDR]
-        _SssColor("Shallow Scattering", Color) = (0, 0, 0, 1)
-        [HDR]
-        _DiffuseColor("Diffuse", Color) = (0, 0, 0, 1)
-        _AbsorptionColor0("", Vector) = (1, 1, 1, 1)
-        _AbsorptionColor1("", Vector) = (1, 1, 1, 1)
-        _AbsorptionColor2("", Vector) = (1, 1, 1, 1)
-        _AbsorptionColor3("", Vector) = (1, 1, 1, 1)
-        _AbsorptionColor4("", Vector) = (1, 1, 1, 1)
-        _AbsorptionColor5("", Vector) = (1, 1, 1, 1)
-        _AbsorptionColor6("", Vector) = (1, 1, 1, 1)
-        _AbsorptionColor7("", Vector) = (1, 1, 1, 1)
-        _AbsorptionGradientParams("", Vector) = (1, 1, 1, 1)
-        _AbsorptionDepthScale("Absorbtion Scale", Float) = 10
-
-        // downward reflections mask
-        [HDR]
-        _DownwardReflectionsColor("Downward Reflections", Color) = (0, 0, 0, 0)
-        _DownwardReflectionsRadius("Radius", Range(-0.5, 1.1)) = 0.1
-        _DownwardReflectionsSharpness("Sharpness", Range(0, 30)) = 4
-
-        // specular
+        // surface
+        _RoughnessScale("Roughness Scale", Range(0.0, 2.0)) = 1
         _SpecularStrength("Strength", Range(0.0, 10.0)) = 1
         _SpecularMinRoughness("Sun Size", Range(0.0, 1)) = 0.1
-
-        // horizon
-        _RoughnessScale("Roughness Scale", Range(0.0, 2.0)) = 1
-        _RoughnessDistance("Roughness Distance", Float) = 140
-        _HorizonFog("Horizon Fog", Range(0.0, 1.0)) = 0.25
-        _CascadesFadeDist("Cascades Fade Scale", Float) = 20
-
-        // planar reflections
-        _ReflectionNormalStength("Normal Strength", Range(0.0, 1.0)) = 0.25
-
-        // underwater 
+        _ReflectionNormalStength("Local Reflection Normal", Range(0.0, 1.0)) = 0.25
         _RefractionStrength("Strength Air-Water", Float) = 0.25
         _RefractionStrengthUnderwater("Strength Water-Air", Float) = 0.75
+        // reflection mask
+        _ReflectionMaskRadius("Radius", Range(-0.5, 1.1)) = 0.1
+        _ReflectionMaskSharpness("Sharpness", Range(0, 30)) = 4
 
+        // volume
+        _FogDensity("Fog Density", Float) = 0.1
+        _AbsorptionDepthScale("Absorbtion Scale", Float) = 10
         // subsurface scattering
         _SssSunStrength("Sun", Range(0.0, 1)) = 0
         _SssEnvironmentStrength("Environment", Range(0.0, 1)) = 0
         _SssSpread("Spread", Range(0.0, 1.0)) = 0.2
         _SssNormalStrength("Normal Strength", Range(0.0, 1.0)) = 1
         _SssHeightBias("Height Bias", Range(-1, 1)) = 0
-        _SssFadeDistance("Fade Distance", Float) = 30
+        _SssFadeDistance("Fade Distance", Float) = 3
+        
+        // distant view
+        _RoughnessDistance("Roughness Distance", Float) = 140
+        _HorizonFog("Horizon Fog", Range(0.0, 1.0)) = 0.25
+        _CascadesFadeDist("Cascades Fade Scale", Float) = 20
+        _UvWarpStrength("Uv Warp", Range(0.0, 1.0)) = 0
+        _DistantRoughnessMap("Distant Roughness", 2D) = "black" {}
+        _FoamDetailMap("Foam Detail", 2D) = "black" {}
 
         // foam
         _FoamAlbedo("Albedo", 2D) = "white" {}
@@ -136,7 +117,14 @@ Shader "Ocean/Ocean"
                 output.positionWS = ClipMapVertex(input.positionOS.xyz, input.uv);
                 output.worldUV = output.positionWS.xz;
 
-                float viewDist = length(output.positionWS - _WorldSpaceCameraPos);
+                float3 viewVector = output.positionWS - _WorldSpaceCameraPos;
+                float viewDist = length(viewVector);
+                float viewDistXzSquared = dot(viewVector.xz, viewVector.xz);
+
+                float warpDistance = Ocean_LengthScales.x * 0.5;
+                output.worldUV += sin(output.worldUV.yx / warpDistance)
+                    * min(1, viewDistXzSquared / (warpDistance * warpDistance * 100))
+                    * warpDistance * 0.4 * _UvWarpStrength;
 
                 float4 weights = LodWeights(viewDist, _CascadesFadeDist);
                 output.positionWS += SampleDisplacement(output.worldUV, weights, 1);
@@ -166,6 +154,7 @@ Shader "Ocean/Ocean"
                 FoamInput fi;
                 fi.derivatives = derivatives;
                 fi.worldUV = input.worldUV;
+                fi.viewDist = viewDist;
                 fi.lodWeights = lodWeights;
                 fi.shoreWeights = shoreWeights;
                 fi.positionNDC = input.positionNDC;
@@ -185,11 +174,15 @@ Shader "Ocean/Ocean"
                 #endif
 
                 Light mainLight = GetMainLight(shadowCoord);
+                float roughnessMap = SAMPLE_TEXTURE2D(_DistantRoughnessMap, sampler_DistantRoughnessMap,
+                    TRANSFORM_TEX(input.worldUV, _DistantRoughnessMap) * 0.001).r;
+                roughnessMap *= saturate(viewDist / Ocean_LengthScales.x * 0.05);
 
                 LightingInput li;
                 li.normal = normal;
                 li.viewDir = viewDir;
                 li.viewDist = viewDist;
+                li.roughnessMap = roughnessMap;
                 li.positionWS = input.positionWS;
                 li.shore = 0;
                 li.positionNDC = input.positionNDC;

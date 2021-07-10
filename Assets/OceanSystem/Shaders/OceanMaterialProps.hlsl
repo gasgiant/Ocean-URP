@@ -13,7 +13,12 @@ float4 _ContactFoamTexture_ST;
 TEXTURE2D(_FoamTrailTexture);
 SAMPLER(sampler_FoamTrailTexture);
 
-
+TEXTURE2D(_DistantRoughnessMap);
+SAMPLER(sampler_DistantRoughnessMap);
+float4 _DistantRoughnessMap_ST;
+TEXTURE2D(_FoamDetailMap);
+SAMPLER(sampler_FoamDetailMap);
+float4 _FoamDetailMap_ST;
 
 CBUFFER_START(UnityPerMaterial)
 // specular
@@ -25,6 +30,7 @@ float _RoughnessScale;
 float _RoughnessDistance;
 float _HorizonFog;
 float _CascadesFadeDist;
+float _UvWarpStrength;
 
 // local reflections
 float _ReflectionNormalStength;

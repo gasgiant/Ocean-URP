@@ -51,8 +51,8 @@ namespace OceanSystem
 
         private void SetupCameraGlobals(CommandBuffer cmd, Camera cam)
         {
-            cmd.SetGlobalMatrix(GlobalShaderVariables.InverseViewMatrix, cam.cameraToWorldMatrix);
-            cmd.SetGlobalMatrix(GlobalShaderVariables.InverseProjectionViewMatrix,
+            cmd.SetGlobalMatrix(GlobalShaderVariables.Misc.InverseViewMatrix, cam.cameraToWorldMatrix);
+            cmd.SetGlobalMatrix(GlobalShaderVariables.Misc.InverseProjectionMatrix,
                 GL.GetGPUProjectionMatrix(cam.projectionMatrix, false).inverse);
         }
 
@@ -69,12 +69,6 @@ namespace OceanSystem
             else
                 cmd.DisableShaderKeyword(keyword);
         }
-
-        private static class GlobalShaderVariables
-        {
-            public static readonly int InverseViewMatrix = Shader.PropertyToID("Ocean_InverseViewMatrix");
-            public static readonly int InverseProjectionViewMatrix = Shader.PropertyToID("Ocean_InverseProjectionMatrix");
-        }
     }
 
     public class OceanUnderwaterEffectPass : ScriptableRenderPass
@@ -83,7 +77,7 @@ namespace OceanSystem
         private readonly Material _underwaterEffectMaterial;
         private RenderTargetIdentifier _submergenceTarget;
         private static readonly int _submergenceTargetID = Shader.PropertyToID("SubmergenceTarget");
-        private static readonly int _cameraSubmergenceTextureID = Shader.PropertyToID("Ocean_CameraSubmergenceTexture");
+        
 
         public OceanUnderwaterEffectPass(OceanRendererFeature.OceanRenderingSettings settings)
         {
@@ -112,7 +106,7 @@ namespace OceanSystem
                 CommandBuffer cmd = CommandBufferPool.Get("Underwater Effect");
                 RenderingUtils.DrawPreceduralFullscreenQuad(cmd, _submergenceTarget,
                     RenderBufferLoadAction.DontCare, _underwaterEffectMaterial, 0);
-                cmd.SetGlobalTexture(_cameraSubmergenceTextureID, _submergenceTargetID);
+                cmd.SetGlobalTexture(GlobalShaderVariables.Misc.SubmergenceTexture, _submergenceTargetID);
 
                 RenderingUtils.DrawPreceduralFullscreenQuad(cmd, cameraData.renderer.cameraColorTarget,
                     RenderBufferLoadAction.Load, _underwaterEffectMaterial, 1);
@@ -131,7 +125,7 @@ namespace OceanSystem
     {
         private OceanRendererFeature.OceanRenderingSettings _settings;
 
-        private static readonly int _skyMapID = Shader.PropertyToID("Ocean_SkyMap");
+        
         private readonly Material _skyMapMaterial;
         private RenderTexture _skyMap;
         private bool _skyMapRendered;
@@ -173,7 +167,7 @@ namespace OceanSystem
         private void RenderSkyMap(CommandBuffer cmd)
         {
             Blit(cmd, (RenderTexture)null, _skyMap, _skyMapMaterial, 0);
-            cmd.SetGlobalTexture(_skyMapID, _skyMap);
+            cmd.SetGlobalTexture(GlobalShaderVariables.Misc.SkyMap, _skyMap);
             _skyMapRendered = true;
         }
 
