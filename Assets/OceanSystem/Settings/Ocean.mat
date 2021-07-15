@@ -146,7 +146,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _HorizonFog: 0.388
+    - _HorizonFog: 0.25
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _PLANAR_REFLECTIONS_ENABLED: 0
@@ -160,7 +160,7 @@ Material:
     - _RefractionStrength: 0.25
     - _RefractionStrengthUnderwater: 0.75
     - _RenderDepthEnabled: 0
-    - _RoughnessDistance: 140
+    - _RoughnessDistance: 500
     - _RoughnessScale: 1
     - _SHORE_ENABLED: 0
     - _Smoothness: 0.5
@@ -187,7 +187,7 @@ Material:
     - _WAVES_FOAM_ENABLED: 1
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - distantViewEditorExpanded: 1
+    - distantViewEditorExpanded: 0
     - foamEditorExpanded: 0
     - horizonEditorExpanded: 1
     - sssEditorExpanded: 1
@@ -224,7 +224,7 @@ Material:
     - _DownwardReflectionsColor: {r: 0.015895328, g: 0.09349897, b: 0.1792453, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FoamCascadesWeights: {r: 3, g: 1, b: 0.5, a: 0.3}
-    - _FoamTint: {r: 0.8757565, g: 0.9184382, b: 0.9433962, a: 1}
+    - _FoamTint: {r: 0.66087574, g: 0.7406194, b: 0.7924528, a: 1}
     - _FogColor: {r: 0.0028835847, g: 0.023913046, b: 0.05660379, a: 1}
     - _MurkColor: {r: 0.18867922, g: 0.16357076, b: 0.0950516, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}

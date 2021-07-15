@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 05d6389fa46ca6641a6adda15de50824, type: 3}
-  m_Name: Simulation Settings
+  m_Name: SimulationSettings
   m_EditorClassIdentifier: 
   _resolution: 128
   _cascadesNumber: 4
