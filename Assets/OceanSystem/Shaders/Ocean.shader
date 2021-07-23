@@ -2,34 +2,33 @@ Shader "Ocean/Ocean"
 {
     Properties
     {
-        surfaceEditorExpanded("", Float) = 0
-        volumeEditorExpanded("", Float) = 0
-        distantViewEditorExpanded("", Float) = 0
-        foamEditorExpanded("", Float) = 0
-
-        [Toggle(WAVES_FOAM_ENABLED)]
-        _WAVES_FOAM_ENABLED("Waves Foam", Float) = 0
-
-        [Toggle(CONTACT_FOAM_ENABLED)]
-        _CONTACT_FOAM_ENABLED("Contact Foam", Float) = 0
-
-        [MaterialToggle] _ReceiveShadows("Receive Shadows", Float) = 0
-
+        [TabScope(Tabs, Surface Volume Distant_View Foam)]
         // surface
+        [Tab(. Surface)]
+        [MaterialToggle] _ReceiveShadows("Receive Shadows", Float) = 0
         _RoughnessScale("Roughness Scale", Range(0.0, 2.0)) = 1
         _SpecularStrength("Strength", Range(0.0, 10.0)) = 1
         _SpecularMinRoughness("Sun Size", Range(0.0, 1)) = 0.1
         _ReflectionNormalStength("Local Reflection Normal", Range(0.0, 1.0)) = 0.25
+
+        [Header(Refraction)]
+        [Space]
         _RefractionStrength("Strength Air-Water", Float) = 0.25
         _RefractionStrengthUnderwater("Strength Water-Air", Float) = 0.75
+
         // reflection mask
+        [Header(Reflection Mask)]
+        [Space]
         _ReflectionMaskRadius("Radius", Range(-0.5, 1.1)) = 0.1
         _ReflectionMaskSharpness("Sharpness", Range(0, 30)) = 4
-
+        
         // volume
+        [Tab(.. Volume)]
         _FogDensity("Fog Density", Float) = 0.1
         _AbsorptionDepthScale("Absorbtion Scale", Float) = 10
         // subsurface scattering
+        [Header(Subsurface Scattering)]
+        [Space]
         _SssSunStrength("Sun", Range(0.0, 1)) = 0
         _SssEnvironmentStrength("Environment", Range(0.0, 1)) = 0
         _SssSpread("Spread", Range(0.0, 1.0)) = 0.2
@@ -38,26 +37,36 @@ Shader "Ocean/Ocean"
         _SssFadeDistance("Fade Distance", Float) = 3
         
         // distant view
+        [Tab(.. Distant_View)]
         _RoughnessDistance("Roughness Distance", Float) = 140
         _HorizonFog("Horizon Fog", Range(0.0, 1.0)) = 0.25
         _CascadesFadeDist("Cascades Fade Scale", Float) = 20
         _UvWarpStrength("Uv Warp", Range(0.0, 1.0)) = 0
+        [CompactTexture(UniformScale)]
         _DistantRoughnessMap("Distant Roughness", 2D) = "black" {}
+        [CompactTexture(UniformScale)]
         _FoamDetailMap("Foam Detail", 2D) = "black" {}
 
         // foam
+        [Tab(.. Foam)]
+        [Toggle(WAVES_FOAM_ENABLED)] _WAVES_FOAM_ENABLED("Waves Foam", Float) = 0
+        [Toggle(CONTACT_FOAM_ENABLED)] _CONTACT_FOAM_ENABLED("Contact Foam", Float) = 0
+        [CompactTexture(UniformScale)]
         _FoamAlbedo("Albedo", 2D) = "white" {}
-        _FoamUnderwaterTexture("Underwater Texture", 2D) = "gray" {}
+        [CompactTexture(UniformScale)]
+        _FoamUnderwaterTexture("Underwater", 2D) = "gray" {}
+        [CompactTexture]
         [NoScaleOffset]
-        _FoamTrailTexture("Trail Texture", 2D) = "white" {}
-        _ContactFoamTexture("Contact Foam Texture", 2D) = "white" {}
+        _FoamTrailTexture("Trail", 2D) = "white" {}
+        [CompactTexture(UniformScale)]
+        _ContactFoamTexture("Contact Foam", 2D) = "white" {}
         _FoamNormalsDetail("Normal Strength", Range(0, 1.0)) = 0.5
         _FoamTint("Tint", Color) = (1, 1, 1, 1)
         _UnderwaterFoamParallax("Underwater Parallax", Range(0, 3.0)) = 1.2
         _ContactFoam("Contact Foam", Range(0, 1.0)) = 0
     }
 
-    CustomEditor "OceanSystem.OceanShaderEditor"
+    CustomEditor "EditorExtras.Editor.ExtendedShaderEditor"
 
     SubShader
     {

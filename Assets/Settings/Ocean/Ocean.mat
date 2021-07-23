@@ -1,0 +1,255 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Ocean
+  m_Shader: {fileID: 4800000, guid: b8f769ad93da9b041abbe077590a2bce, type: 3}
+  m_ShaderKeywords: CONTACT_FOAM_ENABLED TRANSPARENCY_ENABLED UNDERWATER_ENABLED
+    WAVES_FOAM_ENABLED _RECEIVESHADOWS_ON _RECIEVE_SHADOWS_OFF
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ContactFoamTexture:
+        m_Texture: {fileID: 2800000, guid: 59dbbddfa177fb04abfff22b3ff5470d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DistantRoughnessMap:
+        m_Texture: {fileID: 2800000, guid: eb16ff669af32da4aa5432e5a69dbc88, type: 3}
+        m_Scale: {x: 0.01, y: 0.01}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamAlbedo:
+        m_Texture: {fileID: 2800000, guid: b3cc8537b21085a4c8677a3987f09953, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamDetailMap:
+        m_Texture: {fileID: 2800000, guid: eb16ff669af32da4aa5432e5a69dbc88, type: 3}
+        m_Scale: {x: 0.01, y: 0.01}
+        m_Offset: {x: 0, y: 0}
+    - _FoamTexture:
+        m_Texture: {fileID: 2800000, guid: e98d03927fb7cac46a98f32099947a8b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamTrailTexture:
+        m_Texture: {fileID: 2800000, guid: 04679a4fcbf91f64fb356dd28c5ddaaf, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamUnderwaterTexture:
+        m_Texture: {fileID: 2800000, guid: 8f48e7e3bb6e6a040b70ccac20bb032f, type: 3}
+        m_Scale: {x: 0.2, y: 0.2}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SurfaceFoamAlbedo:
+        m_Texture: {fileID: 2800000, guid: b3cc8537b21085a4c8677a3987f09953, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WindGusts:
+        m_Texture: {fileID: 2800000, guid: eb16ff669af32da4aa5432e5a69dbc88, type: 3}
+        m_Scale: {x: 0.02, y: 0.02}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Ocean_BottomHemisphereRadius: 0.03
+    - Ocean_BottomHemisphereStrength: 2.68
+    - Ocean_DownwardReflectionsRadius: 0.1
+    - Ocean_DownwardReflectionsSharpness: 4
+    - Ocean_DownwardReflectionsShrpness: 0
+    - Ocean_DownwardReflectionsSmoothness: 0
+    - Ocean_FogDensity: 0.1
+    - Ocean_TintDepthScale: 10
+    - _AbsorptionDepthScale: 10
+    - _AlphaClip: 0
+    - _Blend: 0
+    - _BumpScale: 1
+    - _CONTACT_FOAM_ENABLED: 1
+    - _CascadesFadeDist: 20
+    - _ClearCoatMask: 0
+    - _ClearCoatSmoothness: 0
+    - _ContactFoam: 0.109
+    - _Cull: 0
+    - _Cutoff: 0.5
+    - _DetailAlbedoMapScale: 1
+    - _DetailNormalMapScale: 1
+    - _DownwardReflectionsRadius: 0.1
+    - _DownwardReflectionsSharpness: 4
+    - _DstBlend: 0
+    - _EnvironmentReflections: 1
+    - _FoamCoverage: 0.709
+    - _FoamDensity: 8.4
+    - _FoamNormalsDetail: 0.316
+    - _FoamPersistence: 0.866
+    - _FogDensity: 0.1
+    - _GlossMapScale: 0
+    - _Glossiness: 0
+    - _GlossyReflections: 0
+    - _HorizonFog: 0.25
+    - _Metallic: 0
+    - _OcclusionStrength: 1
+    - _PLANAR_REFLECTIONS_ENABLED: 0
+    - _Parallax: 0.005
+    - _QueueOffset: 0
+    - _ReceiveShadows: 1
+    - _RecieveShadowsOff: 1
+    - _ReflectionMaskRadius: -0.03
+    - _ReflectionMaskSharpness: 4
+    - _ReflectionNormalStength: 0.25
+    - _RefractionStrength: 0.25
+    - _RefractionStrengthUnderwater: 0.75
+    - _RenderDepthEnabled: 0
+    - _RoughnessDistance: 500
+    - _RoughnessScale: 1
+    - _SHORE_ENABLED: 0
+    - _Smoothness: 0.5
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SpecularMinRoughness: 0
+    - _SpecularStrength: 1
+    - _SrcBlend: 1
+    - _SssEnvironmentStrength: 0.21
+    - _SssFadeDistance: 30
+    - _SssHeight: 0.2
+    - _SssHeightBias: 0
+    - _SssHeightMult: 0.63
+    - _SssNormalStrength: 0.779
+    - _SssSpread: 0.498
+    - _SssSunStrength: 0.12
+    - _Surface: 0
+    - _TRANSPARENCY_ENABLED: 1
+    - _TintDepthScale: 10
+    - _UNDERWATER_ENABLED: 1
+    - _UnderwaterFoam: 0.36
+    - _UnderwaterFoamParallax: 1.67
+    - _UvWarpStrength: 0
+    - _WAVES_FOAM_ENABLED: 1
+    - _WorkflowMode: 1
+    - _ZWrite: 1
+    - distantViewEditorExpanded: 0
+    - foamEditorExpanded: 0
+    - horizonEditorExpanded: 1
+    - sssEditorExpanded: 1
+    - surfaceEditorExpanded: 1
+    - volumeEditorExpanded: 0
+    m_Colors:
+    - Ocean_BottomHemisphereColor: {r: 0.5566038, g: 0, b: 0, a: 1}
+    - Ocean_DiffuseColor: {r: 0, g: 0.025490196, b: 0.02745098, a: 1}
+    - Ocean_DownwardReflectionsColor: {r: 1, g: 0, b: 0, a: 1}
+    - Ocean_FogColor: {r: 0.010893557, g: 0.029177655, b: 0.05660379, a: 1}
+    - Ocean_SssColor: {r: 0.13333334, g: 0.9411765, b: 0.6039216, a: 1}
+    - Ocean_TintColor0: {r: 0, g: 0.041025557, b: 0.094412796, a: 0}
+    - Ocean_TintColor1: {r: 0, g: 0.17351386, b: 0.43203577, a: 0.2}
+    - Ocean_TintColor2: {r: 0.16198544, g: 0.68352747, b: 0.79865986, a: 0.66608685}
+    - Ocean_TintColor3: {r: 1, g: 1, b: 1, a: 1}
+    - Ocean_TintColor4: {r: 1, g: 1, b: 1, a: 1}
+    - Ocean_TintColor5: {r: 1, g: 1, b: 1, a: 1}
+    - Ocean_TintColor6: {r: 1, g: 1, b: 1, a: 1}
+    - Ocean_TintColor7: {r: 1, g: 1, b: 1, a: 1}
+    - Ocean_TintGradientParams: {r: 4, g: 0, b: 0, a: 0}
+    - _AbsorptionColor0: {r: 0, g: 0.041025557, b: 0.094412796, a: 0}
+    - _AbsorptionColor1: {r: 0, g: 0.17351386, b: 0.43203577, a: 0.2}
+    - _AbsorptionColor2: {r: 0.16198544, g: 0.68352747, b: 0.79865986, a: 0.66608685}
+    - _AbsorptionColor3: {r: 1, g: 1, b: 1, a: 1}
+    - _AbsorptionColor4: {r: 1, g: 1, b: 1, a: 1}
+    - _AbsorptionColor5: {r: 1, g: 1, b: 1, a: 1}
+    - _AbsorptionColor6: {r: 1, g: 1, b: 1, a: 1}
+    - _AbsorptionColor7: {r: 1, g: 1, b: 1, a: 1}
+    - _AbsorptionGradientParams: {r: 4, g: 0, b: 0, a: 0}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _DeepScatterColor: {r: 0, g: 0.012745098, b: 0.04019608, a: 1}
+    - _DiffuseColor: {r: 0, g: 0.025490196, b: 0.033333335, a: 1}
+    - _DownwardReflectionsColor: {r: 0.015895328, g: 0.09349897, b: 0.1792453, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FoamCascadesWeights: {r: 3, g: 1, b: 0.5, a: 0.3}
+    - _FoamTint: {r: 0.66087574, g: 0.7406194, b: 0.7924528, a: 1}
+    - _FogColor: {r: 0.0028835847, g: 0.023913046, b: 0.05660379, a: 1}
+    - _MurkColor: {r: 0.18867922, g: 0.16357076, b: 0.0950516, a: 1}
+    - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _SssColor: {r: 0, g: 1, b: 0.8926091, a: 1}
+    - _TintColor0: {r: 0, g: 0.041025557, b: 0.094412796, a: 0}
+    - _TintColor1: {r: 0, g: 0.17351386, b: 0.43203577, a: 0.2}
+    - _TintColor2: {r: 0.16198544, g: 0.68352747, b: 0.79865986, a: 0.66608685}
+    - _TintColor3: {r: 1, g: 1, b: 1, a: 1}
+    - _TintColor4: {r: 1, g: 1, b: 1, a: 1}
+    - _TintColor5: {r: 1, g: 1, b: 1, a: 1}
+    - _TintColor6: {r: 1, g: 1, b: 1, a: 1}
+    - _TintColor7: {r: 1, g: 1, b: 1, a: 1}
+    - _TintGradientParams: {r: 4, g: 0, b: 0, a: 0}
+    - _WhitecapsColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
+--- !u!114 &7172881441959664
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 4

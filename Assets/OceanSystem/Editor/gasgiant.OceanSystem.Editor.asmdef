@@ -1,0 +1,19 @@
+{
+    "name": "gasgiant.OceanSystem.Editor",
+    "rootNamespace": "OceanSystem.Editor",
+    "references": [
+        "GUID:b12ec72401993e04a8d59460e440ca52",
+        "GUID:bbc1d9e8eae2a214bb52eae376dbd713",
+        "GUID:d3040e716f8936a4f85e3a5eb009cb77",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
