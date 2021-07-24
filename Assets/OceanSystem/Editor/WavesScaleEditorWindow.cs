@@ -7,14 +7,17 @@ namespace OceanSystem.Editor
 {
     public class WavesScaleEditorWindow : EditorWindow
     {
+        private const string WindForceProperty = "_windForce";
+
         private SerializedProperty _presetsArray;
         private string _assetPath;
         private int _selectedPresetIndex = -1;
-        private Dictionary<SerializedProperty, UnityEditor.Editor> _editors = 
-            new Dictionary<SerializedProperty, UnityEditor.Editor>();
+        private Dictionary<Object, UnityEditor.Editor> _editors = 
+            new Dictionary<Object, UnityEditor.Editor>();
         private Vector2 _scrollPositionSidebar;
         private Vector2 _scrollPositionMain;
         private List<LocalWavesPreset> listForSorting = new List<LocalWavesPreset>();
+        private float _maxWindForce = -1;
 
         public static WavesScaleEditorWindow Open(SerializedProperty presetsArray)
         {
@@ -33,8 +36,9 @@ namespace OceanSystem.Editor
                 return;
             }
 
-            //if (_presetsArray.arraySize > 0)
-            //    SortArray();
+            if (_maxWindForce < 0)
+                SortArray();
+
             if (_selectedPresetIndex >= _presetsArray.arraySize)
                 _selectedPresetIndex = -1;
 
@@ -46,23 +50,27 @@ namespace OceanSystem.Editor
 
             EditorGUILayout.BeginVertical();
             _scrollPositionMain = EditorGUILayout.BeginScrollView(_scrollPositionMain);
+
             if (_selectedPresetIndex >= 0)
             {
+                SerializedProperty property = _presetsArray.GetArrayElementAtIndex(_selectedPresetIndex);
+                WindForceField(property);
+                EditorGUILayout.Space();
                 bool drawScript = ExtraEditorGUI.DrawScriptProperty;
                 ExtraEditorGUI.DrawScriptProperty = false;
-                GetEditor(_presetsArray.GetArrayElementAtIndex(_selectedPresetIndex)).OnInspectorGUI();
+                GetEditor(property).OnInspectorGUI();
                 ExtraEditorGUI.DrawScriptProperty = drawScript;
+                GUILayout.FlexibleSpace();
             }
             EditorGUILayout.EndScrollView();
 
             if (_selectedPresetIndex >= 0)
             {
-                GUILayout.FlexibleSpace();
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("Delete", GUILayout.MaxWidth(150)))
                 {
-                    RemoveObjectFromAsset(_selectedPresetIndex, _assetPath, _presetsArray);
+                    RemovePreset();
                 }
                 EditorGUILayout.EndHorizontal();
             }
@@ -76,8 +84,7 @@ namespace OceanSystem.Editor
             _scrollPositionSidebar = EditorGUILayout.BeginScrollView(_scrollPositionSidebar);
             for (int i = 0; i < _presetsArray.arraySize; i++)
             {
-                var preset = GetPresetAtIndex(i);
-                string label = "Wind Force " + preset.WindForce;
+                string label = CreateLabel(GetPresetAtIndex(i).WindForce);
                 if (i == _selectedPresetIndex)
                 {
                     GUILayout.Toggle(true, label, GUI.skin.button);
@@ -95,19 +102,42 @@ namespace OceanSystem.Editor
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Add"))
             {
-                AddItem();
+                AddPreset();
+            }
+        }
+
+        private void WindForceField(SerializedProperty property)
+        {
+            var preset = property.objectReferenceValue as LocalWavesPreset;
+            EditorGUI.BeginChangeCheck();
+            float value = EditorGUILayout.DelayedFloatField("Wind Force", preset.WindForce);
+            value = Mathf.Max(0, value);
+            if (EditorGUI.EndChangeCheck())
+            {
+                SetWindForce(preset, value);
+                SortArray();
+                AssetDatabase.SaveAssets();
             }
         }
 
         private UnityEditor.Editor GetEditor(SerializedProperty property)
         {
-            if (_editors.ContainsKey(property))
-                return _editors[property];
-            return UnityEditor.Editor.CreateEditor(property.objectReferenceValue);
+            UnityEditor.Editor editor = null;
+            if (_editors.ContainsKey(property.objectReferenceValue))
+                editor = _editors[property.objectReferenceValue];
+
+            UnityEditor.Editor.CreateCachedEditor(property.objectReferenceValue, 
+                null, ref editor);
+            return editor;
         }
 
         private void SortArray()
         {
+            if (_presetsArray.arraySize <= 0)
+            {
+                _maxWindForce = -1;
+            }
+
             listForSorting.Clear();
             LocalWavesPreset selected = null;
             for (int i = 0; i < _presetsArray.arraySize; i++)
@@ -119,11 +149,16 @@ namespace OceanSystem.Editor
             }
             listForSorting.Sort((p0, p1) => p0.WindForce.CompareTo(p1.WindForce));
 
+            _maxWindForce = -1;
             for (int i = 0; i < _presetsArray.arraySize; i++)
             {
+                if (listForSorting[i].WindForce > _maxWindForce)
+                    _maxWindForce = listForSorting[i].WindForce;
                 if (listForSorting[i] == selected)
                     _selectedPresetIndex = i;
-                _presetsArray.GetArrayElementAtIndex(i).objectReferenceValue = listForSorting[i];
+                listForSorting[i].name = CreateName(listForSorting[i].WindForce);
+                var prop = _presetsArray.GetArrayElementAtIndex(i);
+                prop.objectReferenceValue = listForSorting[i];
             }
 
             _presetsArray.serializedObject.ApplyModifiedProperties();
@@ -135,12 +170,42 @@ namespace OceanSystem.Editor
                     as LocalWavesPreset;
         }
 
-        private void AddItem()
+        private void AddPreset()
         {
             LocalWavesPreset localWaves = CreateInstance<LocalWavesPreset>();
-            localWaves.name = $"Child {_presetsArray.arraySize}";
+            _maxWindForce += 1;
+            SetWindForce(localWaves, _maxWindForce);
+            
             Undo.RegisterCreatedObjectUndo(localWaves, $"Create {typeof(LocalWavesPreset).Name} Asset");
             AddObjectToAsset(localWaves, _assetPath, _presetsArray);
+        }
+
+        private void RemovePreset()
+        {
+            var preset = GetPresetAtIndex(_selectedPresetIndex);
+            _editors.Remove(preset);
+            RemoveObjectFromAsset(_selectedPresetIndex, _assetPath, _presetsArray);
+            SortArray();
+        }
+
+        private void SetWindForce(LocalWavesPreset localWaves, float windForce)
+        {
+            SerializedObject so = new SerializedObject(localWaves);
+            so.FindProperty(WindForceProperty).floatValue = windForce;
+            so.ApplyModifiedProperties();
+            localWaves.name = CreateName(windForce);
+        }
+
+        private string CreateName(float windForce)
+        {
+            return _presetsArray.serializedObject.targetObject.name + " | Wind Force " 
+                + windForce.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        private string CreateLabel(float windForce)
+        {
+            return "Wind Force "
+                + windForce.ToString(System.Globalization.CultureInfo.InvariantCulture);
         }
 
         private static void AddObjectToAsset(Object asset, string path, SerializedProperty list)

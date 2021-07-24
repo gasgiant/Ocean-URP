@@ -28,7 +28,7 @@ namespace OceanSystem.Editor
             {
                 if (GUILayout.Button("Edit Local Waves"))
                 {
-                    _scaleEditorWindow = WavesScaleEditorWindow.Open(serializedObject.FindProperty("_localWavesPresets"));
+                    _scaleEditorWindow = WavesScaleEditorWindow.Open(serializedObject.FindProperty("_localWavesArray"));
                 }
             }
             serializedObject.ApplyModifiedProperties();

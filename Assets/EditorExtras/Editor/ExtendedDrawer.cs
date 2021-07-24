@@ -94,11 +94,11 @@ namespace EditorExtras.Editor
         private void Initialize(SerializedProperty property)
         {
             targetObject = ExtraEditorUtils.GetTargetObjectOfProperty(property);
+            serializedObject = property.serializedObject;
+            children = ExtraEditorUtils.GetChildrenProperties(property);
             if (targetObjectType != null) return;
             targetObjectType = targetObject.GetType();
             settings = attribute as ExtendedPropertyAttribute;
-            serializedObject = property.serializedObject;
-            children = ExtraEditorUtils.GetChildrenProperties(property);
             fields = new FieldInfo[children.Length];
             for (int i = 0; i < fields.Length; i++)
             {

@@ -16,32 +16,34 @@ namespace OceanSystem
         [SerializeField] private float _depth = 1000;
 
         [InlineEditor]
-        [SerializeField] private SwellPreset _swellPreset;
-        [InlineEditor, HideIf(nameof(IsScale))]
-        [SerializeField] private LocalWavesPreset _localWavesPreset;
+        [SerializeField] private SwellPreset _swell;
+        [InlineEditor, HideIf(nameof(IsScaleMode))]
+        [SerializeField] private LocalWavesPreset _localWaves;
 
-        [SerializeField, Range(0, 1), ShowIf(nameof(IsScale))] private float _defaultWindForce;
-        [SerializeField, ShowIf(nameof(IsScale))] private EqualizerPreset _defaultEqualizer;
-        [SerializeField, HideInInspector] private LocalWavesPreset[] _localWavesPresets;
-        
+        [ShowIfGroup("ShowIfScaleMode", nameof(IsScaleMode))]
+        [Box("./Local Waves")]
+        [SerializeField, Range(0, 1)] private float _displayWindForce;
+        [SerializeField] private EqualizerPreset _defaultEqualizer;
+
+        [SerializeField, HideInInspector] private LocalWavesPreset[] _localWavesArray;
         [SerializeField, HideInInspector] private float _maxWindForce;
 
-        private bool IsScale => _mode == InputsProviderMode.Scale;
+        private bool IsScaleMode => _mode == InputsProviderMode.Scale;
 
         private void OnValidate()
         {
             _maxWindForce = 0;
-            if (_localWavesPresets != null)
-                for (int i = 0; i < _localWavesPresets.Length; i++)
+            if (_localWavesArray != null)
+                for (int i = 0; i < _localWavesArray.Length; i++)
                 {
-                    if (_localWavesPresets[i].WindForce > _maxWindForce)
-                        _maxWindForce = _localWavesPresets[i].WindForce;
+                    if (_localWavesArray[i].WindForce > _maxWindForce)
+                        _maxWindForce = _localWavesArray[i].WindForce;
                 }
         }
 
         public void PopulateInputs(OceanSimulationInputs target)
         {
-            PopulateInputs(target, _defaultWindForce);
+            PopulateInputs(target, _displayWindForce);
         }
 
         public void PopulateInputs(OceanSimulationInputs target, float windForce01)
@@ -50,25 +52,25 @@ namespace OceanSystem
             target.depth = _depth;
 
             float referenceWaveHeight = 0;
-            if (_swellPreset)
+            if (_swell)
             {
-                target.swell = _swellPreset.Spectrum;
-                referenceWaveHeight += _swellPreset.ReferenceWaveHeight;
+                target.swell = _swell.Spectrum;
+                referenceWaveHeight += _swell.ReferenceWaveHeight;
             }
 
-            if (_mode == InputsProviderMode.Fixed || _localWavesPresets == null || _localWavesPresets.Length < 2)
+            if (_mode == InputsProviderMode.Fixed || _localWavesArray == null || _localWavesArray.Length < 2)
             {
                 target.foamTrailUpdateTime = 0;
-                if (_localWavesPreset != null)
+                if (_localWaves != null)
                 {
-                    SetValues(target, _localWavesPreset);
-                    referenceWaveHeight += _localWavesPreset.ReferenceWaveHeight;
+                    SetValues(target, _localWaves);
+                    referenceWaveHeight += _localWaves.ReferenceWaveHeight;
                 }
             }
             else
             {
                 target.foamTrailUpdateTime = 1;
-                LerpVars lerp = GetLerpVars(windForce01, _maxWindForce, _localWavesPresets);
+                LerpVars lerp = GetLerpVars(windForce01, _maxWindForce, _localWavesArray);
 
                 if (lerp.start != null && lerp.end != null)
                 {

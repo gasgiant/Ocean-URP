@@ -252,7 +252,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 84b6085041b7ae74b885a97020904eee, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84b6085041b7ae74b885a97020904eee, type: 3}
@@ -274,7 +274,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &895675551
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -577,7 +577,7 @@ MonoBehaviour:
   _swellDirection: 0
   _windForce01: 1
   _simulationSettings: {fileID: 11400000, guid: 59c5d1e11cdd336428ee3e1f68810c3f, type: 2}
-  _inputsProvider: {fileID: 11400000, guid: 498263f52a7c9414f8e6cba1ce60b647, type: 2}
+  _inputsProvider: {fileID: 11400000, guid: 60b7fe5ee6ea80e4aa9ad21d6132d821, type: 2}
 --- !u!1 &2138677391
 GameObject:
   m_ObjectHideFlags: 0

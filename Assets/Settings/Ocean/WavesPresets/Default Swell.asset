@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _spectrum:
     energySpectrum: 0
-    windSpeed: 3
+    windSpeed: 16
     fetch: 0
     peaking: 0
     scale: 0

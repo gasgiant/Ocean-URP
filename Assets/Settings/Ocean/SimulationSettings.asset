@@ -20,11 +20,11 @@ MonoBehaviour:
   _readbackCascades: 0
   _samplingIterations: 3
   _domainsMode: 0
-  _simulationScale: 679.06
+  _simulationScale: 700
   _allowOverlap: 1
   _minWavesInCascade: 6
   _c0Scale: 858.72
   _c1Scale: 167
   _c2Scale: 30.84
   _c3Scale: 5.62
-  _displaySpectrum: {fileID: 0}
+  _displaySpectrum: {fileID: 11400000, guid: 60b7fe5ee6ea80e4aa9ad21d6132d821, type: 2}

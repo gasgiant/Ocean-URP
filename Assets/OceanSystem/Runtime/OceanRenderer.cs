@@ -8,8 +8,9 @@ namespace OceanSystem
     public class OceanRenderer : MonoBehaviour
     {
         public enum OceanReflectionsMode { Default, RealtimeProbe, Custom }
-
+        [InlineEditor]
         [SerializeField] private Material _material;
+        [InlineEditor]
         [SerializeField] private OceanColorsPreset _colorsPreset;
         [SerializeField] private OceanReflectionsMode _reflectionsMode;
         [ShowIf("IsRealtimeProbeReflections")]

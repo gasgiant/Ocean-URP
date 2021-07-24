@@ -22,4 +22,4 @@ MonoBehaviour:
     center: 0
     value: 0.4
     width: 0.77
-  _displaySpectrum: {fileID: 0}
+  _displaySpectrum: {fileID: 11400000, guid: 60b7fe5ee6ea80e4aa9ad21d6132d821, type: 2}
