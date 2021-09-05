@@ -35,3 +35,4 @@ MonoBehaviour:
     trailTextureSize: {x: 0, y: 0}
     underwater: 0
     cascadesWeights: {x: 0, y: 0, z: 0, w: 0}
+  _windForce: 0

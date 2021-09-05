@@ -1,29 +1,28 @@
-using EditorExtras.Editor;
+using MarkupAttributes.Editor;
 using UnityEditor;
 using UnityEngine;
 
 namespace OceanSystem.Editor
 {
     [CustomEditor(typeof(OceanSimulationInputsProvider))]
-    public class OceanSimulationInputsProviderEditor : ExtendedEditor
+    public class OceanSimulationInputsProviderEditor : MarkedUpEditor
     {
         private WavesScaleEditorWindow _scaleEditorWindow;
 
-        private void OnEnable()
+        protected override void OnInitialize()
         {
-            InitializeExtendedInspector();
+            AddCallback(serializedObject.FindProperty("_defaultEqualizer"),
+                CallbackEvent.AfterProperty, DrawEditLocalWavesButton);
         }
 
-        private void OnDisable()
+        protected override void OnCleanup()
         {
             if (_scaleEditorWindow != null)
                 _scaleEditorWindow.Close();
         }
 
-        public override void OnInspectorGUI()
+        private void DrawEditLocalWavesButton(SerializedProperty property)
         {
-            serializedObject.Update();
-            DrawExtendedInspector();
             if (serializedObject.FindProperty("_mode").enumValueIndex > 0)
             {
                 if (GUILayout.Button("Edit Local Waves"))
@@ -31,7 +30,6 @@ namespace OceanSystem.Editor
                     _scaleEditorWindow = WavesScaleEditorWindow.Open(serializedObject.FindProperty("_localWavesArray"));
                 }
             }
-            serializedObject.ApplyModifiedProperties();
         }
     }
 }

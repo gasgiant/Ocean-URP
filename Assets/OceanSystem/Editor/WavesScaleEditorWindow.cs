@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using EditorExtras.Editor;
+using MarkupAttributes.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -56,10 +56,10 @@ namespace OceanSystem.Editor
                 SerializedProperty property = _presetsArray.GetArrayElementAtIndex(_selectedPresetIndex);
                 WindForceField(property);
                 EditorGUILayout.Space();
-                bool drawScript = ExtraEditorGUI.DrawScriptProperty;
-                ExtraEditorGUI.DrawScriptProperty = false;
-                GetEditor(property).OnInspectorGUI();
-                ExtraEditorGUI.DrawScriptProperty = drawScript;
+                using (new MarkupGUI.InlineEditorScope())
+                {
+                    GetEditor(property).OnInspectorGUI();
+                }
                 GUILayout.FlexibleSpace();
             }
             EditorGUILayout.EndScrollView();

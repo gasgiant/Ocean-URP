@@ -1,4 +1,4 @@
-using EditorExtras;
+using MarkupAttributes;
 using UnityEngine;
 
 namespace OceanSystem
@@ -6,11 +6,11 @@ namespace OceanSystem
     [CreateAssetMenu(fileName = "New Swell", menuName = "Ocean/Swell")]
     public class SwellPreset : ScriptableObject
     {
-        [Box("Spectrum")]
-        [ExtendedProperty(true)]
+        [TitleGroup("Spectrum")]
+        [MarkedUpField(false, false)]
         [SerializeField] private SpectrumParams _spectrum = SpectrumParams.GetDefaultSwell();
 
-        [Box("Others")]
+        [TitleGroup("Others")]
         [SerializeField] private float _referenceWaveHeight;
 
         public float ReferenceWaveHeight => _referenceWaveHeight;

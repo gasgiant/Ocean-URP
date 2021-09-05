@@ -1,4 +1,4 @@
-using EditorExtras;
+using MarkupAttributes;
 using UnityEngine;
 
 namespace OceanSystem
@@ -14,19 +14,19 @@ namespace OceanSystem
             TMA
         };
 
-        private bool IsPmSpectrum => energySpectrum == EnergySpectrumModel.PM;
-
         public EnergySpectrumModel energySpectrum;
         [Range(0.1f, 30)]
         public float windSpeed;
-        [HideIf("IsPmSpectrum")]
+
+        [HideIf(nameof(energySpectrum), EnergySpectrumModel.PM)]
         public float fetch;
-        [Range(1, 10), HideIf("IsPmSpectrum")]
+        [Range(1, 10), HideIf(nameof(energySpectrum), EnergySpectrumModel.PM)]
         public float peaking;
+
         [Range(0, 1)]
         public float scale;
         public float cutoffWavelength;
-        [Space]
+
         [Range(0, 1)]
         public float alignment;
         [Range(0, 1)]

@@ -1,4 +1,4 @@
-using EditorExtras;
+using MarkupAttributes;
 using UnityEngine;
 
 namespace OceanSystem
@@ -24,15 +24,16 @@ namespace OceanSystem
 
         [Header("Readback")]
         [SerializeField] private ReadbackCascadesMode _readbackCascades;
-        [Range(1, 5), HideIf("NoReadback")]
+        [HideIf(nameof(_readbackCascades), ReadbackCascadesMode.None)]
+        [Range(1, 5)]
         [SerializeField] private int _samplingIterations = 3;
 
         [Header("Cascade Domains")]
         [SerializeField] private CascadeDomainsMode _domainsMode;
-        [ShowIfGroup("Auto", "IsDomainsModeAuto")]
+        [ShowIf(nameof(_domainsMode), CascadeDomainsMode.Auto)]
         [SerializeField] private float _simulationScale = 400;
 
-        [HideIfGroup("Manual", "IsDomainsModeAuto")]
+        [ShowIfGroup("Manual Cascades Mode", nameof(_domainsMode), CascadeDomainsMode.Manual)]
         [SerializeField] private bool _allowOverlap = false;
         [Range(1, 10)]
         [SerializeField] private float _minWavesInCascade = 6;
@@ -41,13 +42,10 @@ namespace OceanSystem
         [SerializeField] private float _c2Scale;
         [SerializeField] private float _c3Scale;
         
-
         const int SmallestWaveMultiplierAuto = 4;
         const int MinWavesInCascadeAuto = 6;
 
 #if UNITY_EDITOR
-        private bool IsDomainsModeAuto => _domainsMode == CascadeDomainsMode.Auto;
-        private bool NoReadback => _readbackCascades == ReadbackCascadesMode.None;
         [HideInInspector]
         [SerializeField] private OceanSimulationInputsProvider _displaySpectrum;
 #endif

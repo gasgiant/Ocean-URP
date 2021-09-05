@@ -31,13 +31,12 @@ Shader "Hidden/Ocean/UnderwaterEffect"
             return positionWS.y - waterHeight + 0.5;
         }
 
-        half4 UnderwaterPostEffectFrag(Varyings input, float FACING : VFACE) : SV_Target
+        half4 UnderwaterPostEffectFrag(Varyings input) : SV_Target
         {
             float submergence = SAMPLE_TEXTURE2D(Ocean_CameraSubmergenceTexture,
                 samplerOcean_CameraSubmergenceTexture, input.uv).r;
             float safetyMargin = 0.05;
             clip(-(submergence - 0.5 > safetyMargin));
-            
             float rawDepth = SampleSceneDepth(input.uv);
             float4 positionCS = float4(input.uv * 2 - 1, rawDepth, 1);
             float4 positionVS = mul(Ocean_InverseProjectionMatrix, positionCS);

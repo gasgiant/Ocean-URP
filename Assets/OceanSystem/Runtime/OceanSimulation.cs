@@ -1,4 +1,4 @@
-﻿using EditorExtras;
+﻿using MarkupAttributes;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -7,17 +7,15 @@ namespace OceanSystem
     [ExecuteAlways]
     public class OceanSimulation : MonoBehaviour
     {
+        [SerializeField] private OceanSimulationSettings _simulationSettings;
+        [SerializeField] private OceanSimulationInputsProvider _inputsProvider;
+
         [Range(0, 360)]
         [SerializeField] private float _localWindDirection;
         [Range(0, 360)]
         [SerializeField] private float _swellDirection;
         [Range(0, 1)]
         [SerializeField] private float _windForce01;
-
-        [InlineEditor]
-        [SerializeField] private OceanSimulationSettings _simulationSettings;
-        [InlineEditor]
-        [SerializeField] private OceanSimulationInputsProvider _inputsProvider;
 
         public OceanCollision Collision => _collision;
         

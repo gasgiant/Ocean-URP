@@ -1,4 +1,4 @@
-using EditorExtras;
+using MarkupAttributes;
 using UnityEngine;
 
 namespace OceanSystem
@@ -8,27 +8,25 @@ namespace OceanSystem
     {
         public enum InputsProviderMode { Fixed, Scale }
 
-        public InputsProviderMode Mode => _mode;
-
+        [Box("Main")]
         [SerializeField] private InputsProviderMode _mode;
         [Range(0, 1)]
         [SerializeField] private float _timeScale = 1;
         [SerializeField] private float _depth = 1000;
+        [EndGroup]
 
         [InlineEditor]
         [SerializeField] private SwellPreset _swell;
-        [InlineEditor, HideIf(nameof(IsScaleMode))]
+        [InlineEditor, ShowIf(nameof(_mode), InputsProviderMode.Fixed)]
         [SerializeField] private LocalWavesPreset _localWaves;
 
-        [ShowIfGroup("ShowIfScaleMode", nameof(IsScaleMode))]
+        [ShowIfGroup("ShowIfScaleMode", nameof(_mode), InputsProviderMode.Scale)]
         [Box("./Local Waves")]
         [SerializeField, Range(0, 1)] private float _displayWindForce;
         [SerializeField] private EqualizerPreset _defaultEqualizer;
 
         [SerializeField, HideInInspector] private LocalWavesPreset[] _localWavesArray;
         [SerializeField, HideInInspector] private float _maxWindForce;
-
-        private bool IsScaleMode => _mode == InputsProviderMode.Scale;
 
         private void OnValidate()
         {

@@ -1,13 +1,14 @@
 using UnityEngine;
 using UnityEditor;
+using MarkupAttributes.Editor;
 
 namespace OceanSystem.Editor
 {
     [CustomEditor(typeof(EqualizerPreset))]
     public class EqualizerPresetEditor : UnityEditor.Editor
     {
-        private const string ShowScale = "OceanEqualizerShowScale";
-        private const string ShowChop = "OceanEqualizerShowChop";
+        private const string ActiveTab = "OceanEqualizerActiveTab";
+        private readonly string[] Tabs = new string[] { "Scale", "Chop" };
         private static readonly string[] _filterTypeNames = { "Bell ", "Hight Shelf ", "Low Shelf "};
 
         private EqualizerPreset _oceanEqualizerPreset;
@@ -27,7 +28,9 @@ namespace OceanSystem.Editor
         private static readonly GUIContent _duplicateButtonContent = new GUIContent("+", "duplicate");
         private static readonly GUIContent _deleteButtonContent = new GUIContent("-", "delete");
         private static readonly GUILayoutOption _miniButtonWidth = GUILayout.Width(20f);
-        private static readonly GUILayoutOption _miniButtonHeight = GUILayout.Height(21);
+        private static readonly GUILayoutOption _miniButtonHeight = GUILayout.Height(20);
+
+        private MarkupGUI.GroupsStack _groupsStack = new MarkupGUI.GroupsStack();
 
 
         private void OnEnable()
@@ -41,11 +44,20 @@ namespace OceanSystem.Editor
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            GUI.enabled = false;
-            EditorGUILayout.ObjectField("Script:", MonoScript.FromScriptableObject(_oceanEqualizerPreset), typeof(EqualizerPreset), false);
-            GUI.enabled = true;
+            _groupsStack.Clear();
 
-            EditorGUILayout.PropertyField(_displaySpectrum);
+            if (!MarkupGUI.IsInsideInlineEditor)
+            {
+                using (new EditorGUI.DisabledScope(true))
+                {
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Script"));
+                }
+
+                EditorGUILayout.PropertyField(_displaySpectrum);
+                EditorGUILayout.Space();
+            }
+
+            
 
             OceanSimulationInputsProvider inputsProvider = _displaySpectrum.objectReferenceValue as OceanSimulationInputsProvider;
             OceanSimulationInputs inputs = null;
@@ -55,30 +67,25 @@ namespace OceanSystem.Editor
                 inputs = _simulationInputs;
             }
 
-            bool showScale = EditorGUILayout.BeginFoldoutHeaderGroup(EditorPrefs.GetBool(ShowScale), "Scale");
-            EditorPrefs.SetBool(ShowScale, showScale);
-            EditorGUILayout.EndFoldoutHeaderGroup();
-            if (showScale)
+            int activeTab = EditorPrefs.GetInt(ActiveTab);
+            _groupsStack += MarkupGUI.BeginTabsGroup(ref activeTab, Tabs);
+            EditorPrefs.SetInt(ActiveTab, activeTab);
+
+            if (activeTab == 0)
             {
-                EditorGUILayout.Space();
-                
                 SpectrumPlotter.DrawSpectrumWithEqualizer(inputs,
                     _oceanEqualizerPreset.GetRamp(), 0, _scaleFill, _scaleLine);
                 ShowFiltersArray(_scaleFilters);
-                EditorGUILayout.Space();
-                EditorGUILayout.Space();
             }
 
-            bool showChop = EditorGUILayout.BeginFoldoutHeaderGroup(EditorPrefs.GetBool(ShowChop), "Chop");
-            EditorPrefs.SetBool(ShowChop, showChop);
-            if (showChop)
+            if (activeTab == 1)
             {
-                EditorGUILayout.Space();
                 SpectrumPlotter.DrawSpectrumWithEqualizer(inputs,
                    _oceanEqualizerPreset.GetRamp(), 1, _chopFill, _chopLine);
                 ShowFiltersArray(_chopFilters);
             }
-            EditorGUILayout.EndFoldoutHeaderGroup();
+
+            _groupsStack.EndAll();
 
             serializedObject.ApplyModifiedProperties();
         }
@@ -129,11 +136,11 @@ namespace OceanSystem.Editor
 
         private void ShowMiniButtons(SerializedProperty list, int index)
         {
-            if (GUILayout.Button(_duplicateButtonContent, EditorStyles.miniButtonLeft, _miniButtonWidth, _miniButtonHeight))
+            if (GUILayout.Button(_duplicateButtonContent, EditorStyles.miniButton, _miniButtonWidth, _miniButtonHeight))
             {
                 list.InsertArrayElementAtIndex(index);
             }
-            if (GUILayout.Button(_deleteButtonContent, EditorStyles.miniButtonRight, _miniButtonWidth, _miniButtonHeight))
+            if (GUILayout.Button(_deleteButtonContent, EditorStyles.miniButton, _miniButtonWidth, _miniButtonHeight))
             {
                 int oldSize = list.arraySize;
                 list.DeleteArrayElementAtIndex(index);

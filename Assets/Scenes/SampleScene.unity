@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 2138677392}
-  m_IndirectSpecularColor: {r: 0.113703, g: 0.20249514, b: 0.24222717, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0.99999905, b: 0.99999905, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -573,11 +573,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edf2da8994d19eb47a1ab86a4a607e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _simulationSettings: {fileID: 11400000, guid: 59c5d1e11cdd336428ee3e1f68810c3f, type: 2}
+  _inputsProvider: {fileID: 11400000, guid: 60b7fe5ee6ea80e4aa9ad21d6132d821, type: 2}
   _localWindDirection: 155
   _swellDirection: 0
   _windForce01: 1
-  _simulationSettings: {fileID: 11400000, guid: 59c5d1e11cdd336428ee3e1f68810c3f, type: 2}
-  _inputsProvider: {fileID: 11400000, guid: 60b7fe5ee6ea80e4aa9ad21d6132d821, type: 2}
 --- !u!1 &2138677391
 GameObject:
   m_ObjectHideFlags: 0

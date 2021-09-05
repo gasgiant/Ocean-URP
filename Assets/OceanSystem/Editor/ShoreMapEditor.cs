@@ -43,7 +43,7 @@ namespace OceanSystem.Editor
         private void OnEnable()
         {
             SceneView.duringSceneGui += OnSceneGUI;
-            RenderPipelineManager.beginFrameRendering += SetCameraTarget;
+            //RenderPipelineManager.beginFrameRendering += SetCameraTarget;
 
 
             shoreMap = (ShoreMap)target;
@@ -56,7 +56,7 @@ namespace OceanSystem.Editor
             go.hideFlags = HideFlags.DontSave | HideFlags.NotEditable;
 
             cam = go.AddComponent<Camera>();
-            var additionalCamData = cam.GetUniversalAdditionalCameraData();
+            //var additionalCamData = cam.GetUniversalAdditionalCameraData();
 
             cam.enabled = false;
             cam.clearFlags = CameraClearFlags.SolidColor;
@@ -68,17 +68,18 @@ namespace OceanSystem.Editor
             cam.transform.rotation = Quaternion.Euler(90, 0, 0);
 
             InitRenderTextures(resolution);
-            additionalCamData.renderShadows = false;
-            additionalCamData.requiresColorOption = CameraOverrideOption.Off;
-            additionalCamData.requiresDepthOption = CameraOverrideOption.Off;
-            additionalCamData.SetRenderer(1);
+            cam.targetTexture = elevationMap;
+            //additionalCamData.renderShadows = false;
+            //additionalCamData.requiresColorOption = CameraOverrideOption.Off;
+            //additionalCamData.requiresDepthOption = CameraOverrideOption.Off;
+            //additionalCamData.SetRenderer(1);
 
             //distanceFieldShader = (ComputeShader)Resources.Load("ComputeShaders/RaymarchDistanceField");
         }
 
         private void OnDisable()
         {
-            RenderPipelineManager.beginFrameRendering -= SetCameraTarget;
+            //RenderPipelineManager.beginFrameRendering -= SetCameraTarget;
             SceneView.duringSceneGui -= OnSceneGUI;
             if (cam != null)
                 DestroyImmediate(cam.gameObject);
@@ -195,7 +196,7 @@ namespace OceanSystem.Editor
 
         private void BakeMap()
         {
-            //RenderElevation();
+            RenderElevation();
 
             //distanceFieldShader.SetInt("Resolution", resolution);
             //distanceFieldShader.SetFloat("MapSize", size * 2);
@@ -241,13 +242,13 @@ namespace OceanSystem.Editor
             shoreMap.previewFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(shoreMap.previewFoldout, "Preview");
             if (shoreMap.previewFoldout)
             {
-                if (cam.targetTexture != null)
+                if (elevationMap != null)
                     RenderElevation();
                 Rect previewRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(200));
 
                 Rect camPreviewRect = previewRect;
                 camPreviewRect.width *= 0.5f;
-                EditorGUI.DrawPreviewTexture(camPreviewRect, elevationMap);
+                EditorGUI.DrawPreviewTexture(camPreviewRect, shoreMapRT);
                 if (shoreMap.Texture != null)
                 {
                     Rect texPreviewRect = previewRect;
@@ -258,10 +259,10 @@ namespace OceanSystem.Editor
             }
         }
 
-        private void SetCameraTarget(ScriptableRenderContext context, Camera[] camera)
-        {
-            cam.targetTexture = elevationMap;
-        }
+        //private void SetCameraTarget(ScriptableRenderContext context, Camera[] camera)
+        //{
+        //    cam.targetTexture = elevationMap;
+        //}
 
         private void RenderElevation()
         {
@@ -269,6 +270,11 @@ namespace OceanSystem.Editor
             cam.backgroundColor = new Vector4(backgroundElevation, 0, 0, 0);
             cam.targetTexture = elevationMap;
             cam.Render();
+            Material mat = new Material(Shader.Find("Hidden/Ocean/FullscreenPositionWS"));
+            RenderTexture active = RenderTexture.active;
+            Graphics.Blit(null, shoreMapRT, mat);
+            RenderTexture.active = active;
+
         }
 
         private void InitRenderTextures(int size)
@@ -280,8 +286,8 @@ namespace OceanSystem.Editor
 
             // elevation map
             if (elevationMap != null) elevationMap.Release();
-            elevationMap = new RenderTexture(size, size, 16,
-                RenderTextureFormat.RFloat, RenderTextureReadWrite.Linear);
+            elevationMap = new RenderTexture(size, size, 24,
+                RenderTextureFormat.Depth, RenderTextureReadWrite.Linear);
             elevationMap.useMipMap = false;
             elevationMap.wrapMode = TextureWrapMode.Clamp;
             elevationMap.filterMode = FilterMode.Bilinear;
@@ -290,7 +296,7 @@ namespace OceanSystem.Editor
 
             // shore map
             if (shoreMapRT != null) shoreMapRT.Release();
-            shoreMapRT = new RenderTexture(size, size, 0,
+            shoreMapRT = new RenderTexture(size, size, 16,
                 mapRtFormat, RenderTextureReadWrite.Linear);
             shoreMapRT.wrapMode = TextureWrapMode.Clamp;
             shoreMapRT.enableRandomWrite = true;

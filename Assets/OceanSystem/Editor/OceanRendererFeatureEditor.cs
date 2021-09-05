@@ -1,11 +1,11 @@
-using EditorExtras.Editor;
+using MarkupAttributes.Editor;
 using System.Threading.Tasks;
 using UnityEditor;
 
 namespace OceanSystem.Editor
 {
     [CustomEditor(typeof(OceanRendererFeature))]
-    public class OceanRendererFeatureEditor : ExtendedEditor
+    public class OceanRendererFeatureEditor : MarkedUpEditor
     {
         private const string RequirementTextures = "Depth Texture and Opaque Texture must " +
             "be enabled in the pipeline asset.";
@@ -13,9 +13,8 @@ namespace OceanSystem.Editor
 
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();
+            DrawMarkedUpInspector();
             EditorGUI.BeginChangeCheck();
-            DrawExtendedInspector(false);
 
             SerializedProperty _settings = serializedObject.FindProperty("_settings");
             SerializedProperty _transparency = _settings.FindPropertyRelative("transparency");
@@ -39,9 +38,8 @@ namespace OceanSystem.Editor
             {
                 EditorApplication.QueuePlayerLoopUpdate();
                 QueueDelayedPlayerLoopUpdate();
+                serializedObject.ApplyModifiedProperties();
             }
-
-            serializedObject.ApplyModifiedProperties();
         }
 
         async private void QueueDelayedPlayerLoopUpdate()

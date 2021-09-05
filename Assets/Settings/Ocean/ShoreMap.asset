@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65f100276f66b834d9e285293bb9a9e4, type: 3}
   m_Name: ShoreMap
   m_EditorClassIdentifier: 
-  texture: {fileID: 0}
+  texture: {fileID: 2800000, guid: 882556dcb56d4174f90e65f82d6d2457, type: 2}
   position: {x: 0, y: 500, z: 0}
   size: 1000
   elevationRange: {x: -50, y: 3}
@@ -24,5 +24,5 @@ MonoBehaviour:
     m_Bits: 0
   backgroundElevation: -100
   resolution: 256
-  captureFoldout: 0
-  previewFoldout: 0
+  captureFoldout: 1
+  previewFoldout: 1

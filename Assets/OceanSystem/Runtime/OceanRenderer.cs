@@ -1,4 +1,4 @@
-using EditorExtras;
+using MarkupAttributes;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -8,14 +8,14 @@ namespace OceanSystem
     public class OceanRenderer : MonoBehaviour
     {
         public enum OceanReflectionsMode { Default, RealtimeProbe, Custom }
-        [InlineEditor]
         [SerializeField] private Material _material;
-        [InlineEditor]
         [SerializeField] private OceanColorsPreset _colorsPreset;
         [SerializeField] private OceanReflectionsMode _reflectionsMode;
-        [ShowIf("IsRealtimeProbeReflections")]
+
+        [ShowIf(nameof(_reflectionsMode), OceanReflectionsMode.RealtimeProbe)]
         [SerializeField] private ReflectionProbe _probe;
-        [ShowIf("IsCubemapReflections")]
+
+        [ShowIf(nameof(_reflectionsMode), OceanReflectionsMode.Custom)]
         [SerializeField] private Cubemap _cubemap;
 
         [Header("Mesh")]
@@ -29,11 +29,6 @@ namespace OceanSystem
         private GameObject _meshObject;
         private MeshFilter _meshFilter;
         private Vector2Int _currentMeshParams = -Vector2Int.one;
-
-#if UNITY_EDITOR
-        private bool IsRealtimeProbeReflections => _reflectionsMode == OceanReflectionsMode.RealtimeProbe;
-        private bool IsCubemapReflections => _reflectionsMode == OceanReflectionsMode.Custom;
-#endif
 
         private void Update()
         {

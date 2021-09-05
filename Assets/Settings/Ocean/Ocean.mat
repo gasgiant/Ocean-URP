@@ -155,12 +155,12 @@ Material:
     - _ReceiveShadows: 1
     - _RecieveShadowsOff: 1
     - _ReflectionMaskRadius: -0.03
-    - _ReflectionMaskSharpness: 4
+    - _ReflectionMaskSharpness: 3.55
     - _ReflectionNormalStength: 0.25
     - _RefractionStrength: 0.25
     - _RefractionStrengthUnderwater: 0.75
     - _RenderDepthEnabled: 0
-    - _RoughnessDistance: 500
+    - _RoughnessDistance: 150
     - _RoughnessScale: 1
     - _SHORE_ENABLED: 0
     - _Smoothness: 0.5

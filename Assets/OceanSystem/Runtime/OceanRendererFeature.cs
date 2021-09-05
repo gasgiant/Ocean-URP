@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using EditorExtras;
+using MarkupAttributes;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -13,7 +13,7 @@ namespace OceanSystem
         public static bool IsCorrectCameraType(CameraType t) => t == CameraType.Game 
             || t == CameraType.SceneView || t == CameraType.VR;
 
-        [ExtendedProperty(true)]
+        [MarkedUpField(false, false)]
         [SerializeField] private OceanRenderingSettings _settings;
 
         private OceanGeometryPass _geometryPass;

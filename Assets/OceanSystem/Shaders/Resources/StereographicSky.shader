@@ -22,9 +22,9 @@ Shader "Hidden/Ocean/StereographicSky"
             #include "FullscreenVert.hlsl"
             #include "../OceanGlobals.hlsl"
 
-            half4 StereographicSkyFrag(Varyings IN, float FACING : VFACE) : SV_Target
+            half4 StereographicSkyFrag(Varyings input) : SV_Target
             {
-                float2 xy = (IN.uv - 0.5) * 2 * 1.1;
+                float2 xy = (input.uv - 0.5) * 2 * 1.1;
                 float sqrs = dot(xy, xy);
                 float3 dir = float3(2 * xy.x, 1 - sqrs, 2 * xy.y) / (1 + sqrs);
                 float3 col = SampleOceanSpecCube(dir);
