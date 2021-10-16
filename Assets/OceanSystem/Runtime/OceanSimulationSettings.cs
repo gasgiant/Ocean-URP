@@ -94,6 +94,7 @@ namespace OceanSystem
             {
                 highs[i] = 2 * Mathf.PI * Resolution / lengthScales[i] / SmallestWaveMultiplierAuto;
             }
+            highs[CascadesNumber - 1] *= SmallestWaveMultiplierAuto / 2;
 
             cutoffsHigh = highs;
             cutoffsLow = allowOverlap ? lows : Vector4.Max(lows, new Vector4(0, highs[0], highs[1], highs[2]));

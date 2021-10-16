@@ -7,8 +7,7 @@ namespace OceanSystem
     public static class FFTCompute
     {
         private const string ShaderPath = "ComputeShaders/FFT";
-        private const int LocalWorkGroupsX = 8;
-        private const int LocalWorkGroupsY = 8;
+        private const int LocalWorkGroups = 8;
 
         private static readonly Dictionary<int, RenderTexture> _precomputedData = new Dictionary<int, RenderTexture>();
         private static ComputeShader _fftShader;
@@ -78,7 +77,7 @@ namespace OceanSystem
                 pingPong = !pingPong;
                 cmd.SetComputeIntParam(fftShader, ShaderVariables.Step, i);
                 cmd.SetComputeFloatParam(fftShader, ShaderVariables.PingPong, pingPong ? 1 : 0);
-                cmd.DispatchCompute(fftShader, _fftStepKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+                cmd.DispatchCompute(fftShader, _fftStepKernel, WorkGroups(size), WorkGroups(size), 1);
             }
 
             cmd.SetComputeFloatParam(fftShader, ShaderVariables.Direction, 1);
@@ -87,7 +86,7 @@ namespace OceanSystem
                 pingPong = !pingPong;
                 cmd.SetComputeIntParam(fftShader, ShaderVariables.Step, i);
                 cmd.SetComputeFloatParam(fftShader, ShaderVariables.PingPong, pingPong ? 1 : 0);
-                cmd.DispatchCompute(fftShader, _fftStepKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+                cmd.DispatchCompute(fftShader, _fftStepKernel, WorkGroups(size), WorkGroups(size), 1);
             }
 
             if (pingPong && outputToInput)
@@ -104,16 +103,18 @@ namespace OceanSystem
             {
                 cmd.SetComputeIntParam(fftShader, ShaderVariables.Size, size);
                 cmd.SetComputeTextureParam(fftShader, _permuteKernel, ShaderVariables.Buffer0, outputToInput ? input : buffer);
-                cmd.DispatchCompute(fftShader, _permuteKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+                cmd.DispatchCompute(fftShader, _permuteKernel, WorkGroups(size), WorkGroups(size), 1);
             }
 
             if (scale)
             {
                 cmd.SetComputeIntParam(fftShader, ShaderVariables.Size, size);
                 cmd.SetComputeTextureParam(fftShader, _scaleKernel, ShaderVariables.Buffer0, outputToInput ? input : buffer);
-                cmd.DispatchCompute(fftShader, _scaleKernel, size / LocalWorkGroupsX, size / LocalWorkGroupsY, 1);
+                cmd.DispatchCompute(fftShader, _scaleKernel, WorkGroups(size), WorkGroups(size), 1);
             }
         }
+
+        private static int WorkGroups(int size) => Mathf.CeilToInt(((float)size) / LocalWorkGroups);
 
         private static ComputeShader GetFftShader()
         {
@@ -146,7 +147,7 @@ namespace OceanSystem
 
                 _fftShader.SetInt(ShaderVariables.Size, size);
                 _fftShader.SetTexture(_precomputeKernel, ShaderVariables.PrecomputedData, rt);
-                _fftShader.Dispatch(_precomputeKernel, logSize, size / 2 / LocalWorkGroupsY, 1);
+                _fftShader.Dispatch(_precomputeKernel, logSize, WorkGroups(size / 2), 1);
                 if (Application.isPlaying)
                     _precomputedData.Add(size, rt);
                 return rt;

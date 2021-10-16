@@ -22,7 +22,7 @@ namespace OceanSystem
 
         [ShowIfGroup("ShowIfScaleMode", nameof(_mode), InputsProviderMode.Scale)]
         [Box("./Local Waves")]
-        [SerializeField, Range(0, 1)] private float _displayWindForce;
+        [SerializeField, Range(0, 1)] private float _displayWindForce01;
         [SerializeField] private EqualizerPreset _defaultEqualizer;
 
         [SerializeField, HideInInspector] private LocalWavesPreset[] _localWavesArray;
@@ -39,13 +39,20 @@ namespace OceanSystem
                 }
         }
 
+        public void SetDisplayWindForce(float displayWindForce01)
+        {
+            _displayWindForce01 = displayWindForce01;
+        }
+
         public void PopulateInputs(OceanSimulationInputs target)
         {
-            PopulateInputs(target, _displayWindForce);
+            PopulateInputs(target, _displayWindForce01);
         }
 
         public void PopulateInputs(OceanSimulationInputs target, float windForce01)
         {
+            windForce01 = _displayWindForce01;
+
             target.timeScale = _timeScale;
             target.depth = _depth;
 

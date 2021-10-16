@@ -3,6 +3,7 @@
 #pragma kernel Scale
 #pragma kernel Permute
 
+#define LOCAL_WORK_GROUPS 8
 #define PI 3.1415926
 
 RWTexture2D<float4> PrecomputedData;
@@ -30,7 +31,7 @@ float2 ComplexExp(float2 a)
 	return float2(cos(a.y), sin(a.y)) * exp(a.x);
 }
 
-[numthreads(1, 8, 1)]
+[numthreads(1, LOCAL_WORK_GROUPS, 1)]
 void PrecomputeTwiddleFactorsAndInputIndices(uint3 id : SV_DispatchThreadID)
 {
 	uint b = Size >> (id.x + 1);
@@ -54,7 +55,7 @@ void DoButterfly(RWTexture2DArray<float4> buff0, RWTexture2DArray<float4> buff1,
 	}
 }
 
-[numthreads(8, 8, 1)]
+[numthreads(LOCAL_WORK_GROUPS, LOCAL_WORK_GROUPS, 1)]
 void FftStep(uint3 id : SV_DispatchThreadID)
 {
 	float4 data;
@@ -93,7 +94,7 @@ void FftStep(uint3 id : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(8, 8, 1)]
+[numthreads(LOCAL_WORK_GROUPS, LOCAL_WORK_GROUPS, 1)]
 void Scale(uint3 id : SV_DispatchThreadID)
 {
 	for (uint i = 0; i < TargetsCount; i++)
@@ -102,7 +103,7 @@ void Scale(uint3 id : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(8, 8, 1)]
+[numthreads(LOCAL_WORK_GROUPS, LOCAL_WORK_GROUPS, 1)]
 void Permute(uint3 id : SV_DispatchThreadID)
 {
 	for (uint i = 0; i < TargetsCount; i++)

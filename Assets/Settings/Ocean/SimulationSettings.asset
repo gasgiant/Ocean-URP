@@ -12,19 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05d6389fa46ca6641a6adda15de50824, type: 3}
   m_Name: SimulationSettings
   m_EditorClassIdentifier: 
-  _resolution: 128
+  _resolution: 256
   _cascadesNumber: 4
   _anisoLevel: 6
-  _simulateFoam: 1
-  _updateSpectrum: 1
+  _simulateFoam: 0
+  _updateSpectrum: 0
   _readbackCascades: 0
   _samplingIterations: 3
   _domainsMode: 0
-  _simulationScale: 700
+  _simulationScale: 665.91
   _allowOverlap: 1
   _minWavesInCascade: 6
   _c0Scale: 858.72
   _c1Scale: 167
   _c2Scale: 30.84
   _c3Scale: 5.62
-  _displaySpectrum: {fileID: 11400000, guid: 60b7fe5ee6ea80e4aa9ad21d6132d821, type: 2}
+  _displaySpectrum: {fileID: 11400000, guid: 17e1d399daf52c24d9bdea2555f49052, type: 2}

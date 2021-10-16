@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8036a3839c161684a839801183dabb0f, type: 3}
+  m_Name: New Local Waves
+  m_EditorClassIdentifier: 
+  _spectrum:
+    energySpectrum: 0
+    windSpeed: 4.4
+    fetch: 100
+    peaking: 3.3
+    scale: 1
+    cutoffWavelength: 0
+    alignment: 1
+    extraAlignment: 0
+  _referenceWaveHeight: 1
+  _chop: 1.3
+  _foam:
+    decayRate: 0.02
+    coverage: -0.1
+    density: 8.4
+    sharpness: 1
+    persistence: 0
+    trail: 0
+    trailTextureStrength: 0.5
+    trailTextureSize: {x: 100, y: 50}
+    underwater: 0
+    cascadesWeights: {x: 1, y: 0, z: 0, w: 0}
+  _equalizer: {fileID: 11400000, guid: 1fd9d91ff7b9c9a4c91fe8d00b1d9ef0, type: 2}
+  _windForce: 0

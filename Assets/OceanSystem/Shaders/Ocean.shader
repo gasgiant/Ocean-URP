@@ -153,6 +153,7 @@ Shader "Ocean/Ocean"
                 viewDir = viewDir / viewDist;
 
                 float4 lodWeights = LodWeights(viewDist, _CascadesFadeDist);
+
                 float4 shoreWeights = 1;// ShoreModulation(i.shore.x);
                 float4x4 derivatives = SampleDerivatives(input.worldUV, lodWeights * shoreWeights);
                 float3 normal = NormalFromDerivatives(derivatives, 1);

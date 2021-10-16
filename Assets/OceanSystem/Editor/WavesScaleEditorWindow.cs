@@ -10,13 +10,14 @@ namespace OceanSystem.Editor
         private const string WindForceProperty = "_windForce";
 
         private SerializedProperty _presetsArray;
+        private OceanSimulationInputsProvider _inputsProvider;
         private string _assetPath;
         private int _selectedPresetIndex = -1;
         private Dictionary<Object, UnityEditor.Editor> _editors = 
             new Dictionary<Object, UnityEditor.Editor>();
         private Vector2 _scrollPositionSidebar;
         private Vector2 _scrollPositionMain;
-        private List<LocalWavesPreset> listForSorting = new List<LocalWavesPreset>();
+        private readonly List<LocalWavesPreset> _listForSorting = new List<LocalWavesPreset>();
         private float _maxWindForce = -1;
 
         public static WavesScaleEditorWindow Open(SerializedProperty presetsArray)
@@ -25,6 +26,7 @@ namespace OceanSystem.Editor
             window._presetsArray = presetsArray;
             window._assetPath = AssetDatabase.GetAssetPath(
                 presetsArray.serializedObject.targetObject);
+            window._inputsProvider = presetsArray.serializedObject.targetObject as OceanSimulationInputsProvider;
             return window;
         }
 
@@ -41,6 +43,9 @@ namespace OceanSystem.Editor
 
             if (_selectedPresetIndex >= _presetsArray.arraySize)
                 _selectedPresetIndex = -1;
+
+            if (_selectedPresetIndex >= 0)
+                _inputsProvider.SetDisplayWindForce(GetPresetAtIndex(_selectedPresetIndex).WindForce / _maxWindForce);
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.BeginVertical("box", GUILayout.MaxWidth(150), 
@@ -138,27 +143,27 @@ namespace OceanSystem.Editor
                 _maxWindForce = -1;
             }
 
-            listForSorting.Clear();
+            _listForSorting.Clear();
             LocalWavesPreset selected = null;
             for (int i = 0; i < _presetsArray.arraySize; i++)
             {
                 var preset = GetPresetAtIndex(i);
-                listForSorting.Add(preset);
+                _listForSorting.Add(preset);
                 if (i == _selectedPresetIndex)
                     selected = preset;
             }
-            listForSorting.Sort((p0, p1) => p0.WindForce.CompareTo(p1.WindForce));
+            _listForSorting.Sort((p0, p1) => p0.WindForce.CompareTo(p1.WindForce));
 
             _maxWindForce = -1;
             for (int i = 0; i < _presetsArray.arraySize; i++)
             {
-                if (listForSorting[i].WindForce > _maxWindForce)
-                    _maxWindForce = listForSorting[i].WindForce;
-                if (listForSorting[i] == selected)
+                if (_listForSorting[i].WindForce > _maxWindForce)
+                    _maxWindForce = _listForSorting[i].WindForce;
+                if (_listForSorting[i] == selected)
                     _selectedPresetIndex = i;
-                listForSorting[i].name = CreateName(listForSorting[i].WindForce);
+                _listForSorting[i].name = CreateName(_listForSorting[i].WindForce);
                 var prop = _presetsArray.GetArrayElementAtIndex(i);
-                prop.objectReferenceValue = listForSorting[i];
+                prop.objectReferenceValue = _listForSorting[i];
             }
 
             _presetsArray.serializedObject.ApplyModifiedProperties();
