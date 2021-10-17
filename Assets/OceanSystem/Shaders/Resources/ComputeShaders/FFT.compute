@@ -1,113 +1,120 @@
-﻿#pragma kernel PrecomputeTwiddleFactorsAndInputIndices
-#pragma kernel FftStep
-#pragma kernel Scale
-#pragma kernel Permute
+﻿#pragma kernel Fft
+#pragma kernel PostProcess
 
-#define LOCAL_WORK_GROUPS 8
-#define PI 3.1415926
+#pragma multi_compile _ FFT_ARRAY_TARGET
+#pragma multi_compile _ FFT_SIZE_128 FFT_SIZE_256 FFT_SIZE_512
 
-RWTexture2D<float4> PrecomputedData;
-RWTexture2DArray<float4> Buffer0;
-RWTexture2DArray<float4> Buffer1;
+#if defined(FFT_SIZE_512)
+#define SIZE 512
+#define LOG_SIZE 9
+#elif defined(FFT_SIZE_256)
+#define SIZE 256
+#define LOG_SIZE 8
+#elif defined(FFT_SIZE_128)
+#define SIZE 128
+#define LOG_SIZE 7
+#else
+#define SIZE 64
+#define LOG_SIZE 6
+#endif
+
+static uint Size = SIZE;
+
+#ifdef FFT_ARRAY_TARGET
+RWTexture2DArray<float4> Target;
+#else
+RWTexture2D<float4> Target;
+#endif
 
 cbuffer Params
 {
-    uint Step;
-    uint Size;
     uint TargetsCount;
-	bool Direction;
-	bool PingPong;
-	bool Inverse;
+    bool Direction;
+    bool Inverse;
+    bool Scale;
+    bool Permute;
 };
 
+groupshared float4 buffer[2][SIZE];
 
 float2 ComplexMult(float2 a, float2 b)
 {
-	return float2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+    return float2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
 }
 
-float2 ComplexExp(float2 a)
+void ButterflyValues(uint step, uint index, out uint2 indices, out float2 twiddle)
 {
-	return float2(cos(a.y), sin(a.y)) * exp(a.x);
+    const float twoPi = 6.28318530718;
+    uint b = Size >> (step + 1);
+    uint w = b * (index / b);
+    uint i = (w + index) % Size;
+    sincos(-twoPi / Size * w, twiddle.y, twiddle.x);
+    if (Inverse)
+        twiddle.y = -twiddle.y;
+    indices = uint2(i, i + b);
 }
 
-[numthreads(1, LOCAL_WORK_GROUPS, 1)]
-void PrecomputeTwiddleFactorsAndInputIndices(uint3 id : SV_DispatchThreadID)
+float4 DoFft(uint threadIndex, float4 input)
 {
-	uint b = Size >> (id.x + 1);
-	float2 mult = 2 * PI * float2(0, 1) / Size;
-	uint i = (2 * b * (id.y / b) + id.y % b) % Size;
-	float2 twiddle = ComplexExp(-mult * ((id.y / b) * b));
-	PrecomputedData[id.xy] = float4(twiddle.x, twiddle.y, i, i + b);
-	PrecomputedData[uint2(id.x, id.y + Size / 2)] = float4(-twiddle.x, -twiddle.y, i, i + b);
+    buffer[0][threadIndex] = input;
+    GroupMemoryBarrierWithGroupSync();
+    bool flag = false;
+    
+    [unroll(LOG_SIZE)]
+    for (uint step = 0; step < LOG_SIZE; step++)
+    {
+        uint2 inputsIndices;
+        float2 twiddle;
+        ButterflyValues(step, threadIndex, inputsIndices, twiddle);
+        
+        float4 v = buffer[flag][inputsIndices.y];
+        buffer[!flag][threadIndex] = buffer[flag][inputsIndices.x]
+		    + float4(ComplexMult(twiddle, v.xy), ComplexMult(twiddle, v.zw));
+        flag = !flag;
+        GroupMemoryBarrierWithGroupSync();
+    }
+    
+    return buffer[flag][threadIndex];
 }
 
-void DoButterfly(RWTexture2DArray<float4> buff0, RWTexture2DArray<float4> buff1,
-	uint2 id, uint2 sampleIndexA, uint2 sampleIndexB, float2 twiddle)
+[numthreads(SIZE, 1, 1)]
+void Fft(uint3 id : SV_DispatchThreadID)
 {
-	float4 v;
-	
-	for (uint i = 0; i < TargetsCount; i++)
-	{
-		v = buff0[uint3(sampleIndexA, i)];
-		buff1[uint3(id, i)] = buff0[uint3(sampleIndexB, i)]
-		+ float4(ComplexMult(twiddle, v.xy), ComplexMult(twiddle, v.zw));
-	}
+    uint threadIndex = id.x;
+    uint2 targetIndex;
+    if (Direction)
+        targetIndex = id.yx;
+    else
+        targetIndex = id.xy;
+    
+#ifdef FFT_ARRAY_TARGET
+    for (uint k = 0; k < TargetsCount; k++)
+    {
+        Target[uint3(targetIndex, k)] = DoFft(threadIndex, Target[uint3(targetIndex, k)]);
+    }
+#else
+    Target[targetIndex] = DoFft(threadIndex, Target[targetIndex]);
+#endif
 }
 
-[numthreads(LOCAL_WORK_GROUPS, LOCAL_WORK_GROUPS, 1)]
-void FftStep(uint3 id : SV_DispatchThreadID)
+float4 DoPostProcess(float4 input, uint2 id)
 {
-	float4 data;
-	uint2 inputsIndices;
-	uint2 sampleIndexA;
-	uint2 sampleIndexB;
-	float2 twiddle;
-	
-	if (Direction)
-	{
-		data = PrecomputedData[uint2(Step, id.y)];
-		inputsIndices = (uint2) data.zw;
-		sampleIndexA = uint2(id.x, inputsIndices.y);
-		sampleIndexB = uint2(id.x, inputsIndices.x);
-	}
-	else
-	{
-		data = PrecomputedData[uint2(Step, id.x)];
-		inputsIndices = (uint2) data.zw;
-		sampleIndexA = uint2(inputsIndices.y, id.y);
-		sampleIndexB = uint2(inputsIndices.x, id.y);
-	}
-	
-	if (Inverse)
-		twiddle = float2(data.x, -data.y);
-	else
-		twiddle = data.xy;
-	
-	if (PingPong)
-	{
-		DoButterfly(Buffer0, Buffer1, id.xy, sampleIndexA, sampleIndexB, twiddle);
-	}
-	else
-	{
-		DoButterfly(Buffer1, Buffer0, id.xy, sampleIndexA, sampleIndexB, twiddle);
-	}
+    if (Scale)
+        input /= Size * Size;
+    if (Permute)
+        input *= 1.0 - 2.0 * ((id.x + id.y) % 2);
+    return input;
 }
 
-[numthreads(LOCAL_WORK_GROUPS, LOCAL_WORK_GROUPS, 1)]
-void Scale(uint3 id : SV_DispatchThreadID)
+[numthreads(8, 8, 1)]
+void PostProcess(uint3 id : SV_DispatchThreadID)
 {
-	for (uint i = 0; i < TargetsCount; i++)
-	{
-		Buffer0[uint3(id.xy, i)] = Buffer0[uint3(id.xy, i)] / Size / Size;
-	}
-}
-
-[numthreads(LOCAL_WORK_GROUPS, LOCAL_WORK_GROUPS, 1)]
-void Permute(uint3 id : SV_DispatchThreadID)
-{
-	for (uint i = 0; i < TargetsCount; i++)
-	{
-		Buffer0[uint3(id.xy, i)] = Buffer0[uint3(id.xy, i)] * (1.0 - 2.0 * ((id.x + id.y) % 2));
-	}
+#ifdef FFT_ARRAY_TARGET
+    for (uint i = 0; i < TargetsCount; i++)
+    {
+        Target[uint3(id.xy, i)] = DoPostProcess(Target[uint3(id.xy, i)], id.xy);
+    }
+#else
+    Target[id.xy] = DoPostProcess(Target[id.xy], id.xy);
+#endif
 }

@@ -1,11 +1,9 @@
-﻿#pragma kernel GenerateGaussianNoise
-#pragma kernel CalculateInitialSpectrum
+﻿#pragma kernel CalculateInitialSpectrum
 #pragma kernel CalculateConjugatedSpectrum
 
 #include "GPURandom.hlsl"
 #include "Oceanography.hlsl"
 
-RWTexture2DArray<float2> Noise;
 RWTexture2DArray<float4> H0;
 // wave vector x, chop, wave vector z, frequency
 RWTexture2DArray<float4> WavesData;
@@ -51,13 +49,13 @@ float CascadeContribution(float k, int cascade)
         }
         return 1 / total;
     }
-	
 }
 
 
 void CalculateInitialsForCascade(uint3 id)
 {
-	float2 noise = Noise[id];
+    float2 noise = float2(NormalRandom(id),
+			NormalRandom(uint3(id.xy, id.z + CascadesCount)));
     float deltaK = 2 * OCEANOGRAPHY_PI / LengthScales[id.z];
 	int nx = id.x - Size / 2;
 	int nz = id.y - Size / 2;
@@ -95,17 +93,6 @@ void CalculateInitialsForCascade(uint3 id)
 		H0K[id] = 0;
 	}
 }
-
-[numthreads(8, 8, 1)]
-void GenerateGaussianNoise(uint3 id : SV_DispatchThreadID)
-{
-	for (uint i = 0; i < CascadesCount; i++)
-	{
-		Noise[uint3(id.xy, i)] = float2(NormalRandom(uint3(id.xy, i)), 
-			NormalRandom(uint3(id.xy, i + CascadesCount)));
-	}
-}
-
 
 [numthreads(8, 8, 1)]
 void CalculateInitialSpectrum(uint3 id : SV_DispatchThreadID)

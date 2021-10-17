@@ -16,7 +16,7 @@ MonoBehaviour:
   _cascadesNumber: 4
   _anisoLevel: 6
   _simulateFoam: 0
-  _updateSpectrum: 0
+  _updateSpectrum: 1
   _readbackCascades: 0
   _samplingIterations: 3
   _domainsMode: 0
