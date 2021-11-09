@@ -21,7 +21,7 @@ namespace OceanSystem
         [SerializeField] private LocalWavesPreset _localWaves;
 
         [ShowIfGroup("ShowIfScaleMode", nameof(_mode), InputsProviderMode.Scale)]
-        [Box("./Local Waves")]
+        [Foldout("./Local Waves")]
         [SerializeField, Range(0, 1)] private float _displayWindForce01;
         [SerializeField] private EqualizerPreset _defaultEqualizer;
 

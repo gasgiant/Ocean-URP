@@ -15,12 +15,12 @@ MonoBehaviour:
   _resolution: 256
   _cascadesNumber: 4
   _anisoLevel: 6
-  _simulateFoam: 0
+  _simulateFoam: 1
   _updateSpectrum: 1
   _readbackCascades: 0
   _samplingIterations: 3
   _domainsMode: 0
-  _simulationScale: 665.91
+  _simulationScale: 1353.61
   _allowOverlap: 1
   _minWavesInCascade: 6
   _c0Scale: 858.72

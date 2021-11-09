@@ -1,13 +1,11 @@
 ﻿#pragma kernel CalculateInitialSpectrum
-#pragma kernel CalculateConjugatedSpectrum
 
 #include "GPURandom.hlsl"
 #include "Oceanography.hlsl"
 
-RWTexture2DArray<float4> H0;
 // wave vector x, chop, wave vector z, frequency
 RWTexture2DArray<float4> WavesData;
-RWTexture2DArray<float2> H0K;
+RWTexture2DArray<float2> InitialAmplitude;
 
 StructuredBuffer<SpectrumParams> Spectrums;
 Texture2D<float2> EqualizerRamp0;
@@ -84,14 +82,15 @@ void CalculateInitialsForCascade(uint3 id)
 		float lambda = Chop * eq.g;
 		
 		WavesData[id] = float4(k.x, lambda, k.y, omega);
-		H0K[id] = contribution * scaleRamp * float2(noise.x, noise.y)
-			* sqrt(2 * spectrum * abs(dOmegadk) / kLength * deltaK * deltaK);
-	}
+        InitialAmplitude[id] = contribution * scaleRamp 
+			* sqrt(2 * spectrum * abs(dOmegadk) / kLength * deltaK * deltaK) 
+			* float2(noise.x, noise.y);
+    }
 	else
 	{
 		WavesData[id] = float4(k.x, 0, k.y, 0);
-		H0K[id] = 0;
-	}
+        InitialAmplitude[id] = 0;
+    }
 }
 
 [numthreads(8, 8, 1)]
@@ -103,13 +102,3 @@ void CalculateInitialSpectrum(uint3 id : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(8,8,1)]
-void CalculateConjugatedSpectrum(uint3 id : SV_DispatchThreadID)
-{
-	for (uint i = 0; i < CascadesCount; i++)
-	{
-		float2 h0K = H0K[uint3(id.xy, i)];
-		float2 h0MinusK = H0K[uint3((Size - id.x) % Size, (Size - id.y) % Size, i)];
-		H0[uint3(id.xy, i)] = float4(h0K.x, h0K.y, h0MinusK.x, -h0MinusK.y);
-	}
-}

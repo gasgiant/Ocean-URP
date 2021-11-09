@@ -12,7 +12,6 @@ cbuffer Params
     float FoamDecayRate;
 };
 
-
 void SimulateForCascade(uint3 id)
 {
 	float Dxz = Input[uint3(id.xy, id.z * 2)].w;

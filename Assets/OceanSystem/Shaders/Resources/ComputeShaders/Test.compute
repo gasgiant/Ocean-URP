@@ -1,0 +1,68 @@
+﻿#pragma kernel Simulate
+
+RWTexture2D<float> Map;
+
+// DxDyDzDxz, DyxDyzDxxDzz for each cascade
+Texture2DArray Input;
+SamplerState samplerInput;
+
+cbuffer Params
+{
+    uint CascadesCount;
+    float DeltaTime;
+    float4 LengthScales;
+    float MapScale;
+    uint MapResolution;
+};
+
+float3 Derivatives(float2 worldPos, float4 weights)
+{
+    float3 d = 0;
+    for (uint c = 0; c < CascadesCount; c++)
+    {
+        float2 uv = worldPos / LengthScales[c];
+        d.z += weights[c] * Input.SampleLevel(samplerInput, float3(uv, c * 2), 0).w;
+        d.xy += weights[c] * Input.SampleLevel(samplerInput, float3(uv, c * 2 + 1), 0).zw;
+    }
+    return d / dot(weights, 1);
+}
+
+float Blur(int2 id)
+{
+    float v = Map[id.xy];
+    float n = 0.1 * DeltaTime * MapResolution / MapScale;
+    
+    v += n * Map[max(0, min(id.xy + int2(1, 0), MapResolution))];
+    v += n * Map[max(0, min(id.xy + int2(1, 1), MapResolution))];
+    v += n * Map[max(0, min(id.xy + int2(1, -1), MapResolution))];
+    v += n * Map[max(0, min(id.xy + int2(0, 1), MapResolution))];
+    v += n * Map[max(0, min(id.xy + int2(0, -1), MapResolution))];
+    v += n * Map[max(0, min(id.xy + int2(-1, 0), MapResolution))];
+    v += n * Map[max(0, min(id.xy + int2(-1, 1), MapResolution))];
+    v += n * Map[max(0, min(id.xy + int2(-1, -1), MapResolution))];
+    
+    return v / (1 + 8 * n);
+}
+
+[numthreads(8, 8, 1)]
+void Simulate(uint3 id : SV_DispatchThreadID)
+{
+    float2 worldPos = MapScale / MapResolution * id.xy;;
+    
+    float3 der = Derivatives(worldPos, float4(1, 1, 0.2, 0.1));
+    
+    float jxx = 1 + der.x;
+    float jzz = 1 + der.y;
+    float jxz = der.z;
+	
+    float jacobian = jxx * jzz - jxz * jxz;
+    float jminus = 0.5 * (jxx + jzz) - 0.5 * sqrt((jxx - jzz) * (jxx - jzz) + 4 * jxz * jxz);
+
+    float previous = Blur(id.xy);
+    previous *= 1 - DeltaTime * 2;
+    
+    Map[id.xy] = max(previous, min(1, (-jacobian + 0.85) * 2));
+
+}
+
+

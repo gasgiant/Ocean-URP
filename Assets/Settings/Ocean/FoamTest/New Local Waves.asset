@@ -14,25 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _spectrum:
     energySpectrum: 0
-    windSpeed: 4.4
+    windSpeed: 18.6
     fetch: 100
     peaking: 3.3
     scale: 1
     cutoffWavelength: 0
     alignment: 1
     extraAlignment: 0
-  _referenceWaveHeight: 1
+  _referenceWaveHeight: 8.34
   _chop: 1.3
   _foam:
-    decayRate: 0.02
-    coverage: -0.1
-    density: 8.4
-    sharpness: 1
-    persistence: 0
+    decayRate: 0.01
+    coverage: 0.551
+    density: 9
+    sharpness: 0.72
+    persistence: 0.917
     trail: 0
-    trailTextureStrength: 0.5
-    trailTextureSize: {x: 100, y: 50}
-    underwater: 0
-    cascadesWeights: {x: 1, y: 0, z: 0, w: 0}
+    trailTextureStrength: 1
+    trailTextureSize: {x: 100, y: 40}
+    underwater: 0.51
+    cascadesWeights: {x: 3, y: 1, z: 0.1, w: 0.1}
   _equalizer: {fileID: 11400000, guid: 1fd9d91ff7b9c9a4c91fe8d00b1d9ef0, type: 2}
   _windForce: 0

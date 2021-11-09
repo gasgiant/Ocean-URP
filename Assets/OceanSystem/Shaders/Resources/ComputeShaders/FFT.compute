@@ -19,6 +19,7 @@
 #endif
 
 static uint Size = SIZE;
+static float OneOverSize = 1.0 / SIZE;
 
 #ifdef FFT_ARRAY_TARGET
 RWTexture2DArray<float4> Target;
@@ -48,13 +49,11 @@ void ButterflyValues(uint step, uint index, out uint2 indices, out float2 twiddl
     uint b = Size >> (step + 1);
     uint w = b * (index / b);
     uint i = (w + index) % Size;
-    sincos(-twoPi / Size * w, twiddle.y, twiddle.x);
-    if (Inverse)
-        twiddle.y = -twiddle.y;
     indices = uint2(i, i + b);
+    sincos(-twoPi * OneOverSize * w, twiddle.y, twiddle.x);
 }
 
-float4 DoFft(uint threadIndex, float4 input)
+float4 DoFft(uint threadIndex, float4 input, float inverse)
 {
     buffer[0][threadIndex] = input;
     GroupMemoryBarrierWithGroupSync();
@@ -66,6 +65,7 @@ float4 DoFft(uint threadIndex, float4 input)
         uint2 inputsIndices;
         float2 twiddle;
         ButterflyValues(step, threadIndex, inputsIndices, twiddle);
+        twiddle.y = twiddle.y * inverse;
         
         float4 v = buffer[flag][inputsIndices.y];
         buffer[!flag][threadIndex] = buffer[flag][inputsIndices.x]
@@ -86,21 +86,22 @@ void Fft(uint3 id : SV_DispatchThreadID)
         targetIndex = id.yx;
     else
         targetIndex = id.xy;
+    float inverse = Inverse ? -1 : 1;
     
 #ifdef FFT_ARRAY_TARGET
     for (uint k = 0; k < TargetsCount; k++)
     {
-        Target[uint3(targetIndex, k)] = DoFft(threadIndex, Target[uint3(targetIndex, k)]);
+        Target[uint3(targetIndex, k)] = DoFft(threadIndex, Target[uint3(targetIndex, k)], inverse);
     }
 #else
-    Target[targetIndex] = DoFft(threadIndex, Target[targetIndex]);
+    Target[targetIndex] = DoFft(threadIndex, Target[targetIndex], inverse);
 #endif
 }
 
 float4 DoPostProcess(float4 input, uint2 id)
 {
     if (Scale)
-        input /= Size * Size;
+        input *= OneOverSize * OneOverSize;
     if (Permute)
         input *= 1.0 - 2.0 * ((id.x + id.y) % 2);
     return input;

@@ -5,21 +5,25 @@
 // DxDyDzDxz, DyxDyzDxxDzz for each cascade
 RWTexture2DArray<float4> Result;
 
-Texture2DArray<float4> H0;
+Texture2DArray<float2> InitialAmplitude;
 // wave vector x, chop, wave vector z, frequency
 Texture2DArray<float4> WavesData;
 
 cbuffer Params
 {
     uint CascadesCount;
+    uint Size;
     float Time;
 };
-
-
 
 float2 ComplexMult(float2 a, float2 b)
 {
 	return float2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+}
+
+float2 PackComplexToRealFftAmplitudes(float2 a, float2 b)
+{
+    return float2(a.x - b.y, a.y + b.x);
 }
 
 void CalculateForCascade(uint3 id)
@@ -28,7 +32,10 @@ void CalculateForCascade(uint3 id)
 	
 	float phase = wave.w * Time;
 	float2 exponent = float2(cos(phase), sin(phase));
-	float4 h0 = H0[id];
+    float2 h0K = InitialAmplitude[id];
+    float2 h0MinusK = InitialAmplitude[uint3((Size - id.x) % Size, (Size - id.y) % Size, id.z)];
+    float4 h0 = float4(h0K.x, h0K.y, h0MinusK.x, -h0MinusK.y);
+	
 	float2 h = ComplexMult(h0.xy, exponent)
 		+ ComplexMult(h0.zw, float2(exponent.x, -exponent.y));
 	float2 ih = float2(-h.y, h.x);
@@ -36,21 +43,23 @@ void CalculateForCascade(uint3 id)
 	float oneOverKLength = 1 / max(0.001, length(wave.xz));
 	
 	float lambda = wave.y;
-	float2 displacementX = lambda * ih * wave.x * oneOverKLength;
+	float2 displacementX = lambda * wave.x * oneOverKLength * ih;
 	float2 displacementY = h;
-	float2 displacementZ = lambda * ih * wave.z * oneOverKLength;
+    float2 displacementZ = lambda * wave.z * oneOverKLength * ih;
 	
-	float2 displacementX_dx = -lambda * h * wave.x * wave.x * oneOverKLength;
+    float2 displacementX_dx = -lambda * wave.x * wave.x * oneOverKLength * h;
 	float2 displacementY_dx = ih * wave.x;
-	float2 displacementZ_dx = -lambda * h * wave.x * wave.z * oneOverKLength;
+    float2 displacementZ_dx = -lambda * wave.x * wave.z * oneOverKLength * h;
 		 
-	float2 displacementY_dz = ih * wave.z;
-	float2 displacementZ_dz = -lambda * h * wave.z * wave.z * oneOverKLength;
+	float2 displacementY_dz = wave.z * ih;
+    float2 displacementZ_dz = -lambda * wave.z * wave.z * oneOverKLength * h;
 	
-	Result[uint3(id.xy, id.z * 2)] = float4(float2(displacementX.x - displacementY.y, displacementX.y + displacementY.x),
-							  float2(displacementZ.x - displacementZ_dx.y, displacementZ.y + displacementZ_dx.x));
-	Result[uint3(id.xy, id.z * 2 + 1)] = float4(float2(displacementY_dx.x - displacementY_dz.y, displacementY_dx.y + displacementY_dz.x),
-							     float2(displacementX_dx.x - displacementZ_dz.y, displacementX_dx.y + displacementZ_dz.x));
+    Result[uint3(id.xy, id.z * 2)] = float4(
+		PackComplexToRealFftAmplitudes(displacementX, displacementY),
+		PackComplexToRealFftAmplitudes(displacementZ, displacementZ_dx));
+    Result[uint3(id.xy, id.z * 2 + 1)] = float4(
+		PackComplexToRealFftAmplitudes(displacementY_dx, displacementY_dz),
+		PackComplexToRealFftAmplitudes(displacementX_dx, displacementZ_dz));
 }
 
 [numthreads(8,8,1)]

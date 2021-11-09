@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serializedBoolEntries:
   - key: OceanSystem.LocalWavesPreset/Tabs
-    value: 0
+    value: 1
   - key: Ocean/Ocean/Tabs
-    value: 0
+    value: 3
   - key: OceanSystem.OceanSimulationInputsProvider/ShowIfScaleMode/Local Waves
     value: 1
   - key: OceanSystem.LocalWavesPreset/Tabs/Waves/Spectrum
