@@ -89,7 +89,7 @@ MonoBehaviour:
   _depth: 1000
   _swell: {fileID: 11400000, guid: 9275ed2623fcd8a478d04263e6973ff0, type: 2}
   _localWaves: {fileID: 0}
-  _displayWindForce01: 0.741
+  _displayWindForce01: 0.029
   _defaultEqualizer: {fileID: 11400000, guid: 1fd9d91ff7b9c9a4c91fe8d00b1d9ef0, type: 2}
   _localWavesArray:
   - {fileID: 8216255704537436480}

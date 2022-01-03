@@ -393,6 +393,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 1
   m_Antialiasing: 1
   m_AntialiasingQuality: 2
@@ -574,7 +575,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _simulationSettings: {fileID: 11400000, guid: 59c5d1e11cdd336428ee3e1f68810c3f, type: 2}
-  _inputsProvider: {fileID: 11400000, guid: 17e1d399daf52c24d9bdea2555f49052, type: 2}
+  _inputsProvider: {fileID: 11400000, guid: 60b7fe5ee6ea80e4aa9ad21d6132d821, type: 2}
   _localWindDirection: 155
   _swellDirection: 0
   _windForce01: 1
